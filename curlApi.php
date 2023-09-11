@@ -172,28 +172,31 @@
             </div>
         </div><br><br>
         <div class="row col-md-12">
-            <div class="col-md-6">
-                <div class="card custom-card">
-                    <div class="card-body">
-                        <h2 class="card-title">Mandar foto de evidencia </h2>
-                        <h5 class="card-title">opcion="9"</h5>
-                        <h5 class="card-title">ID_actividad="2"</h5>
-                        <h5 class="card-title">ID_usuario="1"</h5>
-                        <h5 class="card-title">archivo="foto.png"</h5>
+        <div class="col-md-6">
+            <div class="card custom-card">
+                <div class="card-body">
+                    <h2 class="card-title">Mandar foto de evidencia</h2>
+                    <h5 class="card-title">opcion="9"</h5>
+                    <h5 class="card-title">ID_actividad="2"</h5>
+                    <h5 class="card-title">ID_usuario="1"</h5>
+                    <h5 class="card-title">archivo="foto.png"</h5>
 
-                        <form action="mostrar.php" method="post" enctype="multipart/form-data">
-                            <input type="hidden" name="opcion" value="9">
-                            <input type="hidden" name="ID_usuario" value="1"> <!-- Cambia esto con el ID de usuario adecuado -->
-                            <input type="hidden" name="ID_actividad" value="2"> <!-- Cambia esto con el ID de actividad adecuado -->
+                    <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+                  
+                        <input class="form-control mb-2" type="text" name="opcion" value="9">
+                        <input class="form-control mb-2"type="text" name="ID_actividad" value="2">
+                        <input class="form-control mb-2" type="text" name="ID_usuario" value="1">
 
-                            <label for="archivo">Selecciona una imagen:</label>
-                            <input type="file" name="archivo" id="archivo">
-                            <input type="submit" value="Subir Imagen">
-                        </form>
-                    </div>
+                        <label for="imagen">Seleccionar Imagen:</label>
+                        <input class="form-control mb-2" type="file" id="imagen" name="imagen" accept="image/*" required>
+                        <br>
+
+                        <input class="btn btn-primary" type="submit" value="Subir Imagen y Datos">
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </body>
 

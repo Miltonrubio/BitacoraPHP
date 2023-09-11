@@ -1,19 +1,19 @@
 <?php
 require_once "conexion.php";
 
-$opcion = $_POST["opcion"];
-$correo = $_POST["correo"];
-$clave = $_POST["clave"];
-$nombreActividad = $_POST["nombreActividad"];
-$descripcionActividad = $_POST["descripcionActividad"];
+$opcion = isset($_POST["opcion"]) ? $_POST["opcion"] : "";
+$correo = isset($_POST["correo"]) ? $_POST["correo"] : "";
+$clave = isset($_POST["clave"]) ? $_POST["clave"] : "";
+$nombreActividad = isset($_POST["nombreActividad"]) ? $_POST["nombreActividad"] : "";
+$descripcionActividad = isset($_POST["descripcionActividad"]) ? $_POST["descripcionActividad"] : "";
 
-$nuevoEstado = $_POST["nuevoEstado"];
-$ID_usuario = $_POST["ID_usuario"];
-$ID_actividad = $_POST["ID_actividad"];
-$longitud = $_POST["longitud"];
-$latitud = $_POST["latitud"];
-$nuevoNombreActividad = $_POST["nuevoNombreActividad"];
-$ID_nombre_actividad = $_POST["ID_nombre_actividad"];
+$nuevoEstado = isset($_POST["nuevoEstado"]) ? $_POST["nuevoEstado"] : "";
+$ID_usuario = isset($_POST["ID_usuario"]) ? $_POST["ID_usuario"] : "";
+$ID_actividad = isset($_POST["ID_actividad"]) ? $_POST["ID_actividad"] : "";
+$longitud = isset($_POST["longitud"]) ? $_POST["longitud"] : "";
+$latitud = isset($_POST["latitud"]) ? $_POST["latitud"] : "";
+$nuevoNombreActividad = isset($_POST["nuevoNombreActividad"]) ? $_POST["nuevoNombreActividad"] : "";
+$ID_nombre_actividad = isset($_POST["ID_nombre_actividad"]) ? $_POST["ID_nombre_actividad"] : "";
 
 // Verificar la conexión a la base de datos
 if ($conexion->connect_error) {
@@ -162,39 +162,44 @@ if ($opcion == "1") {
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
-}elseif ($opcion == "9") {
-    // Opción 9: Subir una imagen y guardar su información en la base de datos
 
-    // Verificamos si se ha enviado un archivo
-    if(isset($_FILES['archivo'])) {
-        $nombreFoto = $_FILES['archivo']['name'];
-        $fecha = date('Y-m-d H:i:s'); // Fecha actual
+} elseif ($opcion == "9") {
+    // Verificar si se ha enviado un archivo
+    if ($_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+        // Obtener información del archivo
+        $nombreArchivoOriginal = $_FILES['imagen']['name'];
+        $tipoArchivo = $_FILES['imagen']['type'];
+        $tamañoArchivo = $_FILES['imagen']['size'];
+        $rutaTemporal = $_FILES['imagen']['tmp_name'];
 
-        // Ruta donde se guardarán los archivos (en la carpeta "fotos" en la raíz de tu proyecto)
-        $ruta = '../fotos/' . $nombreFoto;
+        // Generar un nombre de archivo único
+        $nombreUnico = uniqid() . '_' . $nombreArchivoOriginal;
 
+        // Definir la ruta donde se guardará la imagen
+        $rutaDestino = 'fotos/' . $nombreUnico;
 
-        // Mover el archivo cargado a la carpeta destino
-        if(move_uploaded_file($_FILES['archivo']['tmp_name'], $ruta)) {
-            // La carga del archivo fue exitosa, ahora puedes realizar la inserción en la base de datos
-            // Asegúrate de escapar los valores adecuadamente para prevenir inyecciones SQL
-            $nombreFoto = $conexion->real_escape_string($nombreFoto);
-            $sql = "INSERT INTO fotos_actividades(nombreFoto, fecha, ID_usuario, ID_actividad) 
-                    VALUES ('$nombreFoto', '$fecha', $ID_usuario, $ID_actividad)";
+        // Crear la carpeta 'fotos' si no existe
+        if (!file_exists('fotos')) {
+            mkdir('fotos', 0777, true);
+        }
+
+        // Mover la imagen de la ruta temporal a la ruta de destino con el nombre único
+        if (move_uploaded_file($rutaTemporal, $rutaDestino)) {
             
-            $result = $conexion->query($sql);
 
-            if ($result) {
-                echo "Éxito";
+            $sql = "INSERT INTO fotos_actividades (nombreFoto, fecha, ID_usuario, ID_actividad) 
+VALUES ('$nombreUnico', NOW(), $ID_usuario, '$ID_actividad')";
+
+            if ($conexion->query($sql) === TRUE) {
+                echo "La imagen se ha subido y los datos se han registrado correctamente en la base de datos.";
             } else {
-                // Error en la consulta SQL
-                echo "Error en la consulta: " . $conexion->error;
+                echo "Error al registrar la imagen en la base de datos: " . $conexion->error;
             }
         } else {
-            echo "Error al subir el archivo.";
+            echo "Hubo un error al subir la imagen.";
         }
     } else {
-        echo "No se ha enviado ningún archivo.";
+        echo "Error al cargar la imagen.";
     }
 } else {
     // Opción no válida

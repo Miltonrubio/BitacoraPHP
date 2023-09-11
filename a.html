@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subir Imagen</title>
+</head>
+<body>
+    <h1>Subir Imagen</h1>
+    <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+        <label for="nombreActividad">Nombre de la Actividad:</label>
+        <input type="text" id="nombreActividad" name="nombreActividad" required>
+        <br>
+
+        <label for="descripcionActividad">Descripción de la Actividad:</label>
+        <textarea id="descripcionActividad" name="descripcionActividad" required></textarea>
+        <br>
+
+        <label for="imagen">Seleccionar Imagen:</label>
+        <input type="file" id="imagen" name="imagen" accept="image/*" required>
+        <br>
+
+        <label for="ID_usuario">ID de Usuario:</label>
+        <input type="text" id="ID_usuario" name="ID_usuario" required>
+        <br>  
+        
+        <label for="ID_actividad">ID de ac:</label>
+        <input type="text" id="ID_actividad" name="ID_actividad" required>
+        <br>
+
+        <input type="hidden" name="opcion" value="9">
+        <input type="submit" value="Subir Imagen y Datos">
+    </form>
+</body>
+</html>
