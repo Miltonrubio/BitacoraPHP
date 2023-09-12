@@ -15,6 +15,15 @@ $latitud = isset($_POST["latitud"]) ? $_POST["latitud"] : "";
 $nuevoNombreActividad = isset($_POST["nuevoNombreActividad"]) ? $_POST["nuevoNombreActividad"] : "";
 $ID_nombre_actividad = isset($_POST["ID_nombre_actividad"]) ? $_POST["ID_nombre_actividad"] : "";
 
+
+$permisos = isset($_POST["permisos"]) ? $_POST["permisos"] : "";
+$nombre_usuario = isset($_POST["nombre"]) ? $_POST["nombre"] : "";
+$correo_usuario = isset($_POST["correo"]) ? $_POST["correo"] : "";
+$clave_usuario = isset($_POST["clave"]) ? $_POST["clave"] : "";
+$telefono_usuario = isset($_POST["telefono"]) ? $_POST["telefono"] : "";
+
+
+
 // Verificar la conexión a la base de datos
 if ($conexion->connect_error) {
     die("Conexión fallida: " . $conexion->connect_error);
@@ -162,7 +171,6 @@ if ($opcion == "1") {
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
-
 } elseif ($opcion == "9") {
     // Verificar si se ha enviado un archivo
     if ($_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
@@ -185,7 +193,7 @@ if ($opcion == "1") {
 
         // Mover la imagen de la ruta temporal a la ruta de destino con el nombre único
         if (move_uploaded_file($rutaTemporal, $rutaDestino)) {
-            
+
 
             $sql = "INSERT INTO fotos_actividades (nombreFoto, fecha, ID_usuario, ID_actividad) 
 VALUES ('$nombreUnico', NOW(), $ID_usuario, '$ID_actividad')";
@@ -201,9 +209,167 @@ VALUES ('$nombreUnico', NOW(), $ID_usuario, '$ID_actividad')";
     } else {
         echo "Error al cargar la imagen.";
     }
+} elseif ($opcion == "10") {
+    // Opción 2: Obtener actividades del usuario
+    $sql = "SELECT * FROM `fotos_actividades`";
+
+    $result = $conexion->query($sql);
+
+    if ($result) {
+        // Verificar si se encontraron resultados en la consulta
+        if ($result->num_rows > 0) {
+            // Las actividades fueron encontradas
+            $response = array();
+            while ($row = $result->fetch_assoc()) {
+                $response[] = $row;
+            }
+            echo json_encode($response);
+        } else {
+            // No se encontraron actividades para el usuario
+            echo "No se encontraron actividades";
+        }
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
+} elseif ($opcion == "11") {
+    // Opción 2: Obtener actividades del usuario
+    $sql = "SELECT * FROM `nombre_actividades`";
+
+    $result = $conexion->query($sql);
+
+    if ($result) {
+        // Verificar si se encontraron resultados en la consulta
+        if ($result->num_rows > 0) {
+            // Las actividades fueron encontradas
+            $response = array();
+            while ($row = $result->fetch_assoc()) {
+                $response[] = $row;
+            }
+            echo json_encode($response);
+        } else {
+            // No se encontraron actividades para el usuario
+            echo "No se encontraron actividades";
+        }
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
+} elseif ($opcion == "12") {
+    // Opción 2: Obtener actividades del usuario
+    $sql = "DELETE FROM nombre_actividades WHERE ID_nombre_actividad=$ID_nombre_actividad";
+
+    $result = $conexion->query($sql);
+
+    if ($result) {
+        // Verificar si se encontraron resultados en la consulta
+
+        echo "Exito";
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
+} elseif ($opcion == "13") {
+    // Opción 2: Obtener actividades del usuario
+    $sql = "SELECT * FROM `usuarios`";
+
+    $result = $conexion->query($sql);
+
+    if ($result) {
+        // Verificar si se encontraron resultados en la consulta
+        if ($result->num_rows > 0) {
+            // Las actividades fueron encontradas
+            $response = array();
+            while ($row = $result->fetch_assoc()) {
+                $response[] = $row;
+            }
+            echo json_encode($response);
+        } else {
+            // No se encontraron actividades para el usuario
+            echo "No se encontraron actividades";
+        }
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
+} elseif ($opcion == "14") {
+    $correo_existente = false;
+    $nombre_existente = false;
+    $telefono_existente = false;
+
+    // Verificar si el correo ya existe
+    $sql_correo = "SELECT * FROM usuarios WHERE correo = '$correo_usuario'";
+    $result_correo = $conexion->query($sql_correo);
+
+    if ($result_correo->num_rows > 0) {
+        $correo_existente = true;
+    }
+
+    // Verificar si el nombre ya existe
+    $sql_nombre = "SELECT * FROM usuarios WHERE nombre = '$nombre_usuario'";
+    $result_nombre = $conexion->query($sql_nombre);
+
+    if ($result_nombre->num_rows > 0) {
+        $nombre_existente = true;
+    }
+
+    // Verificar si el teléfono ya existe
+    $sql_telefono = "SELECT * FROM usuarios WHERE telefono = '$telefono_usuario'";
+    $result_telefono = $conexion->query($sql_telefono);
+
+    if ($result_telefono->num_rows > 0) {
+        $telefono_existente = true;
+    }
+
+    if ($correo_existente || $nombre_existente || $telefono_existente) {
+        echo "Error: El correo, nombre o teléfono ya existen en la base de datos.";
+    } else {
+        // Continúa con la inserción
+        $sql = "INSERT INTO `usuarios` (`permisos`, `nombre`, `correo`, `clave`, `telefono`) VALUES ('$permisos', '$nombre_usuario', '$correo_usuario', '$clave_usuario', '$telefono_usuario')";
+
+        $result = $conexion->query($sql);
+
+        if ($result) {
+            echo "Éxito";
+        } else {
+            // Error en la consulta SQL
+            echo "Error en la consulta: " . $conexion->error;
+        }
+    }
+} elseif ($opcion == "15") {
+    // Opción 2: Obtener actividades del usuario
+    $sql = "UPDATE `usuarios` SET `permisos`='$permisos',`nombre`='$nombre_usuario',`correo`='$correo_usuario',`clave`='$clave_usuario',`telefono`='$telefono_usuario' WHERE ID_usuario=$ID_usuario";
+
+    $result = $conexion->query($sql);
+
+    if ($result) {
+        // Verificar si se encontraron resultados en la consulta
+      
+        echo "exito";
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
+} elseif ($opcion == "16") {
+    // Opción 2: Obtener actividades del usuario
+    $sql = "DELETE FROM `usuarios` WHERE ID_usuario= $ID_usuario";
+
+    $result = $conexion->query($sql);
+
+    if ($result) {
+     
+        echo "Exito";
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
 } else {
     // Opción no válida
     echo "Opción no válida";
 }
 // Cerrar la conexión a la base de datos
 $conexion->close();
+
+
+
+//INSERT INTO `usuarios` (`permisos`, `nombre`, `correo`, `clave`, `telefono`) VALUES ('SUPERADMIN', 'Andres', '', 'b@gmail.com', '124125');

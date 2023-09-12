@@ -131,6 +131,23 @@
             <div class="col-md-6">
                 <div class="card custom-card">
                     <div class="card-body">
+                        <h2 class="card-title">Eliminar Nombre de Actividad</h2>
+                        <form method="post" action="mostrar.php">
+                            <h5 class="card-title">opcion="12"</h5>
+                            <h5 class="card-title">ID_nombre_actividad="8"</h5>
+
+                            <input class="form-control mb-2" type="text" name="opcion" value="12">
+                            <input class="form-control mb-2" type="text" name="ID_nombre_actividad" value="8">
+                            <input type="submit" class="btn btn-primary" value="Enviar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
                         <h2 class="card-title">Editar Nombre de Actividad</h2>
                         <form method="post" action="mostrar.php">
                             <h5 class="card-title">opcion="7"</h5>
@@ -172,31 +189,166 @@
             </div>
         </div><br><br>
         <div class="row col-md-12">
-        <div class="col-md-6">
-            <div class="card custom-card">
-                <div class="card-body">
-                    <h2 class="card-title">Mandar foto de evidencia</h2>
-                    <h5 class="card-title">opcion="9"</h5>
-                    <h5 class="card-title">ID_actividad="2"</h5>
-                    <h5 class="card-title">ID_usuario="1"</h5>
-                    <h5 class="card-title">archivo="foto.png"</h5>
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Mandar foto de evidencia</h2>
+                        <h5 class="card-title">opcion="9"</h5>
+                        <h5 class="card-title">ID_actividad="2"</h5>
+                        <h5 class="card-title">ID_usuario="1"</h5>
+                        <h5 class="card-title">archivo="foto.png"</h5>
 
-                    <form action="mostrar.php" method="POST" enctype="multipart/form-data">
-                  
-                        <input class="form-control mb-2" type="text" name="opcion" value="9">
-                        <input class="form-control mb-2"type="text" name="ID_actividad" value="2">
-                        <input class="form-control mb-2" type="text" name="ID_usuario" value="1">
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
 
-                        <label for="imagen">Seleccionar Imagen:</label>
-                        <input class="form-control mb-2" type="file" id="imagen" name="imagen" accept="image/*" required>
-                        <br>
+                            <input class="form-control mb-2" type="text" name="opcion" value="9">
+                            <input class="form-control mb-2" type="text" name="ID_actividad" value="2">
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="1">
 
-                        <input class="btn btn-primary" type="submit" value="Subir Imagen y Datos">
-                    </form>
+                            <label for="imagen">Seleccionar Imagen:</label>
+                            <input class="form-control mb-2" type="file" id="imagen" name="imagen" accept="image/*" required>
+                            <br>
+
+                            <input class="btn btn-primary" type="submit" value="Subir Imagen y Datos">
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </div><br><br>
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Ver todas las fotos</h2>
+                        <h5 class="card-title">opcion="10"</h5>
+
+                        <form action="mostrar.php" method="POST">
+
+                            <input class="form-control mb-2" type="text" name="opcion" value="10">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Ver todos los nombres de actividad</h2>
+                        <h5 class="card-title">opcion="11"</h5>
+
+                        <form action="mostrar.php" method="POST">
+
+                            <input class="form-control mb-2" type="text" name="opcion" value="11">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Ver todos los usuarios</h2>
+                        <h5 class="card-title">opcion="13"</h5>
+
+                        <form action="mostrar.php" method="POST">
+
+                            <input class="form-control mb-2" type="text" name="opcion" value="13">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Registrar Nuevo Usuario</h2>
+                        <h5 class="card-title">opcion="14"</h5>
+                        <h5 class="card-title">permisos="USUARIO"</h5>
+                        <h5 class="card-title">nombre="Milton"</h5>
+                        <h5 class="card-title">correo="milton@gmail.com"</h5>
+                        <h5 class="card-title">clave="123456"</h5>
+                        <h5 class="card-title">telefono="238131121"</h5>
+
+                        <form action="mostrar.php" method="POST">
+                            <input class="form-control mb-2" type="text" name="opcion" value="14">
+                            <select class="form-select mb-2" aria-label="Selecciona una opción" name="permisos">
+                                <option selected value="SUPERADMIN">SUPERADMIN</option>
+                                <option value="USUARIO">USUARIO</option>
+                            </select>
+
+                            <input class="form-control mb-2" type="text" name="nombre" value="Milton Rubio">
+
+                            <input class="form-control mb-2" type="text" name="correo" value="milton@gmail.com">
+
+                            <input class="form-control mb-2" type="text" name="clave" value="123456">
+
+                            <input class="form-control mb-2" type="text" name="telefono" value="2382115594">
+
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>  
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Editar Usuario</h2>
+                        <h5 class="card-title">opcion="15"</h5>
+
+                        <form action="mostrar.php" method="POST">
+
+                            <input class="form-control mb-2" type="text" name="opcion" value="15">
+
+
+                            <select class="form-select mb-2" aria-label="Selecciona una opción" name="permisos">
+
+                                <option selected value="SUPERADMIN">SUPERADMIN</option>
+                                <option value="USUARIO">USUARIO</option>
+                            </select>
+
+                            <input class="form-control mb-2" type="text" name="nombre" value="Milton Rubio">
+
+                            <input class="form-control mb-2" type="text" name="correo" value="milton@gmail.com">
+
+                            <input class="form-control mb-2" type="text" name="clave" value="123456">
+
+                            <input class="form-control mb-2" type="text" name="telefono" value="2382115594">
+
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="5">
+
+
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Eliminar Usuario</h2>
+                        <h5 class="card-title">opcion="16"</h5>
+
+                        <form action="mostrar.php" method="POST">
+
+                            <input class="form-control mb-2" type="text" name="opcion" value="16">
+
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="7">
+
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
     </div>
 </body>
 
