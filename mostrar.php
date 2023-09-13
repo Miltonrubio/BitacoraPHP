@@ -61,7 +61,7 @@ if ($opcion == "1") {
         INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
         INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario
         WHERE actividades.ID_usuario = $ID_usuario
-        ORDER BY actividades.fecha_inicio DESC;
+        ORDER BY actividades.ID_actividad DESC;
         ";
     $result = $conexion->query($sql);
 
@@ -110,7 +110,7 @@ if ($opcion == "1") {
     }
 } elseif ($opcion == "4") {
     // Opción 2: Obtener actividades del usuario
-    $sql = "INSERT INTO `actividades`(`ID_nombre_actividad`, `descripcionActividad`, `fecha_inicio`, `fecha_fin`, `estadoActividad`, `ID_usuario`) VALUES ('$ID_nombre_actividad','$descripcionActividad',NOW(),null,'Pendiente','$ID_usuario')";
+    $sql = "INSERT INTO `actividades`(`ID_nombre_actividad`, `descripcionActividad`, `fecha_inicio`, `fecha_fin`, `estadoActividad`, `ID_usuario`) VALUES ('$ID_nombre_actividad','$descripcionActividad',null,null,'Pendiente','$ID_usuario')";
     $result = $conexion->query($sql);
 
     if ($result) {
@@ -125,6 +125,9 @@ if ($opcion == "1") {
     if ($nuevoEstado != null && $nuevoEstado == "Finalizado") {
 
         $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', fecha_fin=NOW() where ID_actividad=$ID_actividad";
+    } else  if ($nuevoEstado != null && $nuevoEstado == "Iniciado") {
+
+        $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', fecha_inicio=NOW() where ID_actividad=$ID_actividad";
     } else {
 
         $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado' where ID_actividad=$ID_actividad";
@@ -198,9 +201,8 @@ if ($opcion == "1") {
         // Mover la imagen de la ruta temporal a la ruta de destino con el nombre único
         if (move_uploaded_file($rutaTemporal, $rutaDestino)) {
 
-
             $sql = "INSERT INTO fotos_actividades (nombreFoto, fecha, ID_usuario, ID_actividad) 
-VALUES ('$nombreUnico', NOW(), $ID_usuario, '$ID_actividad')";
+            VALUES ('$nombreUnico', NOW(), $ID_usuario, $ID_actividad)";
 
             if ($conexion->query($sql) === TRUE) {
                 echo "La imagen se ha subido y los datos se han registrado correctamente en la base de datos.";
@@ -380,41 +382,39 @@ VALUES ('$nombreUnico', NOW(), $ID_usuario, '$ID_actividad')";
         echo "Error en la consulta: " . $conexion->error;
     }
 } elseif ($opcion == "18") {
-   // Opción 2: Obtener actividades del usuario
-   $sql = "INSERT INTO `actividades`(`ID_nombre_actividad`, `descripcionActividad`, `fecha_inicio`, `fecha_fin`, `estadoActividad`, `ID_usuario`) VALUES ('$ID_nombre_actividad','$descripcionActividad',NOW(),null,'Pendiente','$ID_usuario')";
-   $result = $conexion->query($sql);
+    // Opción 2: Obtener actividades del usuario
+    $sql = "DELETE FROM `actividades` WHERE ID_actividad=$ID_actividad";
+        $result = $conexion->query($sql);
 
-   if ($result) {
-       echo "Extio";
-   } else {
-       // Error en la consulta SQL
-       echo "Error en la consulta: " . $conexion->error;
-   }
-    
+    if ($result) {
+        echo "Extio";
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
 } else if ($opcion == "19") {
-  // Opción 1: Autenticación
-  $sql = "SELECT * FROM ubicacion_actividades WHERE ID_actividad= $ID_actividad";
-  $result = $conexion->query($sql);
+    // Opción 1: Autenticación
+    $sql = "SELECT * FROM ubicacion_actividades WHERE ID_actividad= $ID_actividad";
+    $result = $conexion->query($sql);
 
-  if ($result) {
-      // Verificar si se encontraron resultados en la consulta
-      if ($result->num_rows > 0) {
-          // El usuario y la contraseña son válidos
-          $response = array();
-          while ($row = $result->fetch_assoc()) {
-              $response[] = $row;
-          }
-          echo json_encode($response);
-      } else {
-          // Las credenciales son incorrectas
-          echo "fallo";
-      }
-  } else {
-      // Error en la consulta SQL
-      echo "Error en la consulta: " . $conexion->error;
-  }
-}
-else {
+    if ($result) {
+        // Verificar si se encontraron resultados en la consulta
+        if ($result->num_rows > 0) {
+            // El usuario y la contraseña son válidos
+            $response = array();
+            while ($row = $result->fetch_assoc()) {
+                $response[] = $row;
+            }
+            echo json_encode($response);
+        } else {
+            // Las credenciales son incorrectas
+            echo "fallo";
+        }
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
+} else {
     // Opción no válida
     echo "Opción no válida";
 }
