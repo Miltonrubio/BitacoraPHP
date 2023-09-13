@@ -77,12 +77,12 @@
                         <h2 class="card-title">Insertar Actividad</h2>
                         <form method="post" action="mostrar.php">
                             <h5 class="card-title">opcion="4"</h5>
-                            <h5 class="card-title">nombreActividad="Prueba de nombreActividad"</h5>
-                            <h5 class="card-title">descripcionActividad="Prueba de descripcionActividad"</h5>
+                            <h5 class="card-title">ID_nombre_actividad="1"</h5>
+                            <h5 class="card-title">descripcionActividad="descripcion"</h5>
                             <h5 class="card-title">ID_usuario="2"</h5>
 
                             <input class="form-control mb-2" type="text" name="opcion" value="4">
-                            <input class="form-control mb-2" type="text" name="nombreActividad" value="Prueba de nombreActividad">
+                            <input class="form-control mb-2" type="text" name="ID_nombre_actividad" value="1">
                             <input class="form-control mb-2" type="text" name="descripcionActividad" value="Prueba de descripcionActividad">
                             <input class="form-control mb-2" type="text" name="ID_usuario" value="2">
                             <input type="submit" class="btn btn-primary" value="Enviar">
@@ -336,13 +336,62 @@
                     <div class="card-body">
                         <h2 class="card-title">Eliminar Usuario</h2>
                         <h5 class="card-title">opcion="16"</h5>
-
+                        <h5 class="card-title">ID_usuario="6"</h5>
                         <form action="mostrar.php" method="POST">
-
                             <input class="form-control mb-2" type="text" name="opcion" value="16">
-
-                            <input class="form-control mb-2" type="text" name="ID_usuario" value="7">
-
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="6">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Editar Actividad</h2>
+                        <h5 class="card-title">opcion="17"</h5>
+                        <h5 class="card-title">ID_nombre_actividad="17"</h5>
+                        <h5 class="card-title">descripcionActividad="Nueva Descripcion"</h5>
+                        <h5 class="card-title">ID_actividad="1"</h5>
+                        <form action="mostrar.php" method="POST">
+                            <input class="form-control mb-2" type="text" name="opcion" value="17">
+                            <input class="form-control mb-2" type="text" name="ID_nombre_actividad" value="1">
+                            <input class="form-control mb-2" type="text" name="descripcionActividad" value="Nueva Descripcion Actualizada">
+                            <input class="form-control mb-2" type="text" name="ID_actividad" value="1">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Eliminar Actividad</h2>
+                        <h5 class="card-title">opcion="18"</h5>
+                        <h5 class="card-title">ID_actividad="1"</h5>
+                        <form action="mostrar.php" method="POST">
+                            <input class="form-control mb-2" type="text" name="opcion" value="18">
+                            <input class="form-control mb-2" type="text" name="ID_actividad" value="1">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Mostrar ubicaciones</h2>
+                        <h5 class="card-title">opcion="19"</h5>
+                        <h5 class="card-title">ID_actividad="1"</h5>
+                        <form action="mostrar.php" method="POST">
+                            <input class="form-control mb-2" type="text" name="opcion" value="19">
+                            <input class="form-control mb-2" type="text" name="ID_actividad" value="1">
                             <input class="btn btn-primary" type="submit" value="Consultar">
                         </form>
                     </div>

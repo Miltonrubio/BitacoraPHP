@@ -3,6 +3,7 @@ require_once "conexion.php";
 
 $opcion = isset($_POST["opcion"]) ? $_POST["opcion"] : "";
 $correo = isset($_POST["correo"]) ? $_POST["correo"] : "";
+
 $clave = isset($_POST["clave"]) ? $_POST["clave"] : "";
 $nombreActividad = isset($_POST["nombreActividad"]) ? $_POST["nombreActividad"] : "";
 $descripcionActividad = isset($_POST["descripcionActividad"]) ? $_POST["descripcionActividad"] : "";
@@ -31,7 +32,9 @@ if ($conexion->connect_error) {
 
 if ($opcion == "1") {
     // Opción 1: Autenticación
-    $sql = "SELECT * FROM usuarios WHERE correo = '$correo' AND clave = '$clave'";
+    $sql = "SELECT * FROM usuarios 
+    WHERE (correo = '$correo' OR telefono = '$correo') 
+    AND clave = '$clave'";
     $result = $conexion->query($sql);
 
     if ($result) {
@@ -82,9 +85,10 @@ if ($opcion == "1") {
 } elseif ($opcion == "3") {
     // Opción 2: Obtener actividades del usuario
     $sql = "SELECT *
-        FROM actividades
-        INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
-        ORDER BY actividades.fecha_inicio DESC";
+    FROM actividades
+    INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
+    INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario
+    ORDER BY actividades.fecha_inicio DESC";
     $result = $conexion->query($sql);
 
     if ($result) {
@@ -106,7 +110,7 @@ if ($opcion == "1") {
     }
 } elseif ($opcion == "4") {
     // Opción 2: Obtener actividades del usuario
-    $sql = "INSERT INTO `actividades`(`nombreActividad`, `descripcionActividad`, `fecha_inicio`, `fecha_fin`, `estadoActividad`, `ID_usuario`) VALUES ('$nombreActividad','$descripcionActividad',NOW(),null,'Pendiente','$ID_usuario')";
+    $sql = "INSERT INTO `actividades`(`ID_nombre_actividad`, `descripcionActividad`, `fecha_inicio`, `fecha_fin`, `estadoActividad`, `ID_usuario`) VALUES ('$ID_nombre_actividad','$descripcionActividad',NOW(),null,'Pendiente','$ID_usuario')";
     $result = $conexion->query($sql);
 
     if ($result) {
@@ -344,7 +348,7 @@ VALUES ('$nombreUnico', NOW(), $ID_usuario, '$ID_actividad')";
 
     if ($result) {
         // Verificar si se encontraron resultados en la consulta
-      
+
         echo "exito";
     } else {
         // Error en la consulta SQL
@@ -357,19 +361,62 @@ VALUES ('$nombreUnico', NOW(), $ID_usuario, '$ID_actividad')";
     $result = $conexion->query($sql);
 
     if ($result) {
-     
+
         echo "Exito";
     } else {
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
-} else {
+} elseif ($opcion == "17") {
+    // Opción 2: Obtener actividades del usuario
+    $sql = "UPDATE actividades SET `ID_nombre_actividad`='$ID_nombre_actividad',`descripcionActividad`='$descripcionActividad' WHERE ID_actividad= $ID_actividad";
+
+    $result = $conexion->query($sql);
+    if ($result) {
+
+        echo "Exito";
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
+} elseif ($opcion == "18") {
+   // Opción 2: Obtener actividades del usuario
+   $sql = "INSERT INTO `actividades`(`ID_nombre_actividad`, `descripcionActividad`, `fecha_inicio`, `fecha_fin`, `estadoActividad`, `ID_usuario`) VALUES ('$ID_nombre_actividad','$descripcionActividad',NOW(),null,'Pendiente','$ID_usuario')";
+   $result = $conexion->query($sql);
+
+   if ($result) {
+       echo "Extio";
+   } else {
+       // Error en la consulta SQL
+       echo "Error en la consulta: " . $conexion->error;
+   }
+    
+} else if ($opcion == "19") {
+  // Opción 1: Autenticación
+  $sql = "SELECT * FROM ubicacion_actividades WHERE ID_actividad= $ID_actividad";
+  $result = $conexion->query($sql);
+
+  if ($result) {
+      // Verificar si se encontraron resultados en la consulta
+      if ($result->num_rows > 0) {
+          // El usuario y la contraseña son válidos
+          $response = array();
+          while ($row = $result->fetch_assoc()) {
+              $response[] = $row;
+          }
+          echo json_encode($response);
+      } else {
+          // Las credenciales son incorrectas
+          echo "fallo";
+      }
+  } else {
+      // Error en la consulta SQL
+      echo "Error en la consulta: " . $conexion->error;
+  }
+}
+else {
     // Opción no válida
     echo "Opción no válida";
 }
 // Cerrar la conexión a la base de datos
 $conexion->close();
-
-
-
-//INSERT INTO `usuarios` (`permisos`, `nombre`, `correo`, `clave`, `telefono`) VALUES ('SUPERADMIN', 'Andres', '', 'b@gmail.com', '124125');
