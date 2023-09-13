@@ -215,7 +215,7 @@ VALUES ('$nombreUnico', NOW(), $ID_usuario, '$ID_actividad')";
     }
 } elseif ($opcion == "10") {
     // Opción 2: Obtener actividades del usuario
-    $sql = "SELECT * FROM `fotos_actividades`";
+    $sql = "SELECT * FROM `fotos_actividades` WHERE ID_actividad=$ID_actividad";
 
     $result = $conexion->query($sql);
 
@@ -230,7 +230,7 @@ VALUES ('$nombreUnico', NOW(), $ID_usuario, '$ID_actividad')";
             echo json_encode($response);
         } else {
             // No se encontraron actividades para el usuario
-            echo "No se encontraron actividades";
+            echo "No se encontraron evidencias";
         }
     } else {
         // Error en la consulta SQL

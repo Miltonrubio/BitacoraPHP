@@ -220,10 +220,11 @@
                     <div class="card-body">
                         <h2 class="card-title">Ver todas las fotos</h2>
                         <h5 class="card-title">opcion="10"</h5>
-
+                        <h5 class="card-title">ID_actividad="1"</h5>
                         <form action="mostrar.php" method="POST">
 
-                            <input class="form-control mb-2" type="text" name="opcion" value="10">
+                        <input class="form-control mb-2" type="text" name="opcion" value="10">
+                        <input class="form-control mb-2" type="text" name="ID_actividad" value="1">
                             <input class="btn btn-primary" type="submit" value="Consultar">
                         </form>
                     </div>
