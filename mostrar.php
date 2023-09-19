@@ -2,9 +2,19 @@
 require_once "conexion.php";
 
 $opcion = isset($_POST["opcion"]) ? $_POST["opcion"] : "";
-$correo = isset($_POST["correo"]) ? $_POST["correo"] : "";
 
+
+$correo = isset($_POST["correo"]) ? $_POST["correo"] : "";
 $clave = isset($_POST["clave"]) ? $_POST["clave"] : "";
+$permisos = isset($_POST["permisos"]) ? $_POST["permisos"] : "";
+$nombre_usuario = isset($_POST["nombre"]) ? $_POST["nombre"] : "";
+$correo_usuario = isset($_POST["correo"]) ? $_POST["correo"] : "";
+$clave_usuario = isset($_POST["clave"]) ? $_POST["clave"] : "";
+$foto_usuario= isset($_POST["foto_usuario"]) ? $_POST["foto_usuario"] : "";
+$telefono_usuario = isset($_POST["telefono"]) ? $_POST["telefono"] : "";
+
+
+
 $nombreActividad = isset($_POST["nombreActividad"]) ? $_POST["nombreActividad"] : "";
 $descripcionActividad = isset($_POST["descripcionActividad"]) ? $_POST["descripcionActividad"] : "";
 
@@ -17,11 +27,6 @@ $nuevoNombreActividad = isset($_POST["nuevoNombreActividad"]) ? $_POST["nuevoNom
 $ID_nombre_actividad = isset($_POST["ID_nombre_actividad"]) ? $_POST["ID_nombre_actividad"] : "";
 
 
-$permisos = isset($_POST["permisos"]) ? $_POST["permisos"] : "";
-$nombre_usuario = isset($_POST["nombre"]) ? $_POST["nombre"] : "";
-$correo_usuario = isset($_POST["correo"]) ? $_POST["correo"] : "";
-$clave_usuario = isset($_POST["clave"]) ? $_POST["clave"] : "";
-$telefono_usuario = isset($_POST["telefono"]) ? $_POST["telefono"] : "";
 
 
 
@@ -56,14 +61,16 @@ if ($opcion == "1") {
     }
 } elseif ($opcion == "2") {
     // Opción 2: Obtener actividades del usuario
-    $sql = "SELECT *
-        FROM actividades
-        INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
-        INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario
-        WHERE actividades.ID_usuario = $ID_usuario
-        ORDER BY actividades.ID_actividad DESC;
-        ";
-    $result = $conexion->query($sql);
+  
+ $sql = "SELECT *
+ FROM actividades
+ INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
+ INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario
+ WHERE actividades.ID_usuario = $ID_usuario
+ ORDER BY actividades.ID_actividad DESC";
+
+
+$result = $conexion->query($sql);
 
     if ($result) {
         // Verificar si se encontraron resultados en la consulta
@@ -88,7 +95,7 @@ if ($opcion == "1") {
     FROM actividades
     INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
     INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario
-    ORDER BY actividades.fecha_inicio DESC";
+    ORDER BY actividades.ID_actividad DESC";
     $result = $conexion->query($sql);
 
     if ($result) {
@@ -410,6 +417,20 @@ if ($opcion == "1") {
             // Las credenciales son incorrectas
             echo "fallo";
         }
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
+}else if ($opcion == "20") {
+    // Opción 1: Autenticación
+    $sql = "UPDATE `usuarios` SET `permisos`='$permisos',`nombre`='$nombre_usuario',
+    `correo`='$correo_usuario',`clave`='$clave_usuario',`telefono`='$telefono_usuario',`foto_usuario`='$foto_usuario' WHERE ID_usuario= $ID_usuario";
+    $result = $conexion->query($sql);
+
+    if ($result) {
+       
+echo "Exito";
+
     } else {
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;

@@ -399,6 +399,43 @@
                 </div>
             </div>
         </div><br><br>
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Editar Usuario</h2>
+                        <h5 class="card-title">opcion="20"</h5>
+                        <h5 class="card-title">permisos=""</h5>
+                        <h5 class="card-title">foto_usuario="default.png"</h5>
+                        <h5 class="card-title">nombre="Milton"</h5>
+                        <h5 class="card-title">correo="milton@gmail.com"</h5>
+                        <h5 class="card-title">clave="123456"</h5>
+                        <h5 class="card-title">telefono="238131121"</h5>
+
+                        <form action="mostrar.php" method="POST">
+                            <input class="form-control mb-2" type="text" name="opcion" value="20">
+
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="2">
+                            
+                            <select class="form-select mb-2" aria-label="Selecciona una opción" name="permisos">
+                                <option selected value="SUPERADMIN">SUPERADMIN</option>
+                                <option value="USUARIO">USUARIO</option>
+                            </select>
+
+                            <input class="form-control mb-2" type="text" name="nombre" value="Milton Rubio">
+                            <input class="form-control mb-2" type="text" name="correo" value="milton@gmail.com">
+
+                            <input class="form-control mb-2" type="text" name="clave" value="123456">
+
+                            <input class="form-control mb-2" type="text" name="telefono" value="2382115594">
+                            <input class="form-control mb-2" type="text" name="foto_usuario" value="fotodeusuario.png">
+
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
     </div>
 </body>
 
