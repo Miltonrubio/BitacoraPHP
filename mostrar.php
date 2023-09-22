@@ -10,7 +10,7 @@ $permisos = isset($_POST["permisos"]) ? $_POST["permisos"] : "";
 $nombre_usuario = isset($_POST["nombre"]) ? $_POST["nombre"] : "";
 $correo_usuario = isset($_POST["correo"]) ? $_POST["correo"] : "";
 $clave_usuario = isset($_POST["clave"]) ? $_POST["clave"] : "";
-$foto_usuario= isset($_POST["foto_usuario"]) ? $_POST["foto_usuario"] : "";
+$foto_usuario = isset($_POST["foto_usuario"]) ? $_POST["foto_usuario"] : "";
 $telefono_usuario = isset($_POST["telefono"]) ? $_POST["telefono"] : "";
 
 
@@ -61,8 +61,8 @@ if ($opcion == "1") {
     }
 } elseif ($opcion == "2") {
     // Opción 2: Obtener actividades del usuario
-  
- $sql = "SELECT *
+
+    $sql = "SELECT *
  FROM actividades
  INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
  INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario
@@ -70,7 +70,7 @@ if ($opcion == "1") {
  ORDER BY actividades.ID_actividad DESC";
 
 
-$result = $conexion->query($sql);
+    $result = $conexion->query($sql);
 
     if ($result) {
         // Verificar si se encontraron resultados en la consulta
@@ -391,7 +391,7 @@ $result = $conexion->query($sql);
 } elseif ($opcion == "18") {
     // Opción 2: Obtener actividades del usuario
     $sql = "DELETE FROM `actividades` WHERE ID_actividad=$ID_actividad";
-        $result = $conexion->query($sql);
+    $result = $conexion->query($sql);
 
     if ($result) {
         echo "Extio";
@@ -421,28 +421,30 @@ $result = $conexion->query($sql);
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
-}else if ($opcion == "20") {
-    // Verificar si se ha enviado un archivo
-    if ($_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
-        // Obtener información del archivo
-        $nombreArchivoOriginal = $_FILES['imagen']['name'];
-        $tipoArchivo = $_FILES['imagen']['type'];
-        $tamañoArchivo = $_FILES['imagen']['size'];
-        $rutaTemporal = $_FILES['imagen']['tmp_name'];
+} else if ($opcion == "20") {
 
+    if ($_FILES['imagenusuario']['error'] === UPLOAD_ERR_OK) {
+        // Obtener información del archivo
+        $nombreArchivoOriginal = $_FILES['imagenusuario']['name'];
+        $tipoArchivo = $_FILES['imagenusuario']['type'];
+        $tamañoArchivo = $_FILES['imagenusuario']['size'];
+        $rutaTemporal = $_FILES['imagenusuario']['tmp_name'];
 
         // Definir la ruta donde se guardará la imagen
-        $rutaDestino = 'fotos/' . "fotoperfil".$ID_usuario;
+        $rutaDestino = 'fotos/fotos_usuarios/fotoperfilusuario' . $ID_usuario.'.jpg';
 
         // Crear la carpeta 'fotos' si no existe
         if (!file_exists('fotos')) {
             mkdir('fotos', 0777, true);
         }
+        if (!file_exists('fotos_usuarios')) {
+            mkdir('fotos_usuarios', 0777, true);
+        }
 
         // Mover la imagen de la ruta temporal a la ruta de destino con el nombre único
         if (move_uploaded_file($rutaTemporal, $rutaDestino)) {
 
-            $sql = "UPDATE `usuarios` SET `foto_usuario`='fotoperfil'.$ID_usuario WHERE ID_usuario=$ID_usuario";
+            $sql = "UPDATE `usuarios` SET `foto_usuario`='$rutaDestino' WHERE ID_usuario=$ID_usuario";
 
             if ($conexion->query($sql) === TRUE) {
                 echo "La imagen se ha subido y los datos se han registrado correctamente en la base de datos.";
@@ -453,6 +455,7 @@ $result = $conexion->query($sql);
             echo "Hubo un error al subir la imagen.";
         }
     } else {
+
         echo "Error al cargar la imagen.";
     }
 } else {

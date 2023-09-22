@@ -405,7 +405,7 @@
                     <div class="card-body">
                         <h2 class="card-title">Editar Foto de Usuario</h2>
                         <h5 class="card-title">opcion="20"</h5>
-                        <h5 class="card-title">imagen="foto"</h5>
+                        <h5 class="card-title">imagenusuario="foto"</h5>
                         <h5 class="card-title">ID_usuario="1"</h5>
 
                         <form action="mostrar.php" method="POST">
@@ -413,7 +413,7 @@
 
                             <input class="form-control mb-2" type="text" name="ID_usuario" value="1">
 
-                            <input class="form-control mb-2" type="file" name="imagen" >
+                            <input class="form-control mb-2" type="file" name="imagenusuario" >
                             
                             <input class="btn btn-primary" type="submit" value="Consultar">
                         </form>
