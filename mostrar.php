@@ -430,9 +430,6 @@ if ($_FILES['imagen23']['error'] === UPLOAD_ERR_OK) {
     $tamañoArchivo = $_FILES['imagen23']['size'];
     $rutaTemporal = $_FILES['imagen23']['tmp_name'];
 
-    // Obtener el ID del usuario
-    $ID_usuario = 1; // Cambia esto según cómo obtienes el ID de usuario
-
     // Generar el nombre de archivo
     $nombreArchivo = 'fotoperfilusuario' . $ID_usuario . '.jpg';
 
