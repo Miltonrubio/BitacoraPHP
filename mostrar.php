@@ -422,18 +422,38 @@ $result = $conexion->query($sql);
         echo "Error en la consulta: " . $conexion->error;
     }
 }else if ($opcion == "20") {
-    // Opción 1: Autenticación
-    $sql = "UPDATE `usuarios` SET `permisos`='$permisos',`nombre`='$nombre_usuario',
-    `correo`='$correo_usuario',`clave`='$clave_usuario',`telefono`='$telefono_usuario',`foto_usuario`='$foto_usuario' WHERE ID_usuario= $ID_usuario";
-    $result = $conexion->query($sql);
+    // Verificar si se ha enviado un archivo
+    if ($_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+        // Obtener información del archivo
+        $nombreArchivoOriginal = $_FILES['imagen']['name'];
+        $tipoArchivo = $_FILES['imagen']['type'];
+        $tamañoArchivo = $_FILES['imagen']['size'];
+        $rutaTemporal = $_FILES['imagen']['tmp_name'];
 
-    if ($result) {
-       
-echo "Exito";
 
+        // Definir la ruta donde se guardará la imagen
+        $rutaDestino = 'fotos/' . "fotoperfil".$ID_usuario;
+
+        // Crear la carpeta 'fotos' si no existe
+        if (!file_exists('fotos')) {
+            mkdir('fotos', 0777, true);
+        }
+
+        // Mover la imagen de la ruta temporal a la ruta de destino con el nombre único
+        if (move_uploaded_file($rutaTemporal, $rutaDestino)) {
+
+            $sql = "UPDATE `usuarios` SET `foto_usuario`='fotoperfil'.$ID_usuario WHERE ID_usuario=$ID_usuario";
+
+            if ($conexion->query($sql) === TRUE) {
+                echo "La imagen se ha subido y los datos se han registrado correctamente en la base de datos.";
+            } else {
+                echo "Error al registrar la imagen en la base de datos: " . $conexion->error;
+            }
+        } else {
+            echo "Hubo un error al subir la imagen.";
+        }
     } else {
-        // Error en la consulta SQL
-        echo "Error en la consulta: " . $conexion->error;
+        echo "Error al cargar la imagen.";
     }
 } else {
     // Opción no válida
