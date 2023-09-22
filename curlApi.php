@@ -408,9 +408,9 @@
                         <h5 class="card-title">imagen23="foto"</h5>
                         <h5 class="card-title">ID_usuario="1"</h5>
 
-                        <form action="mostrar.php" method="POST">
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
                             <input class="form-control mb-2" type="text" name="opcion" value="25">
-    
+
                             <input class="form-control mb-2" type="text" name="ID_usuario" value="1">
                             
                             <input class="form-control mb-2" type="file" name="imagen23" >

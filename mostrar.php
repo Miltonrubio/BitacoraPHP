@@ -422,30 +422,32 @@ if ($opcion == "1") {
         echo "Error en la consulta: " . $conexion->error;
     }
 } else if ($opcion == "25") {
-   // Verificar si se ha enviado un archivo
-   if ($_FILES['imagen23']['error'] === UPLOAD_ERR_OK) {
+  // Verificar si se ha enviado un archivo
+if ($_FILES['imagen23']['error'] === UPLOAD_ERR_OK) {
     // Obtener información del archivo
     $nombreArchivoOriginal = $_FILES['imagen23']['name'];
     $tipoArchivo = $_FILES['imagen23']['type'];
     $tamañoArchivo = $_FILES['imagen23']['size'];
     $rutaTemporal = $_FILES['imagen23']['tmp_name'];
 
-    // Generar un nombre de archivo único
-    $nombreUnico = uniqid() . '_' . $nombreArchivoOriginal;
+    // Obtener el ID del usuario
+    $ID_usuario = 1; // Cambia esto según cómo obtienes el ID de usuario
+
+    // Generar el nombre de archivo
+    $nombreArchivo = 'fotoperfilusuario' . $ID_usuario . '.jpg';
 
     // Definir la ruta donde se guardará la imagen
-    $rutaDestino = 'fotos/' . $nombreUnico;
+    $rutaDestino = 'fotos/fotos_usuarios/' . $nombreArchivo;
 
-    // Crear la carpeta 'fotos' si no existe
-    if (!file_exists('fotos')) {
-        mkdir('fotos', 0777, true);
+    // Crear la carpeta 'fotos/fotos_usuarios' si no existe
+    if (!file_exists('fotos/fotos_usuarios')) {
+        mkdir('fotos/fotos_usuarios', 0777, true);
     }
 
     // Mover la imagen de la ruta temporal a la ruta de destino con el nombre único
     if (move_uploaded_file($rutaTemporal, $rutaDestino)) {
 
-        $sql = "INSERT INTO fotos_actividades (nombreFoto, fecha, ID_usuario, ID_actividad) 
-        VALUES ('$nombreUnico', NOW(), $ID_usuario, $ID_actividad)";
+        $sql = "UPDATE `usuarios` SET foto_usuario= '$rutaDestino' WHERE ID_usuario= $ID_usuario";
 
         if ($conexion->query($sql) === TRUE) {
             echo "La imagen se ha subido y los datos se han registrado correctamente en la base de datos.";
@@ -458,6 +460,7 @@ if ($opcion == "1") {
 } else {
     echo "Error al cargar la imagen.";
 }
+
 } else {
     // Opción no válida
     echo "Opción no válida";
