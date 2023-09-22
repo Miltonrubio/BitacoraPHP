@@ -421,43 +421,43 @@ if ($opcion == "1") {
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
-} else if ($opcion == "20") {
+} else if ($opcion == "25") {
+   // Verificar si se ha enviado un archivo
+   if ($_FILES['imagen23']['error'] === UPLOAD_ERR_OK) {
+    // Obtener información del archivo
+    $nombreArchivoOriginal = $_FILES['imagen23']['name'];
+    $tipoArchivo = $_FILES['imagen23']['type'];
+    $tamañoArchivo = $_FILES['imagen23']['size'];
+    $rutaTemporal = $_FILES['imagen23']['tmp_name'];
 
-    if ($_FILES['imagenusuario']['error'] === UPLOAD_ERR_OK) {
-        // Obtener información del archivo
-        $nombreArchivoOriginal = $_FILES['imagenusuario']['name'];
-        $tipoArchivo = $_FILES['imagenusuario']['type'];
-        $tamañoArchivo = $_FILES['imagenusuario']['size'];
-        $rutaTemporal = $_FILES['imagenusuario']['tmp_name'];
+    // Generar un nombre de archivo único
+    $nombreUnico = uniqid() . '_' . $nombreArchivoOriginal;
 
-        // Definir la ruta donde se guardará la imagen
-        $rutaDestino = 'fotos/fotos_usuarios/fotoperfilusuario' . $ID_usuario.'.jpg';
+    // Definir la ruta donde se guardará la imagen
+    $rutaDestino = 'fotos/' . $nombreUnico;
 
-        // Crear la carpeta 'fotos' si no existe
-        if (!file_exists('fotos')) {
-            mkdir('fotos', 0777, true);
-        }
-        if (!file_exists('fotos_usuarios')) {
-            mkdir('fotos_usuarios', 0777, true);
-        }
+    // Crear la carpeta 'fotos' si no existe
+    if (!file_exists('fotos')) {
+        mkdir('fotos', 0777, true);
+    }
 
-        // Mover la imagen de la ruta temporal a la ruta de destino con el nombre único
-        if (move_uploaded_file($rutaTemporal, $rutaDestino)) {
+    // Mover la imagen de la ruta temporal a la ruta de destino con el nombre único
+    if (move_uploaded_file($rutaTemporal, $rutaDestino)) {
 
-            $sql = "UPDATE `usuarios` SET `foto_usuario`='$rutaDestino' WHERE ID_usuario=$ID_usuario";
+        $sql = "INSERT INTO fotos_actividades (nombreFoto, fecha, ID_usuario, ID_actividad) 
+        VALUES ('$nombreUnico', NOW(), $ID_usuario, $ID_actividad)";
 
-            if ($conexion->query($sql) === TRUE) {
-                echo "La imagen se ha subido y los datos se han registrado correctamente en la base de datos.";
-            } else {
-                echo "Error al registrar la imagen en la base de datos: " . $conexion->error;
-            }
+        if ($conexion->query($sql) === TRUE) {
+            echo "La imagen se ha subido y los datos se han registrado correctamente en la base de datos.";
         } else {
-            echo "Hubo un error al subir la imagen.";
+            echo "Error al registrar la imagen en la base de datos: " . $conexion->error;
         }
     } else {
-
-        echo "Error al cargar la imagen.";
+        echo "Hubo un error al subir la imagen.";
     }
+} else {
+    echo "Error al cargar la imagen.";
+}
 } else {
     // Opción no válida
     echo "Opción no válida";
