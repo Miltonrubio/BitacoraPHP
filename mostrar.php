@@ -26,6 +26,8 @@ $latitud = isset($_POST["latitud"]) ? $_POST["latitud"] : "";
 $nuevoNombreActividad = isset($_POST["nuevoNombreActividad"]) ? $_POST["nuevoNombreActividad"] : "";
 $ID_nombre_actividad = isset($_POST["ID_nombre_actividad"]) ? $_POST["ID_nombre_actividad"] : "";
 
+$motivocancelacion = isset($_POST["motivocancelacion"]) ? $_POST["motivocancelacion"] : "";
+
 
 
 
@@ -62,13 +64,7 @@ if ($opcion == "1") {
 } elseif ($opcion == "2") {
     // Opción 2: Obtener actividades del usuario
 
-    $sql = "SELECT *
- FROM actividades
- INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
- INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario
- WHERE actividades.ID_usuario = $ID_usuario
- ORDER BY actividades.ID_actividad DESC";
-
+    $sql = "SELECT * FROM actividades INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario WHERE actividades.ID_usuario = $ID_usuario ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fecha_inicio DESC";
 
     $result = $conexion->query($sql);
 
@@ -130,23 +126,40 @@ if ($opcion == "1") {
     // Opción 2: Obtener actividades del usuario
 
     if ($nuevoEstado != null && $nuevoEstado == "Finalizado") {
-
-        $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', fecha_fin=NOW() where ID_actividad=$ID_actividad";
-    } else  if ($nuevoEstado != null && $nuevoEstado == "Iniciado") {
-
-        $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', fecha_inicio=NOW() where ID_actividad=$ID_actividad";
+        $fechaFin = date("Y-m-d H:i:s"); // Resta una hora a la fecha actual
+        $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', fecha_fin='$fechaFin', motivocancelacion='Todo correcto' WHERE ID_actividad=$ID_actividad";
+    } else if ($nuevoEstado != null && $nuevoEstado == "Iniciado") {
+        $fechaInicio = date("Y-m-d H:i:s"); // Resta una hora a la fecha actual
+        $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', fecha_inicio='$fechaInicio', motivocancelacion='Todo correcto' WHERE ID_actividad=$ID_actividad";
     } else {
-
-        $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado' where ID_actividad=$ID_actividad";
+        $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado' WHERE ID_actividad=$ID_actividad";
     }
+
     $result = $conexion->query($sql);
+    
     if ($result) {
-        echo "Extio";
+        echo "Éxito";
     } else {
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
-} elseif ($opcion == "6") {
+}
+elseif ($opcion == "29") {
+    $fechaFin = date("Y-m-d H:i:s"); // Resta una hora a la fecha actual
+
+        $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', motivocancelacion='$motivocancelacion', fecha_fin='$fechaFin' WHERE ID_actividad=$ID_actividad";
+   
+    $result = $conexion->query($sql);
+    
+    if ($result) {
+        echo "Éxito";
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
+}
+
+ elseif ($opcion == "6") {
     // Opción 2: Obtener actividades del usuario
 
 
@@ -364,19 +377,38 @@ if ($opcion == "1") {
         echo "Error en la consulta: " . $conexion->error;
     }
 } elseif ($opcion == "16") {
-    // Opción 2: Obtener actividades del usuario
-    $sql = "DELETE FROM `usuarios` WHERE ID_usuario= $ID_usuario";
+    
+    $conexion->begin_transaction();
 
-    $result = $conexion->query($sql);
+  // Eliminar fotos_actividades relacionadas con el usuario
+  $sql_fotos = "DELETE FROM `fotos_actividades` WHERE ID_usuario=$ID_usuario";
+  $result_fotos = $conexion->query($sql_fotos);
 
-    if ($result) {
 
-        echo "Exito";
+    // Eliminar ubicacion_actividades relacionadas con el usuario
+    $sql_ubicacion = "DELETE FROM `ubicacion_actividades` WHERE ID_usuario=$ID_usuario";
+    $result_ubicacion = $conexion->query($sql_ubicacion);
+
+    // Eliminar actividades relacionadas con el usuario
+    $sql_actividades = "DELETE FROM `actividades` WHERE ID_usuario = $ID_usuario";
+    $result_actividades = $conexion->query($sql_actividades);
+
+    if ($result_actividades && $result_fotos && $result_ubicacion ) {
+         // Eliminar al usuario
+    $sql_usuario = "DELETE FROM `usuarios` WHERE ID_usuario = $ID_usuario";
+    $result_usuario = $conexion->query($sql_usuario);
+        // Si todas las eliminaciones se realizaron con éxito, confirmar la transacción
+        $conexion->commit();
+        echo "Usuario y sus actividades, fotos y ubicaciones relacionadas eliminados con éxito.";
     } else {
-        // Error en la consulta SQL
-        echo "Error en la consulta: " . $conexion->error;
+        // Si hubo un error en alguna de las eliminaciones, realizar un rollback
+        $conexion->rollback();
+        echo "Error al eliminar actividades, fotos, ubicaciones o al usuario: " . $conexion->error;
     }
-} elseif ($opcion == "17") {
+
+}
+
+elseif ($opcion == "17") {
     // Opción 2: Obtener actividades del usuario
     $sql = "UPDATE actividades SET `ID_nombre_actividad`='$ID_nombre_actividad',`descripcionActividad`='$descripcionActividad' WHERE ID_actividad= $ID_actividad";
 

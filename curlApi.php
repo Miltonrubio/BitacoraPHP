@@ -98,12 +98,32 @@
                         <h2 class="card-title">Actualizar Estado de Actividad</h2>
                         <form method="post" action="mostrar.php">
                             <h5 class="card-title">opcion="5"</h5>
-                            <h5 class="card-title">nuevoEstado="Pendiente"</h5>
+                            <h5 class="card-title">nuevoEstado="Iniciado"</h5>
                             <h5 class="card-title">ID_actividad="1"</h5>
-
                             <input class="form-control mb-2" type="text" name="opcion" value="5">
-                            <input class="form-control mb-2" type="text" name="nuevoEstado" value="Pendiente">
+                            <input class="form-control mb-2" type="text" name="nuevoEstado" value="Iniciado">
                             <input class="form-control mb-2" type="text" name="ID_actividad" value="1">
+                            <input type="submit" class="btn btn-primary" value="Enviar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Cancelar de Actividad</h2>
+                        <form method="post" action="mostrar.php">
+                            <h5 class="card-title">opcion="29"</h5>
+                            <h5 class="card-title">nuevoEstado="Cancelado"</h5>
+                            <h5 class="card-title">ID_actividad="25"</h5>
+                            <h5 class="card-title">motivocancelacion="Tuve problemas para realizar esta actividad"</h5>
+
+                            <input class="form-control mb-2" type="text" name="opcion" value="29">
+                            <input class="form-control mb-2" type="text" name="nuevoEstado" value="Cancelado">
+                            <input class="form-control mb-2" type="text" name="ID_actividad" value="25">
+                            <input class="form-control mb-2" type="text" name="motivocancelacion" value="Tuve problemas para realizar esta actividad">
                             <input type="submit" class="btn btn-primary" value="Enviar">
                         </form>
                     </div>
@@ -223,8 +243,8 @@
                         <h5 class="card-title">ID_actividad="1"</h5>
                         <form action="mostrar.php" method="POST">
 
-                        <input class="form-control mb-2" type="text" name="opcion" value="10">
-                        <input class="form-control mb-2" type="text" name="ID_actividad" value="1">
+                            <input class="form-control mb-2" type="text" name="opcion" value="10">
+                            <input class="form-control mb-2" type="text" name="ID_actividad" value="1">
                             <input class="btn btn-primary" type="submit" value="Consultar">
                         </form>
                     </div>
@@ -295,7 +315,7 @@
                     </div>
                 </div>
             </div>
-        </div><br><br>  
+        </div><br><br>
         <div class="row col-md-12">
             <div class="col-md-6">
                 <div class="card custom-card">
@@ -407,21 +427,22 @@
                         <h5 class="card-title">opcion="25"</h5>
                         <h5 class="card-title">imagen23="foto"</h5>
                         <h5 class="card-title">ID_usuario="1"</h5>
-
                         <form action="mostrar.php" method="POST" enctype="multipart/form-data">
                             <input class="form-control mb-2" type="text" name="opcion" value="25">
-
                             <input class="form-control mb-2" type="text" name="ID_usuario" value="1">
-                            
-                            <input class="form-control mb-2" type="file" name="imagen23" >
-
-                            
+                            <input class="form-control mb-2" type="file" name="imagen23">
                             <input class="btn btn-primary" type="submit" value="Consultar">
                         </form>
                     </div>
                 </div>
             </div>
         </div><br><br>
+
+
+
+            
+
+
     </div>
 </body>
 
