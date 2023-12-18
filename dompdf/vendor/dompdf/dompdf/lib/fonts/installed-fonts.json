@@ -1,0 +1,33 @@
+{
+    "font awesome 6 brands": {
+        "normal": "font_awesome_6_brands_normal_fe9f8889de14dac4e5423b59c7c9c4d7"
+    },
+    "font awesome 6 free": {
+        "normal": "font_awesome_6_free_normal_63ceaa3a26a25d15acc67a2a92a86505",
+        "900": "C:\\xampp\\htdocs\\ControlCorteCajas\\librerias\\dompdf\\vendor\\dompdf\\dompdf\/lib\/fonts\/font_awesome_6_free_900_e28be8b0559d1fb8cc4e17872df29e2a"
+    },
+    "font awesome 5 brands": {
+        "normal": "font_awesome_5_brands_normal_fe9f8889de14dac4e5423b59c7c9c4d7"
+    },
+    "font awesome 5 free": {
+        "900": "font_awesome_5_free_900_e28be8b0559d1fb8cc4e17872df29e2a",
+        "normal": "C:\\xampp\\htdocs\\ControlCorteCajas\\librerias\\dompdf\\vendor\\dompdf\\dompdf\/lib\/fonts\/font_awesome_5_free_normal_63ceaa3a26a25d15acc67a2a92a86505"
+    },
+    "fontawesome": {
+        "normal": "fontawesome_normal_06860fa9961d464ff5b77a2ec3345004"
+    },
+    "roboto serif": {
+        "normal": "roboto_serif_normal_18167bf738dba355198c1cda9337f21e"
+    },
+    "glyphicons halflings": {
+        "normal": "glyphicons_halflings_normal_4bf4c90600ef2617211b8a7969a7b830"
+    },
+    "roboto": {
+        "100": "C:\\xampp\\htdocs\\ComprasFacturas\\librerias\\dompdf\\vendor\\dompdf\\dompdf\/lib\/fonts\/roboto_100_1c4e32da7e6c8539dd3a51af38f413be",
+        "300": "C:\\xampp\\htdocs\\ComprasFacturas\\librerias\\dompdf\\vendor\\dompdf\\dompdf\/lib\/fonts\/roboto_300_32acfcb296f555e063ebba2be7db9e2f",
+        "normal": "roboto_normal_7bc701b343c10631f60048716b96e4f7"
+    },
+    "open sans": {
+        "normal": "open_sans_normal_e3f9da90edb379e243cceabb2fdb3f0a"
+    }
+}

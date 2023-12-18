@@ -1,0 +1,224 @@
+
+.tabla_datos_clientes{
+    width: 100%;
+    height: auto;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+
+.texto-tabla-centrado{
+    background-color: black !important;
+    color: white !important;
+    border-color: lightgray;
+    margin-left: 0px;
+    margin-right: 0px;
+    font-size: 12px;
+    text-align: center;
+    width: 100%;
+    height: auto;
+    margin-top: 0px;
+    margin-bottom: 5px;
+    
+}
+
+
+.titulo{
+  background-color: yellow !important;
+  color: black !important;
+  margin-left: 0px;
+  margin-right: 0px;
+  font-size: 17px;
+  text-align: center;
+  width: 50%;
+  height: auto;
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+
+
+.fondogris{
+    background-color: #EAEAF0;
+    font-weight: bold;
+    border-color: black;
+}
+
+body{
+    font-family: Arial, sans-serif;
+    background-color: white;
+    margin-right: -18px;
+    margin-left: -18px;
+    margin-bottom: 12px;
+
+    
+}
+
+
+
+
+p{
+    font-size: 13px;
+}
+
+/*
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 2px solid black;
+  }
+
+  
+  th, td {
+    border: 2px solid black;
+    color: black;
+    padding: 8px;
+    text-align: left;
+  }
+*/
+
+
+
+.contenedorImagen {
+  text-align: center;
+}
+
+.imagen-centrada {
+  margin: 0 auto;
+  display: block;
+  width: 100px;
+  height: 100px;
+}
+
+
+.imgLogo{
+    display: block;
+    margin: 0 auto;
+    width: 100px;
+    height: 100px;
+  }
+
+  .text-center{
+    text-align: center;
+  }
+
+
+  .table-completa{
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 12px; /* Agrega margen inferior para separarla de otros elementos */
+}
+.tabla_mitad{
+  width: 50%;
+  border-collapse: collapse;
+  margin-bottom: 12px; /* Agrega margen inferior para separarla de otros elementos */
+
+}
+
+
+
+td, th {
+    border: 1px solid black;
+    text-align: center;
+    font-size: 15px;
+    padding: 2px;
+}
+
+/* Agrega un estilo diferente para las celdas de encabezado (th) */
+th {
+    background-color: #f2f2f2;
+}
+
+
+.texto-izquierda{
+    text-align:start !important;
+}
+
+
+
+
+
+
+.contenedor {
+    width: 100%;
+    position: relative;
+  }
+
+  .mitad-izquierda {
+    float: left;
+    width: 50%;
+  }
+
+  .mitad-derecha {
+    float: left;
+    width: 50%;
+
+  }
+
+  /* Limpiar el float para evitar problemas de diseño */
+  .clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  
+
+   .contenedor-imagenes {
+            display: flex;
+            padding: 5% ;
+            justify-content: space-between; /* Ajusta el espacio entre las imágenes */
+        }
+
+        .imagen {
+          flex: 1; /* Hace que las imágenes se expandan para ocupar el espacio disponible de manera equitativa */
+          max-width: 150px; /* Ancho máximo */
+          max-height: 150px; /* Altura máxima */
+          width: 100%;
+          height: 100%;
+          object-fit: cover; /* La imagen se redimensionará para cubrir toda la caja sin deformarla */
+          object-position: center center; /* La imagen se centrará en la caja */
+      }
+
+
+
+
+        .linea-debajo {
+          border-bottom: 1px solid black;
+          margin-left: 15%;
+          margin-right: 15%;
+        }
+
+        .elemento-fijo {
+          position: fixed;
+          bottom: 0;
+          left: 0; /* Puedes ajustar esto según tus preferencias de posicionamiento lateral */
+          width: 100%;
+          padding: 10px;
+          text-align: center;
+        }
+
+
+
+/* Agrega estilos específicos para pantallas más pequeñas (haciendo la tabla responsiva) */
+@media screen and (max-width: 600px) {
+    td, th {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Agrega estilos adicionales para mejorar la apariencia en modo vertical */
+    td {
+        text-align: right;
+        border-bottom: 1px solid #dddddd;
+    }
+}
+
+
+
+/* 
+    font-family: 'Roboto', sans-serif;
+    */
+
+

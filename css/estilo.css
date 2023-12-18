@@ -1,0 +1,96 @@
+.contenedor-tabla {
+    width: 50%;
+    margin: 0 auto; /* Centra el contenedor */
+}
+
+.tabla_mitad {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+
+.fondo_negro{
+
+    background-color: #FCB655 !important;
+    color: black;
+
+}
+
+.fondo_amarillo{
+    
+    background-color: yellow !important;
+    color: black;
+
+}
+
+.titulo {
+    background-color: yellow !important;
+    color: black !important;
+    margin-left: 0px;
+    margin-right: 0px;
+    font-size: 16px;
+    text-align: center;
+    padding-top: 3px;
+    padding-bottom: 4px;
+    width: 100%;
+    height: auto;
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+.fondogris {
+    background-color: #eaeaf0;
+    font-weight: bold;
+    border-color: black;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: white;
+    margin-right: -18px;
+    margin-left: -18px;
+    margin-bottom: 12px;
+}
+
+
+td, th {
+    border: 1px solid black;
+    text-align: left;
+    margin-left: 12px;
+
+    padding-left: 12px;
+    font-size: 14px;
+    padding: 2px;
+}
+
+
+.contenedor_gastos{
+
+    border: 1px solid black;
+    padding-left: 2%;
+    padding-bottom: 2%;
+    padding-right: 2%;
+}
+
+
+th {
+    background-color: #7e7b7b;
+}
+
+.contenedorImagen {
+    text-align: center;
+}
+
+.imagen-centrada {
+    margin: 0 auto;
+    display: block;
+    width: 100px;
+    height: 100px;
+}
+
+
+.texto_centrado{
+text-align: center;
+}
