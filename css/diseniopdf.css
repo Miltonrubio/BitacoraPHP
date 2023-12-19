@@ -54,7 +54,15 @@ body{
     
 }
 
+.texto_verde{
 
+  color: green;
+
+}
+
+.textp_rojo{
+  color: red;
+}
 
 
 p{

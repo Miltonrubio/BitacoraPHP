@@ -48,6 +48,9 @@ $ID_saldo = isset($_POST["ID_saldo"]) ? $_POST["ID_saldo"] : "";
 $nuevoSaldo = isset($_POST["nuevoSaldo"]) ? $_POST["nuevoSaldo"] : "";
 
 
+$deposito = isset($_POST["deposito"]) ? $_POST["deposito"] : "";
+
+
 
 $serverKey = 'AAAAw189fFA:APA91bGcuc07qIZOK9pMiJt_pa-VBBi0sskU9vU3DRohluo2Jd1N2v0-eZdBtWvyqD-CuXBSEAm-n7nDQilh5v6GgiOfdD_Bd-HUGBUcluf9ChvdcfSrzyuiWZu6I-BMxfOcRMJkMVPQ';
 
@@ -324,9 +327,10 @@ $fecha_y_hora_actual = date("Y-m-d H:i:s");
         echo "Error en la consulta: " . $conexion->error;
     }
 } elseif ($opcion == "13") {
-$sql = "SELECT u.*, s.ID_saldo, s.saldo, (s.saldo - COALESCE(g.gastos_totales, 0)) AS saldo_restante FROM usuarios u LEFT JOIN ( SELECT ID_usuario, MAX(ID_saldo) AS ultimo_saldo_id FROM saldo WHERE status_saldo = 'activo' GROUP BY ID_usuario ) max_saldo ON u.ID_usuario = max_saldo.ID_usuario LEFT JOIN saldo s ON max_saldo.ultimo_saldo_id = s.ID_saldo AND s.status_saldo = 'activo' LEFT JOIN ( SELECT ID_saldo, SUM(dinero_gastado) AS gastos_totales FROM gastos GROUP BY ID_saldo ) g ON s.ID_saldo = g.ID_saldo;";
+//$sql = "SELECT u.*, s.ID_saldo, s.saldo, (s.saldo - COALESCE(g.gastos_totales, 0)) AS saldo_restante FROM usuarios u LEFT JOIN ( SELECT ID_usuario, MAX(ID_saldo) AS ultimo_saldo_id FROM saldo WHERE status_saldo = 'activo' GROUP BY ID_usuario ) max_saldo ON u.ID_usuario = max_saldo.ID_usuario LEFT JOIN saldo s ON max_saldo.ultimo_saldo_id = s.ID_saldo AND s.status_saldo = 'activo' LEFT JOIN ( SELECT ID_saldo, SUM(dinero_gastado) AS gastos_totales FROM gastos GROUP BY ID_saldo ) g ON s.ID_saldo = g.ID_saldo;";
 
-    
+$sql="SELECT u.*, s.ID_saldo, s.saldo, (s.saldo - COALESCE(g.gastos_gastos, 0) + COALESCE(g.gastos_depositos, 0)) AS saldo_restante FROM usuarios u LEFT JOIN ( SELECT ID_usuario, MAX(ID_saldo) AS ultimo_saldo_id FROM saldo WHERE status_saldo = 'activo' GROUP BY ID_usuario ) max_saldo ON u.ID_usuario = max_saldo.ID_usuario LEFT JOIN saldo s ON max_saldo.ultimo_saldo_id = s.ID_saldo AND s.status_saldo = 'activo' LEFT JOIN ( SELECT ID_saldo, SUM(CASE WHEN tipo = 'gasto' THEN dinero_gastado ELSE 0 END) AS gastos_gastos, SUM(CASE WHEN tipo = 'deposito' THEN dinero_gastado ELSE 0 END) AS gastos_depositos FROM gastos GROUP BY ID_saldo ) g ON s.ID_saldo = g.ID_saldo;";
+
 /*
 
     $sql = "SELECT
@@ -672,6 +676,25 @@ else if ($opcion == "51") {
 
     //$sql = "SELECT ID_saldo,ID_usuario,status_saldo, saldo as saldo_asignado FROM `saldo` WHERE ID_usuario = $ID_usuario AND status_saldo = 'activo' ORDER BY ID_saldo DESC LIMIT 1";
 
+$sql="SELECT 
+s.ID_saldo,
+s.ID_usuario,
+s.status_saldo,
+s.saldo - COALESCE(SUM(CASE WHEN g.tipo = 'gasto' THEN g.dinero_gastado ELSE 0 END), 0) +
+             COALESCE(SUM(CASE WHEN g.tipo = 'deposito' THEN g.dinero_gastado ELSE 0 END), 0) AS saldo_actualizado
+FROM 
+saldo s
+LEFT JOIN 
+gastos g ON s.ID_saldo = g.ID_saldo
+WHERE 
+s.ID_usuario = $ID_usuario AND s.status_saldo = 'activo'
+GROUP BY 
+s.ID_saldo, s.ID_usuario, s.status_saldo, s.saldo
+ORDER BY 
+s.ID_saldo DESC
+LIMIT 1";
+
+    /*
 $sql = "SELECT 
 s.ID_saldo,
 s.ID_usuario,
@@ -688,6 +711,8 @@ s.ID_saldo, s.ID_usuario, s.status_saldo, s.saldo
 ORDER BY 
 s.ID_saldo DESC
 LIMIT 1";
+
+*/
 
 
     $result = $conexion->query($sql);
@@ -715,7 +740,7 @@ LIMIT 1";
     $fecha_actual = date("Y-m-d");
     $hora_actual = date("H:i:s");
 
-    $sql = "INSERT INTO `gastos`(`dinero_gastado`, `fecha`, `hora`, `ID_saldo`, `ID_actividad`) VALUES ($total_gastado, '$fecha_actual' , '$hora_actual' ,$ID_saldo,$ID_actividad)";
+    $sql = "INSERT INTO `gastos`(`dinero_gastado`, `fecha`, `hora`, `ID_saldo`, `ID_actividad`,`tipo` ) VALUES ($total_gastado, '$fecha_actual' , '$hora_actual' ,$ID_saldo,$ID_actividad, 'gasto')";
     $result = $conexion->query($sql);
 
     if ($result) {
@@ -749,6 +774,22 @@ LIMIT 1";
     */
 } else if ($opcion == "54") {
 
+$sql="SELECT 
+saldo.*,
+saldo.saldo AS saldo_inicial,
+COALESCE(SUM(CASE WHEN gastos.tipo = 'gasto' THEN gastos.dinero_gastado ELSE 0 END), 0) AS total_gastos,
+COALESCE(SUM(CASE WHEN gastos.tipo = 'deposito' THEN gastos.dinero_gastado ELSE 0 END), 0) AS total_depositos,
+saldo.saldo - COALESCE(SUM(CASE WHEN gastos.tipo = 'gasto' THEN gastos.dinero_gastado ELSE 0 END), 0) + COALESCE(SUM(CASE WHEN gastos.tipo = 'deposito' THEN gastos.dinero_gastado ELSE 0 END), 0) AS nuevo_saldo
+FROM 
+saldo
+LEFT JOIN 
+gastos ON gastos.ID_saldo = saldo.ID_saldo
+WHERE 
+saldo.ID_saldo = $ID_saldo
+GROUP BY 
+saldo.ID_saldo, saldo.saldo";
+
+    /*
     // Consulta principal para obtener saldo y resumen de gastos
     $sql = "SELECT saldo.*, saldo.saldo AS saldo_inicial,  COALESCE(SUM(gastos.dinero_gastado), 0) AS total_gastos, 
             saldo.saldo - COALESCE(SUM(gastos.dinero_gastado), 0) AS nuevo_saldo
@@ -757,6 +798,8 @@ LIMIT 1";
             WHERE saldo.ID_saldo = $ID_saldo
             GROUP BY saldo.ID_saldo, saldo.saldo";
 
+
+*/
     $result = $conexion->query($sql);
 
     if ($result) {
@@ -771,6 +814,7 @@ LIMIT 1";
                 $response['nuevo_saldo'] = $row['nuevo_saldo'];
                 $response['fecha_asignacion'] = $row['fecha_asignacion'];
                 $response['hora_asignacion'] = $row['hora_asignacion'];
+                $response['total_depositos'] = $row['total_depositos'];
 
                 // Consulta secundaria para obtener detalles de gastos
                 $sqlDetallesGastos = "SELECT * FROM gastos WHERE ID_saldo = $ID_saldo";
@@ -809,7 +853,10 @@ LIMIT 1";
     }
 } else if ($opcion == "56") {
 
-    $sql = "UPDATE `saldo` SET `status_saldo`='Finalizado' WHERE ID_saldo= $ID_saldo";
+    $fecha_actual = date("Y-m-d");
+    $hora_actual = date("H:i:s");
+
+    $sql = "UPDATE `saldo` SET `status_saldo`='Finalizado', `fecha_final`='$fecha_actual',`hora_final`='$hora_actual'  WHERE ID_saldo= $ID_saldo";
     $result = $conexion->query($sql);
 
     if ($result) {
@@ -820,28 +867,26 @@ LIMIT 1";
 }
 else if ($opcion == "57") {
 
-    /*
+    
 
-    // Consulta principal para obtener saldo y resumen de gastos
-    $sql = "SELECT saldo.*, saldo.saldo AS saldo_inicial, COALESCE(SUM(gastos.dinero_gastado), 0) AS total_gastos, 
-            saldo.saldo - COALESCE(SUM(gastos.dinero_gastado), 0) AS nuevo_saldo
-            FROM saldo
-            LEFT JOIN gastos ON gastos.ID_saldo = saldo.ID_saldo
-            WHERE saldo.ID_usuario = $ID_usuario  
-            GROUP BY saldo.ID_saldo, saldo.saldo";
+$sql="SELECT 
+saldo.*,
+saldo.saldo AS saldo_inicial,
+COALESCE(SUM(CASE WHEN gastos.tipo = 'gasto' THEN gastos.dinero_gastado ELSE 0 END), 0) AS total_gastos,
+COALESCE(SUM(CASE WHEN gastos.tipo = 'deposito' THEN gastos.dinero_gastado ELSE 0 END), 0) AS total_depositos,
+saldo.saldo - COALESCE(SUM(CASE WHEN gastos.tipo = 'gasto' THEN gastos.dinero_gastado ELSE 0 END), 0) + COALESCE(SUM(CASE WHEN gastos.tipo = 'deposito' THEN gastos.dinero_gastado ELSE 0 END), 0) AS nuevo_saldo
+FROM 
+saldo
+LEFT JOIN 
+gastos ON gastos.ID_saldo = saldo.ID_saldo
+WHERE 
+saldo.ID_usuario = $ID_usuario
+GROUP BY 
+saldo.ID_usuario, saldo.ID_saldo, saldo.saldo
+ORDER BY 
+saldo.fecha_asignacion DESC";
 
 
-*/
-
-$sql="SELECT saldo.*, 
-saldo.saldo AS saldo_inicial, 
-COALESCE(SUM(gastos.dinero_gastado), 0) AS total_gastos, 
-saldo.saldo - COALESCE(SUM(gastos.dinero_gastado), 0) AS nuevo_saldo
-FROM saldo
-LEFT JOIN gastos ON gastos.ID_saldo = saldo.ID_saldo
-WHERE saldo.ID_usuario = $ID_usuario  
-GROUP BY saldo.ID_saldo, saldo.saldo
-ORDER BY saldo.fecha_asignacion DESC";
 
     $result = $conexion->query($sql);
 
@@ -861,13 +906,14 @@ ORDER BY saldo.fecha_asignacion DESC";
                     'fecha_asignacion' => $row['fecha_asignacion'],
                     'hora_asignacion' => $row['hora_asignacion'],
                     'status_saldo' => $row['status_saldo'],
+                    'total_depositos' => $row['total_depositos'],                    
                 );
 
                 // Consulta secundaria para obtener detalles de gastos
                 $sqlDetallesGastos = "SELECT gastos.*, actividades.*, nombre_actividades.*
                 FROM gastos
-                JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad
-                JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
+              LEFT OUTER  JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad
+              LEFT OUTER   JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
                 WHERE gastos.ID_saldo = $ID_saldo";
                 $resultDetallesGastos = $conexion->query($sqlDetallesGastos);
 
@@ -898,6 +944,7 @@ else if ($opcion == "58") {
 
     // Define las fechas de inicio y fin del rango
 
+    /*
     // Consulta principal para obtener saldo y resumen de gastos con filtro por fechas
     $sql = "SELECT saldo.*, 
     saldo.saldo AS saldo_inicial, 
@@ -909,6 +956,28 @@ WHERE saldo.ID_usuario = $ID_usuario
 AND saldo.fecha_asignacion BETWEEN '$fechaInicio' AND '$fechaFin'
 GROUP BY saldo.ID_saldo, saldo.saldo
 ORDER BY saldo.fecha_asignacion DESC";
+
+*/
+
+
+$sql="SELECT 
+saldo.*,
+saldo.saldo AS saldo_inicial,
+COALESCE(SUM(CASE WHEN gastos.tipo = 'gasto' THEN gastos.dinero_gastado ELSE 0 END), 0) AS total_gastos,
+COALESCE(SUM(CASE WHEN gastos.tipo = 'deposito' THEN gastos.dinero_gastado ELSE 0 END), 0) AS total_depositos,
+saldo.saldo - COALESCE(SUM(CASE WHEN gastos.tipo = 'gasto' THEN gastos.dinero_gastado ELSE 0 END), 0) + COALESCE(SUM(CASE WHEN gastos.tipo = 'deposito' THEN gastos.dinero_gastado ELSE 0 END), 0) AS nuevo_saldo
+FROM 
+saldo
+LEFT JOIN 
+gastos ON gastos.ID_saldo = saldo.ID_saldo
+WHERE 
+saldo.ID_usuario = $ID_usuario
+AND saldo.fecha_asignacion BETWEEN '$fechaInicio' AND '$fechaFin'
+GROUP BY 
+saldo.ID_usuario, saldo.ID_saldo, saldo.saldo
+ORDER BY 
+saldo.fecha_asignacion DESC";
+
 
     $result = $conexion->query($sql);
 
@@ -928,13 +997,14 @@ ORDER BY saldo.fecha_asignacion DESC";
                     'fecha_asignacion' => $row['fecha_asignacion'],
                     'hora_asignacion' => $row['hora_asignacion'],
                     'status_saldo' => $row['status_saldo'],
+                    'total_depositos' => $row['total_depositos'],
                 );
 
                 // Consulta secundaria para obtener detalles de gastos
-                $sqlDetallesGastos = "SELECT gastos.*, actividades.*, nombre_actividades.*
+                 $sqlDetallesGastos = "SELECT gastos.*, actividades.*, nombre_actividades.*
                 FROM gastos
-                JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad
-                JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
+              LEFT OUTER  JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad
+              LEFT OUTER  JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
                 WHERE gastos.ID_saldo = $ID_saldo";
                 $resultDetallesGastos = $conexion->query($sqlDetallesGastos);
 
@@ -965,10 +1035,29 @@ else if($opcion == 59){
     exit();
 }
 
+else if($opcion == 60){
+
+$fecha_actual = date("Y-m-d");
+$hora_actual = date("H:i:s");
+
+$sql= "INSERT INTO `gastos`(`dinero_gastado`, `fecha`, `hora`, `ID_saldo`, `ID_actividad`, `tipo`) VALUES ($deposito,'$fecha_actual','$hora_actual',$ID_saldo,null,'deposito')";
+$result = $conexion->query($sql);
+
+if ($result) {
+    echo "Exito";
+} else {
+    // Error en la consulta SQL
+    echo "Error en la consulta: " . $conexion->error;
+}
+}
+
 
 else {
     echo "Opción no válida";
 }
+
+
+
 
 
 

@@ -689,6 +689,27 @@
             </div>
         </div><br><br>
 
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">DEPOSITAR POR ID_SALDO ACTUAL </h2>
+                        <h5 class="card-title">opcion="60"</h5>
+                        <h5 class="card-title">ID_saldo=7</h5>
+                        <h5 class="card-title">deposito=450</h5>
+
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="opcion" value="60">
+                            <input class="form-control mb-2" type="text" name="ID_saldo" value="7">
+                            <input class="form-control mb-2" type="text" name="deposito" value="450">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
     </div>
 </body>
 

@@ -45,8 +45,8 @@ if ($resultUsuarios) {
 
 
 
-if(  (empty($fechaInicio) || empty($fechaFin)) ) {
-
+if ((empty($fechaInicio) || empty($fechaFin))) {
+    /*
     $sqlGastos="SELECT saldo.*, 
     saldo.saldo AS saldo_inicial, 
     COALESCE(SUM(gastos.dinero_gastado), 0) AS total_gastos, 
@@ -56,10 +56,27 @@ if(  (empty($fechaInicio) || empty($fechaFin)) ) {
     WHERE saldo.ID_usuario = $ID_usuario  
     GROUP BY saldo.ID_saldo, saldo.saldo
     ORDER BY saldo.fecha_asignacion DESC";
+*/
 
+    $sqlGastos = "SELECT 
+saldo.*,
+saldo.saldo AS saldo_inicial,
+COALESCE(SUM(CASE WHEN gastos.tipo = 'gasto' THEN gastos.dinero_gastado ELSE 0 END), 0) AS total_gastos,
+COALESCE(SUM(CASE WHEN gastos.tipo = 'deposito' THEN gastos.dinero_gastado ELSE 0 END), 0) AS total_depositos,
+saldo.saldo - COALESCE(SUM(CASE WHEN gastos.tipo = 'gasto' THEN gastos.dinero_gastado ELSE 0 END), 0) + COALESCE(SUM(CASE WHEN gastos.tipo = 'deposito' THEN gastos.dinero_gastado ELSE 0 END), 0) AS nuevo_saldo
+FROM 
+saldo
+LEFT JOIN 
+gastos ON gastos.ID_saldo = saldo.ID_saldo
+WHERE 
+saldo.ID_usuario = $ID_usuario
+GROUP BY 
+saldo.ID_usuario, saldo.ID_saldo, saldo.saldo
+ORDER BY 
+saldo.fecha_asignacion DESC";
+} else {
 
-}else{
-
+    /*
     $sqlGastos = "SELECT saldo.*, 
 saldo.saldo AS saldo_inicial, 
 COALESCE(SUM(gastos.dinero_gastado), 0) AS total_gastos, 
@@ -70,7 +87,25 @@ WHERE saldo.ID_usuario = $ID_usuario
 AND saldo.fecha_asignacion BETWEEN '$fechaInicio' AND '$fechaFin'
 GROUP BY saldo.ID_saldo, saldo.saldo
 ORDER BY saldo.fecha_asignacion DESC";
+*/
 
+    $sqlGastos = "SELECT 
+saldo.*,
+saldo.saldo AS saldo_inicial,
+COALESCE(SUM(CASE WHEN gastos.tipo = 'gasto' THEN gastos.dinero_gastado ELSE 0 END), 0) AS total_gastos,
+COALESCE(SUM(CASE WHEN gastos.tipo = 'deposito' THEN gastos.dinero_gastado ELSE 0 END), 0) AS total_depositos,
+saldo.saldo - COALESCE(SUM(CASE WHEN gastos.tipo = 'gasto' THEN gastos.dinero_gastado ELSE 0 END), 0) + COALESCE(SUM(CASE WHEN gastos.tipo = 'deposito' THEN gastos.dinero_gastado ELSE 0 END), 0) AS nuevo_saldo
+FROM 
+saldo
+LEFT JOIN 
+gastos ON gastos.ID_saldo = saldo.ID_saldo
+WHERE 
+saldo.ID_usuario = $ID_usuario
+AND saldo.fecha_asignacion BETWEEN '$fechaInicio' AND '$fechaFin'
+GROUP BY 
+saldo.ID_usuario, saldo.ID_saldo, saldo.saldo
+ORDER BY 
+saldo.fecha_asignacion DESC";
 }
 
 /*
@@ -104,13 +139,15 @@ if ($result) {
                 'fecha_asignacion' => $row['fecha_asignacion'],
                 'hora_asignacion' => $row['hora_asignacion'],
                 'status_saldo' => $row['status_saldo'],
+
+                'total_depositos' => $row['total_depositos'],
             );
 
             // Consulta secundaria para obtener detalles de gastos
             $sqlDetallesGastos = "SELECT gastos.*, actividades.*, nombre_actividades.*
             FROM gastos
-            JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad
-            JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
+          LEFT OUTER  JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad
+       LEFT OUTER  JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
             WHERE gastos.ID_saldo = $ID_saldo";
             $resultDetallesGastos = $conexion->query($sqlDetallesGastos);
 
@@ -163,11 +200,12 @@ if (!empty($datosUsuario)) {
 
 
     <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacora/css/estilo.css" rel="stylesheet">
+<?php 
+/*
+    <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
 
-    <!--
-    <link href="http://<?php // echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
--->
-
+    */
+?>
 </head>
 
 <div class="contenedorImagen">
@@ -205,7 +243,7 @@ if (!empty($datosUsuario)) {
                         </tr>
                         <tr>
                             <td class="fondogris texto-izquierda">Puesto:</td>
-                            <td><?php echo  $refacciones['permisos'] ?></td>
+                            <td><?php echo  $refacciones['permisos'] ?> </td>
                         </tr>
                 <?php
                     }
@@ -227,62 +265,90 @@ if (empty($desgloseDeGastos)) {
     foreach ($desgloseDeGastos as $gastos) {
 ?>
 
-<div class="contenedor_gastos">
+        <div class="contenedor_gastos">
 
-        <H4 class="texto_centrado"> DESGLOSE DE GASTOS: </H4>
+            <H4 class="texto_centrado"> DESGLOSE DE GASTOS: </H4>
 
-        <table class="tabla_mitad">
-            <tbody>
-                <tr>
-                    <td class="fondogris texto_centrado">Saldo asignado</td>
-                    <td class="fondogris texto_centrado">Saldo gastado</td>
-                    <td class="fondogris texto_centrado">Saldo restante</td>
-                    <td class="fondogris texto_centrado">Fecha de asignacion</td>
-                    <td class="fondogris texto_centrado">Hora de asignacion</td>
-                </tr>
+            <table class="tabla_mitad">
+                <tbody>
+                    <tr>
+                        <td class="fondogris texto_centrado">Saldo asignado</td>
+                        <td class="fondogris texto_centrado">Saldo gastado</td>
+                        <td class="fondogris texto_centrado">Saldo restante</td>
+                        <td class="fondogris texto_centrado">Saldo depositado</td>
+                        <td class="fondogris texto_centrado">Fecha de asignacion</td>
+                        <td class="fondogris texto_centrado">Hora de asignacion</td>
+                    </tr>
 
-                <tr>
-                    <td><?php echo  $gastos['saldo_inicial'] ?></td>
-                    <td><?php echo  $gastos['total_gastos'] ?></td>
-                    <td><?php echo  $gastos['nuevo_saldo'] ?></td>
-                    <td><?php echo  $gastos['fecha_asignacion'] ?></td>
-                    <td><?php echo  $gastos['hora_asignacion'] ?></td>
+                    <tr>
+                        <td><?php echo  $gastos['saldo_inicial'] ?></td>
+                        <td><?php echo  $gastos['total_gastos'] ?></td>
+                        <td><?php echo  $gastos['nuevo_saldo'] ?></td>
+                        <td><?php echo  $gastos['total_depositos'] ?></td>
+                        <td><?php echo  $gastos['fecha_asignacion'] ?></td>
+                        <td><?php echo  $gastos['hora_asignacion'] ?></td>
 
-                </tr>
-            </tbody>
-        </table>
-        <br>
-        <table class="tabla_mitad">
-            <tbody>
-                <tr>
-                    <td class="fondo_amarillo">Dinero gastado</td>
-                    <td class="fondo_amarillo">Fecha de uso</td>
-                    <td class="fondo_amarillo">Hora de uso</td>
-                    <td class="fondo_amarillo">Tipo de actividad</td>
-                    <td class="fondo_amarillo">Descripcion de actividad</td>
-                </tr>
-                <?php
-                if (empty($gastos['gastos'])) {
-                    echo "No se encontraron datos";
-                } else {
-                    foreach ($gastos['gastos'] as $desgloseGastos) {
-                ?>
-                        <tr>
-                            <td><?php echo  $desgloseGastos['dinero_gastado'] ?></td>
-                            <td><?php echo  $desgloseGastos['fecha'] ?></td>
-                            <td><?php echo  $desgloseGastos['hora'] ?></td>
-                            <td><?php echo  $desgloseGastos['nombre_actividad'] ?></td>
-                            <td><?php echo  $desgloseGastos['descripcionActividad'] ?></td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <table class="tabla_mitad">
+                <tbody>
+                    <tr>
+                        <td class="fondo_amarillo texto_centrado">Saldo</td>
+                        <td class="fondo_amarillo">Fecha</td>
+                        <td class="fondo_amarillo">Hora</td>
+                        <td class="fondo_amarillo">Tipo de actividad</td>
+                        <td class="fondo_amarillo">Descripcion</td>
+                    </tr>
+                    <?php
+                    if (empty($gastos['gastos'])) {
+                        echo "No se encontraron datos";
+                    } else {
+                        foreach ($gastos['gastos'] as $desgloseGastos) {
+                    ?>
+                            <tr>
+                                <?php
+                                if ($desgloseGastos['tipo'] == "deposito") {
 
-                        </tr>
+                                ?>
+                                    <td class="texto_verde texto_centrado ">
+                                        <?php echo " + " . $desgloseGastos['dinero_gastado'] . " $"; ?>
 
-                <?php
+                                    </td>
+                                <?php
+                                } else {
+                                ?>
+                                <td class="texto_rojo texto_centrado">
+                                        <?php echo " - " . $desgloseGastos['dinero_gastado'] . " $"; ?>
+
+                                    </td>
+                                <?php
+                                }
+                                ?>
+
+
+                                <td><?php echo  $desgloseGastos['fecha'] ?></td>
+                                <td><?php echo  $desgloseGastos['hora'] ?></td>
+                                <td><?php
+                                    if ($desgloseGastos['tipo'] == "deposito") {
+                                        echo  "Deposito de saldo";
+                                    } else {
+                                        echo  $desgloseGastos['nombre_actividad'];
+                                    }
+                                    ?>
+                                </td>
+                                <td><?php echo  $desgloseGastos['descripcionActividad'] ?></td>
+                                
+                            </tr>
+
+                    <?php
+                        }
                     }
-                }
-                ?>
+                    ?>
 
-            </tbody>
-        </table>
+                </tbody>
+            </table>
 
         </div>
         <br>
