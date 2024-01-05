@@ -710,6 +710,33 @@
         </div><br><br>
 
 
+
+
+
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">REPORTE DE ACTIVIDADES POR USUARIO</h2>
+                        <h5 class="card-title">opcion="61"</h5>
+                        <h5 class="card-title">ID_usuario=42</h5>
+                        <h5 class="card-title">rango=hoy/semana/mes/anio</h5>
+
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="opcion" value="61">
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="45">
+                            <input class="form-control mb-2" type="text" name="rango" value="semana">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+
     </div>
 </body>
 

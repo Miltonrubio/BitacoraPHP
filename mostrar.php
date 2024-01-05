@@ -49,6 +49,8 @@ $nuevoSaldo = isset($_POST["nuevoSaldo"]) ? $_POST["nuevoSaldo"] : "";
 
 
 $deposito = isset($_POST["deposito"]) ? $_POST["deposito"] : "";
+$rango = isset($_POST["rango"]) ? $_POST["rango"] : "";
+
 
 
 
@@ -1049,6 +1051,12 @@ if ($result) {
     // Error en la consulta SQL
     echo "Error en la consulta: " . $conexion->error;
 }
+}
+
+
+else if($opcion == 61){
+    header("Location: disenioPDFActividades.php?id=$ID_usuario&rango=$rango");
+    exit();
 }
 
 
