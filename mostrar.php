@@ -50,6 +50,7 @@ $nuevoSaldo = isset($_POST["nuevoSaldo"]) ? $_POST["nuevoSaldo"] : "";
 
 $deposito = isset($_POST["deposito"]) ? $_POST["deposito"] : "";
 $rango = isset($_POST["rango"]) ? $_POST["rango"] : "";
+$NuevaCaja = isset($_POST["NuevaCaja"]) ? $_POST["NuevaCaja"] : "";
 
 
 
@@ -334,6 +335,7 @@ if ($opcion == "1") {
 
     $sql = "SELECT 
     usuarios.*,
+    saldo.saldo,
     (
     SELECT 
         saldo.saldo - COALESCE(gastos.total_dinero_gastado, 0) + COALESCE(depositos.total_dinero_agregado, 0) AS saldo_restante
@@ -365,7 +367,12 @@ if ($opcion == "1") {
         ORDER BY ID_saldo DESC
         LIMIT 1
     ) AS ID_saldo
-FROM usuarios";
+    
+FROM usuarios
+LEFT JOIN saldo ON usuarios.ID_usuario = saldo.ID_usuario AND saldo.status_saldo = 'activo'
+ORDER BY usuarios.ID_usuario
+";
+
 
 
 
@@ -1089,7 +1096,7 @@ saldo.ID_saldo, saldo.saldo";
 } else if ($opcion == "55") {
 
 
-    $sql = "UPDATE `saldo` SET `saldo`=$nuevoSaldo WHERE ID_saldo= $ID_saldo";
+    $sql = "UPDATE `saldo` SET `saldo`=$nuevoSaldo, `caja`='$NuevaCaja' WHERE ID_saldo= $ID_saldo";
     $result = $conexion->query($sql);
 
     if ($result) {
@@ -1097,6 +1104,8 @@ saldo.ID_saldo, saldo.saldo";
     } else {
         echo "Error en la consulta: " . $conexion->error;
     }
+
+
 } else if ($opcion == "56") {
 
     $fecha_actual = date("Y-m-d");
@@ -1297,6 +1306,121 @@ saldo.fecha_asignacion DESC";
     */
 } else if ($opcion == "58") {
 
+
+
+    $sql = "SELECT 
+    saldo.ID_saldo,
+    saldo.ID_usuario,
+    saldo.fecha_asignacion,
+    saldo.hora_asignacion,
+    saldo.status_saldo,
+    saldo.caja,
+    saldo.saldo AS saldo_inicial,
+    saldo.saldo - COALESCE(gastos.total_dinero_gastado, 0) + COALESCE(depositos.total_dinero_agregado, 0) AS nuevo_saldo,
+    COALESCE(gastos.total_dinero_gastado, 0) AS total_dinero_gastado,
+    COALESCE(depositos.total_dinero_agregado, 0) AS total_dinero_agregado,
+    COALESCE(gastos.gastos_Cajagastos, 0) AS gastos_Cajagastos,
+    COALESCE(gastos.gastos_CajaCapital, 0) AS gastos_CajaCapital,
+    COALESCE(depositos.depositos_Cajagastos, 0) AS depositos_Cajagastos,
+    COALESCE(depositos.depositos_CajaCapital, 0) AS depositos_CajaCapital
+FROM saldo
+LEFT JOIN (
+    SELECT
+        ID_saldo,
+        COALESCE(SUM(dinero_gastado), 0) AS total_dinero_gastado,
+        COALESCE(SUM(CASE WHEN tipo_caja = 'Gastos' THEN dinero_gastado END), 0) AS gastos_Cajagastos,
+        COALESCE(SUM(CASE WHEN tipo_caja = 'Capital' THEN dinero_gastado END), 0) AS gastos_CajaCapital
+    FROM gastos
+    GROUP BY ID_saldo
+) AS gastos ON saldo.ID_saldo = gastos.ID_saldo
+LEFT JOIN (
+    SELECT
+        ID_saldo,
+        COALESCE(SUM(dinero_agregado), 0) AS total_dinero_agregado,
+        COALESCE(SUM(CASE WHEN tipo_caja = 'Gastos' THEN dinero_agregado END), 0) AS depositos_Cajagastos,
+        COALESCE(SUM(CASE WHEN tipo_caja = 'Capital' THEN dinero_agregado END), 0) AS depositos_CajaCapital
+    FROM depositos
+    GROUP BY ID_saldo
+)  AS depositos ON saldo.ID_saldo = depositos.ID_saldo
+WHERE saldo.ID_usuario = $ID_usuario
+    AND saldo.fecha_asignacion BETWEEN '$fechaInicio' AND '$fechaFin' 
+ORDER BY saldo.ID_saldo DESC";
+
+$result = $conexion->query($sql);
+
+if ($result) {
+    // Verificar si se encontraron resultados en la consulta principal
+    if ($result->num_rows > 0) {
+        // El usuario y la contraseña son válidos
+        $response = array();
+        while ($row = $result->fetch_assoc()) {
+            $saldoInfo = array(
+                'ID_saldo' => $row['ID_saldo'],
+                'caja' => $row['caja'],
+                'saldo_inicial' => $row['saldo_inicial'],
+                'status_saldo' => $row['status_saldo'],
+                'fecha_asignacion' => $row['fecha_asignacion'],
+                'hora_asignacion' => $row['hora_asignacion'],
+                'nuevo_saldo' => $row['nuevo_saldo'],
+                'total_dinero_gastado' => $row['total_dinero_gastado'],
+                'total_dinero_agregado' => $row['total_dinero_agregado'],
+                'gastos_Cajagastos' => $row['gastos_Cajagastos'],
+                'gastos_CajaCapital' => $row['gastos_CajaCapital'],
+                'depositos_Cajagastos' => $row['depositos_Cajagastos'],
+                'depositos_CajaCapital' => $row['depositos_CajaCapital']
+            );
+
+            // Consulta secundaria para obtener detalles de gastos
+$sqlDetallesGastos="SELECT * FROM gastos LEFT OUTER JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad 
+LEFT OUTER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad WHERE ID_saldo ={$row['ID_saldo']}";
+/*
+
+            $sqlDetallesGastos = "SELECT * FROM gastos WHERE ID_saldo = {$row['ID_saldo']}    ";
+
+$sqlDetallesGastos="SELECT * FROM gastos LEFT OUTER JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad 
+LEFT OUTER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad WHERE ID_saldo ={$row['ID_saldo']}";
+*/
+            $resultDetallesGastos = $conexion->query($sqlDetallesGastos);
+
+            if ($resultDetallesGastos) {
+                $detallesGastos = array();
+                while ($rowDetallesGastos = $resultDetallesGastos->fetch_assoc()) {
+                    $detallesGastos[] = $rowDetallesGastos;
+                }
+
+                // Agregar detalles de gastos al array de saldoInfo
+                $saldoInfo['gastos'] = $detallesGastos;
+            }
+
+            // Consulta secundaria para obtener detalles de depósitos
+            $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = {$row['ID_saldo']}";
+            $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
+
+            if ($resultDetallesDepositos) {
+                $detallesDepositos = array();
+                while ($rowDetallesDepositos = $resultDetallesDepositos->fetch_assoc()) {
+                    $detallesDepositos[] = $rowDetallesDepositos;
+                }
+
+                // Agregar detalles de depósitos al array de saldoInfo
+                $saldoInfo['depositos'] = $detallesDepositos;
+            }
+
+            // Agregar el array de información de saldo al array de respuesta
+            $response[] = $saldoInfo;
+        }
+
+        echo json_encode($response);
+    } else {
+        // No se encontraron resultados
+        echo "No se encontraron resultados";
+    }
+} else {
+    // Error en la consulta SQL
+    echo "Error en la consulta: " . $conexion->error;
+}
+
+    /*
     $sql = "SELECT 
     saldo.ID_saldo,
     saldo.ID_usuario,
@@ -1660,7 +1784,9 @@ LIMIT 1";
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
-} else {
+} 
+
+else {
     echo "Opción no válida";
 }
 

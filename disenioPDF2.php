@@ -1,54 +1,23 @@
 <?php
 
 ob_start();
-
 require_once "conexion.php";
 
+$ID_usuario = $_POST['ID_usuario'];
+$listaSeleccion = $_POST['listaSeleccion'];
 
-$ID_usuario = $_GET['id'];
-$fechaInicio = $_GET['fechaInicio'];
-$fechaFin = $_GET['fechaFin'];
-/*
-$ID_usuario = 45;
-$fechaInicio = "2023-12-12";
-$fechaFin = "2023-12-16";
-*/
+$listaSeleccion = unserialize(urldecode($_POST['listaSeleccion']));
 
-
+// print_r($listaSeleccion);
 if ($conexion->connect_error) {
     die("Conexión fallida: " . $conexion->connect_error);
 }
 
+$resultadosSaldos = array();
 
-$sqlUsuario = "SELECT * FROM usuarios 
-WHERE ID_usuario= $ID_usuario";
-$resultUsuarios = $conexion->query($sqlUsuario);
-
-
-if ($resultUsuarios) {
-    // Verificar si se encontraron resultados en la consulta
-    if ($resultUsuarios->num_rows > 0) {
-        // El usuario y la contraseña son válidos
-        $responseUsuarios = array();
-        while ($row = $resultUsuarios->fetch_assoc()) {
-            $responseUsuarios[] = $row;
-        }
-        $datosUsuario =    json_encode($responseUsuarios);
-    } else {
-        // Las credenciales son incorrectas
-        echo "fallo";
-    }
-} else {
-    // Error en la consulta SQL
-    echo "Error en la consulta: " . $conexion->error;
-}
-
-
-
-if ((empty($fechaInicio) || empty($fechaFin))) {
-
-
-    $sql = "SELECT 
+// Recorrer el array y ejecutar las consultas
+foreach ($listaSeleccion as $elemento) {
+    $sqlSaldos = "SELECT 
     saldo.ID_saldo,
     saldo.ID_usuario,
     saldo.fecha_asignacion,
@@ -82,148 +51,66 @@ LEFT JOIN (
     FROM depositos
     GROUP BY ID_saldo
 ) AS depositos ON saldo.ID_saldo = depositos.ID_saldo
-WHERE saldo.ID_usuario = $ID_usuario
+WHERE saldo.ID_saldo = $elemento
 ORDER BY saldo.ID_saldo DESC";
 
+    $resultSaldos = $conexion->query($sqlSaldos);
 
-
-    /*
-    $sqlGastos = "SELECT 
-saldo.*,
-saldo.saldo AS saldo_inicial,
-COALESCE(SUM(CASE WHEN gastos.tipo = 'gasto' THEN gastos.dinero_gastado ELSE 0 END), 0) AS total_gastos,
-COALESCE(SUM(CASE WHEN gastos.tipo = 'deposito' THEN gastos.dinero_gastado ELSE 0 END), 0) AS total_depositos,
-saldo.saldo - COALESCE(SUM(CASE WHEN gastos.tipo = 'gasto' THEN gastos.dinero_gastado ELSE 0 END), 0) + COALESCE(SUM(CASE WHEN gastos.tipo = 'deposito' THEN gastos.dinero_gastado ELSE 0 END), 0) AS nuevo_saldo
-FROM 
-saldo
-LEFT JOIN 
-gastos ON gastos.ID_saldo = saldo.ID_saldo
-WHERE 
-saldo.ID_usuario = $ID_usuario
-GROUP BY 
-saldo.ID_usuario, saldo.ID_saldo, saldo.saldo
-ORDER BY 
-saldo.fecha_asignacion DESC";
-*/
-} else {
-
-
-
-    $sql = "SELECT 
-    saldo.ID_saldo,
-    saldo.ID_usuario,
-    saldo.fecha_asignacion,
-    saldo.hora_asignacion,
-    saldo.status_saldo,
-    saldo.caja,
-    saldo.saldo AS saldo_inicial,
-    saldo.saldo - COALESCE(gastos.total_dinero_gastado, 0) + COALESCE(depositos.total_dinero_agregado, 0) AS nuevo_saldo,
-    COALESCE(gastos.total_dinero_gastado, 0) AS total_dinero_gastado,
-    COALESCE(depositos.total_dinero_agregado, 0) AS total_dinero_agregado,
-    COALESCE(gastos.gastos_Cajagastos, 0) AS gastos_Cajagastos,
-    COALESCE(gastos.gastos_CajaCapital, 0) AS gastos_CajaCapital,
-    COALESCE(depositos.depositos_Cajagastos, 0) AS depositos_Cajagastos,
-    COALESCE(depositos.depositos_CajaCapital, 0) AS depositos_CajaCapital
-FROM saldo
-LEFT JOIN (
-    SELECT
-        ID_saldo,
-        COALESCE(SUM(dinero_gastado), 0) AS total_dinero_gastado,
-        COALESCE(SUM(CASE WHEN tipo_caja = 'Gastos' THEN dinero_gastado END), 0) AS gastos_Cajagastos,
-        COALESCE(SUM(CASE WHEN tipo_caja = 'Capital' THEN dinero_gastado END), 0) AS gastos_CajaCapital
-    FROM gastos
-    GROUP BY ID_saldo
-) AS gastos ON saldo.ID_saldo = gastos.ID_saldo
-LEFT JOIN (
-    SELECT
-        ID_saldo,
-        COALESCE(SUM(dinero_agregado), 0) AS total_dinero_agregado,
-        COALESCE(SUM(CASE WHEN tipo_caja = 'Gastos' THEN dinero_agregado END), 0) AS depositos_Cajagastos,
-        COALESCE(SUM(CASE WHEN tipo_caja = 'Capital' THEN dinero_agregado END), 0) AS depositos_CajaCapital
-    FROM depositos
-    GROUP BY ID_saldo
-)  AS depositos ON saldo.ID_saldo = depositos.ID_saldo
-WHERE saldo.ID_usuario = $ID_usuario
-    AND saldo.fecha_asignacion BETWEEN '$fechaInicio' AND '$fechaFin' 
-ORDER BY saldo.ID_saldo DESC";
+    if ($resultSaldos) {
+        // Obtener los datos del usuario y almacenarlos en el array de resultados
+        $datosSaldos = $resultSaldos->fetch_assoc();
+        $resultadosSaldos[] = $datosSaldos;
+    } else {
+        // Manejar errores si la consulta no fue exitosa
+        echo "Error en la consulta: " . $conexion->error;
+    }
 }
 
 
-$result = $conexion->query($sql);
+$sqlUsuario = "SELECT * FROM usuarios 
+WHERE ID_usuario= $ID_usuario";
+$resultUsuarios = $conexion->query($sqlUsuario);
 
-if ($result) {
-    // Verificar si se encontraron resultados en la consulta principal
-    if ($result->num_rows > 0) {
+
+if ($resultUsuarios) {
+    // Verificar si se encontraron resultados en la consulta
+    if ($resultUsuarios->num_rows > 0) {
         // El usuario y la contraseña son válidos
-        $response = array();
-        while ($row = $result->fetch_assoc()) {
-            $saldoInfo = array(
-                'ID_saldo' => $row['ID_saldo'],
-                'caja' => $row['caja'],
-                'saldo_inicial' => $row['saldo_inicial'],
-                'status_saldo' => $row['status_saldo'],
-                'fecha_asignacion' => $row['fecha_asignacion'],
-                'hora_asignacion' => $row['hora_asignacion'],
-                'nuevo_saldo' => $row['nuevo_saldo'],
-                'total_dinero_gastado' => $row['total_dinero_gastado'],
-                'total_dinero_agregado' => $row['total_dinero_agregado'],
-                'gastos_Cajagastos' => $row['gastos_Cajagastos'],
-                'gastos_CajaCapital' => $row['gastos_CajaCapital'],
-                'depositos_Cajagastos' => $row['depositos_Cajagastos'],
-                'depositos_CajaCapital' => $row['depositos_CajaCapital']
-            );
-
-            // Consulta secundaria para obtener detalles de gastos
-            $sqlDetallesGastos = "SELECT * FROM gastos LEFT OUTER JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad 
-LEFT OUTER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad WHERE ID_saldo ={$row['ID_saldo']}";
-
-            $resultDetallesGastos = $conexion->query($sqlDetallesGastos);
-
-            if ($resultDetallesGastos) {
-                $detallesGastos = array();
-                while ($rowDetallesGastos = $resultDetallesGastos->fetch_assoc()) {
-                    $detallesGastos[] = $rowDetallesGastos;
-                }
-
-                // Agregar detalles de gastos al array de saldoInfo
-                $saldoInfo['gastos'] = $detallesGastos;
-            }
-
-            // Consulta secundaria para obtener detalles de depósitos
-            $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = {$row['ID_saldo']}";
-            $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
-
-            if ($resultDetallesDepositos) {
-                $detallesDepositos = array();
-                while ($rowDetallesDepositos = $resultDetallesDepositos->fetch_assoc()) {
-                    $detallesDepositos[] = $rowDetallesDepositos;
-                }
-
-                // Agregar detalles de depósitos al array de saldoInfo
-                $saldoInfo['depositos'] = $detallesDepositos;
-            }
-
-            // Agregar el array de información de saldo al array de respuesta
-            $response[] = $saldoInfo;
+        $responseUsuarios = array();
+        while ($row = $resultUsuarios->fetch_assoc()) {
+            $responseUsuarios[] = $row;
         }
-
-        $datosParaMostrar = json_encode($response);
+        $datosUsuario =    json_encode($responseUsuarios);
     } else {
-        // No se encontraron resultados
-        echo "No se encontraron resultados";
+        // Las credenciales son incorrectas
+        echo "fallo";
     }
 } else {
     // Error en la consulta SQL
     echo "Error en la consulta: " . $conexion->error;
 }
 
-if (!empty($datosParaMostrar)) {
 
-    if (is_array($datosParaMostrar)) {
-        $datosParaMostrar = json_encode($datosParaMostrar);
+/*
+if ($resultUsuarios) {
+    // Verificar si se encontraron resultados en la consulta
+    if ($resultUsuarios->num_rows > 0) {
+        // El usuario y la contraseña son válidos
+        $responseUsuarios = array();
+        while ($row = $resultUsuarios->fetch_assoc()) {
+            $responseUsuarios[] = $row;
+        }
+        $datosUsuario =    json_encode($responseUsuarios);
+    } else {
+        // Las credenciales son incorrectas
+        echo "fallo";
     }
-    $desgloseDeGastos = json_decode($datosParaMostrar, true);
+} else {
+    // Error en la consulta SQL
+    echo "Error en la consulta: " . $conexion->error;
 }
+*/
+
 
 
 if (!empty($datosUsuario)) {
@@ -249,12 +136,11 @@ if (!empty($datosUsuario)) {
 
 
     <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacora/css/estilo.css" rel="stylesheet">
-    <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
-    <?php
-    /*
 
-    */
-    ?>
+
+    <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
+
+
 </head>
 
 <div class="contenedorImagen">
@@ -262,37 +148,36 @@ if (!empty($datosUsuario)) {
 
 
     <br><br>
-
     <div class="contenedor-tabla">
-        <H5 class="titulo"> INFORMACION DEL EMPLEADO </H5>
+        <h5 class="titulo">INFORMACION DEL EMPLEADO</h5>
         <table class="tabla_mitad">
             <tbody>
                 <?php
                 if (empty($datosMostrarUsuario)) {
                     echo "No se encontraron datos";
                 } else {
-                    foreach ($datosMostrarUsuario as $refacciones) {
+                    foreach ($datosMostrarUsuario as $datosUsuario) {
                 ?>
                         <tr>
-                            <td class=" fondogris     texto-izquierda">ID de usuario: </td>
-                            <td><?php echo  $refacciones['ID_usuario'] ?></td>
+                            <td class="fondogris texto-izquierda">ID de usuario: </td>
+                            <td><?php echo $datosUsuario['ID_usuario']; ?></td>
                         </tr>
 
                         <tr>
                             <td class="fondogris texto-izquierda">Nombre: </td>
-                            <td><?php echo  $refacciones['nombre'] ?></td>
+                            <td><?php echo $datosUsuario['nombre']; ?></td>
                         </tr>
                         <tr>
                             <td class="fondogris texto-izquierda">Correo:</td>
-                            <td><?php echo  $refacciones['correo'] ?></td>
+                            <td><?php echo $datosUsuario['correo']; ?></td>
                         </tr>
                         <tr>
                             <td class="fondogris texto-izquierda">Telefono: </td>
-                            <td><?php echo  $refacciones['telefono'] ?></td>
+                            <td><?php echo $datosUsuario['telefono']; ?></td>
                         </tr>
                         <tr>
                             <td class="fondogris texto-izquierda">Puesto:</td>
-                            <td><?php echo  $refacciones['permisos'] ?> </td>
+                            <td><?php echo $datosUsuario['permisos']; ?> </td>
                         </tr>
                 <?php
                     }
@@ -302,17 +187,37 @@ if (!empty($datosUsuario)) {
         </table>
     </div>
 
-</div>
 
+</div>
 
 
 <br>
 <?php
-if (empty($desgloseDeGastos)) {
-    echo "No se encontraron datos";
-} else {
-    foreach ($desgloseDeGastos as $gastos) {
-?>
+            if (empty($resultadosSaldos)) {
+                echo "No se encontraron datos";
+            } else {
+                foreach ($resultadosSaldos as $gastos) {
+
+                    $ID_saldo_actual = $gastos['ID_saldo']; // Obtén el ID_saldo actual
+
+                    // Consulta secundaria para obtener detalles de gastos
+                    $sqlDetallesGastos = "SELECT * FROM gastos 
+                                          LEFT OUTER JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad 
+                                          LEFT OUTER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad 
+                                          WHERE ID_saldo = $ID_saldo_actual";
+
+                    $resultDetallesGastos = $conexion->query($sqlDetallesGastos);
+
+                    if ($resultDetallesGastos) {
+                        $detallesGastos = array();
+                        while ($rowDetallesGastos = $resultDetallesGastos->fetch_assoc()) {
+                            $detallesGastos[] = $rowDetallesGastos;
+                        }
+                    } else {
+                        // Manejar errores si la consulta no fue exitosa
+                        echo "Error en la consulta de detalles de gastos: " . $conexion->error;
+                    }
+            ?>
 
         <div class="contenedor_gastos">
 
@@ -388,18 +293,16 @@ if (empty($desgloseDeGastos)) {
                         <td class="fondo_amarillo">Caja</td>
                     </tr>
                     <?php
-                    if (empty($gastos['gastos'])) {
-                        echo "No se encontraron datos";
-                    } else {
-                        foreach ($gastos['gastos'] as $desgloseGastos) {
-                    ?>
+                if (!empty($detallesGastos)) {
+                    foreach ($detallesGastos as $detalleGasto) {
+                        ?>
                             <tr>
-                                <td class="texto_rojo texto_centrado"> <?php echo " - " . $desgloseGastos['dinero_gastado'] . " $"; ?> </td>
-                                <td><?php echo  $desgloseGastos['fecha'] ?></td>
-                                <td><?php echo  $desgloseGastos['hora'] ?></td>
-                                <td><?php echo  $desgloseGastos['nombre_actividad'];    ?> </td>
-                                <td><?php echo  $desgloseGastos['descripcionActividad'] ?></td>
-                                <td><?php echo  $desgloseGastos['tipo_caja'] ?></td>
+                                <td class="texto_rojo texto_centrado"> <?php echo " - " . $detalleGasto['dinero_gastado'] . " $"; ?> </td>
+                                <td><?php echo  $detalleGasto['fecha'] ?></td>
+                                <td><?php echo  $detalleGasto['hora'] ?></td>
+                                <td><?php echo  $detalleGasto['nombre_actividad'];    ?> </td>
+                                <td><?php  echo $detalleGasto['descripcion_actividad']; ?></td>
+                                <td><?php echo  $detalleGasto['tipo_caja'] ?></td>
                             </tr>
 
                     <?php
@@ -419,13 +322,14 @@ if (empty($desgloseDeGastos)) {
 ?>
 
 
+
+
 </html>
 
 
 <?php
 
 $html = ob_get_clean();
-
 
 //echo $html;
 

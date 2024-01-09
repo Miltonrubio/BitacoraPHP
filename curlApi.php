@@ -593,11 +593,13 @@
                         <h5 class="card-title">opcion="55"</h5>
                         <h5 class="card-title">ID_saldo=1</h5>
                         <h5 class="card-title">nuevoSaldo=5500</h5>
+                        <h5 class="card-title">NuevaCaja=Capital/Gastos/Prueba</h5>
 
                         <form action="mostrar.php" method="POST" enctype="multipart/form-data">
                             <input class="form-control mb-2" type="text" name="opcion" value="55">
                             <input class="form-control mb-2" type="text" name="ID_saldo" value="1">
                             <input class="form-control mb-2" type="text" name="nuevoSaldo" value="5500">
+                            <input class="form-control mb-2" type="text" name="NuevaCaja" value="Capital">
                             <input class="btn btn-primary" type="submit" value="Consultar">
                         </form>
                     </div>
@@ -830,6 +832,34 @@
                 </div>
             </div>
         </div><br><br>
+
+
+
+    <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">GENERAR PDF DE SALDOS DE USUARIO POR SELECCION </h2>
+                        <h5 class="card-title">opcion="66"</h5>
+                        <h5 class="card-title">ID_usuario=45</h5>
+                        <h5 class="card-title">listaSeleccion=</h5>
+                        <?php
+                // Ejemplo de array a enviar
+                $listaSeleccion = array('3', '7', '8');
+                ?>
+                        <form action="./disenioPDF2.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="opcion" value="66">
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="45"> 
+                            <input type="text" name="listaSeleccion" value="<?php echo urlencode(serialize($listaSeleccion)); ?>">
+
+
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
 
     </div>
 
