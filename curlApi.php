@@ -929,30 +929,6 @@
         </div><br><br>
 
 
-
-        <div class="row col-md-12">
-            <div class="col-md-6">
-                <div class="card custom-card">
-                    <div class="card-body">
-                        <h2 class="card-title">Eliminar archivos de la actividad </h2>
-                        <h5 class="card-title">opcion="68"</h5>
-                        <h5 class="card-title">ID_archivo="1"</h5>
-
-                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
-
-                            <input class="form-control mb-2" type="text" name="opcion" value="68">
-                            <input class="form-control mb-2" type="text" name="ID_archivo" value="1">
-                            <input class="btn btn-primary" type="submit" value="Enviar">
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div><br><br>
-
-
-
-
-
         <div class="row col-md-12">
             <div class="col-md-6">
                 <div class="card custom-card">
@@ -974,6 +950,26 @@
             </div>
         </div><br><br>
 
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Consultar Ultimo saldo activo</h2>
+                        <h5 class="card-title">opcion="70"</h5>
+                        <h5 class="card-title">ID_usuario="45"</h5>
+
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+
+                            <input class="form-control mb-2" type="text" name="opcion" value="70">
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="45">
+                            <input class="btn btn-primary" type="submit" value="Enviar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
 
 
 

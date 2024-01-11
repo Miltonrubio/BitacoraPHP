@@ -1875,6 +1875,62 @@ VALUES ('$nombreUnico', '$fecha_actual', $ID_actividad, $ID_usuario,'Activo', 'A
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
+} else if ($opcion=="70"){
+
+    $sql="SELECT 
+    usuarios.*,
+    saldo.*,
+    (
+        saldo.saldo -
+        COALESCE((
+            SELECT SUM(dinero_gastado) 
+            FROM gastos 
+            WHERE ID_saldo = saldo.ID_saldo
+        ), 0) +
+        COALESCE((
+            SELECT SUM(dinero_agregado) 
+            FROM depositos 
+            WHERE ID_saldo = saldo.ID_saldo
+        ), 0)
+    ) AS saldo_restante
+FROM usuarios
+LEFT JOIN (
+    SELECT 
+        s1.* 
+    FROM saldo s1
+    JOIN (
+        SELECT 
+            MAX(ID_saldo) AS max_saldo,
+            ID_usuario
+        FROM saldo
+        GROUP BY ID_usuario
+    ) s2 ON s1.ID_saldo = s2.max_saldo
+) saldo ON usuarios.ID_usuario = saldo.ID_usuario
+WHERE usuarios.ID_usuario = $ID_usuario";
+
+
+
+
+$result = $conexion->query($sql);
+
+if ($result) {
+    // Verificar si se encontraron resultados en la consulta
+    if ($result->num_rows > 0) {
+        // Las actividades fueron encontradas
+        $response = array();
+        while ($row = $result->fetch_assoc()) {
+            $response[] = $row;
+        }
+        echo json_encode($response);
+    } else {
+        // No se encontraron actividades para el usuario
+        echo "No se encontraron actividades";
+    }
+} else {
+    // Error en la consulta SQL
+    echo "Error en la consulta: " . $conexion->error;
+}
+
 }
 
 
