@@ -143,9 +143,9 @@ if (!empty($datosUsuario)) {
 
     <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacora/css/estilo.css" rel="stylesheet">
 
-
-    <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
-
+<!--
+    <link href="http://<?php //echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
+-->
 
 </head>
 
