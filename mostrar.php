@@ -64,6 +64,12 @@ $fechaFin = isset($_POST["fechaFin"]) ? $_POST["fechaFin"] : "";
 $tipo_caja = isset($_POST["tipo_caja"]) ? $_POST["tipo_caja"] : "";
 
 
+$ID_archivo=isset($_POST["ID_archivo"]) ? $_POST["ID_archivo"] : "";
+
+
+$nuevoNombreArchivo=isset($_POST["nuevoNombreArchivo"]) ? $_POST["nuevoNombreArchivo"] : "";
+
+
 
 // Verificar la conexión a la base de datos
 if ($conexion->connect_error) {
@@ -386,7 +392,7 @@ LEFT JOIN ( SELECT ID_saldo, SUM(CASE WHEN tipo = 'gasto' THEN dinero_gastado EL
 */
 
 
-/*
+    /*
 $sql = "SELECT 
     usuarios.*,
     (SELECT 
@@ -409,7 +415,7 @@ $sql = "SELECT
 FROM usuarios";
 */
 
-/*
+    /*
     $sql = "SELECT u.*, s.ID_saldo, s.saldo, (s.saldo - COALESCE(g.gastos_gastos, 0) + COALESCE(g.gastos_depositos, 0)) AS saldo_restante 
 FROM usuarios u 
 LEFT JOIN (
@@ -762,7 +768,7 @@ else if ($opcion == "51") {
 }
 
 */ else if ($opcion == "52") {
-   
+
 
     $sql = "SELECT 
     s.ID_saldo,
@@ -901,68 +907,68 @@ WHERE saldo.ID_saldo = $ID_saldo
 ORDER BY saldo.ID_saldo DESC
 LIMIT 1";
 
-$result = $conexion->query($sql);
+    $result = $conexion->query($sql);
 
-if ($result) {
-    // Verificar si se encontraron resultados en la consulta principal
-    if ($result->num_rows > 0) {
-        // El usuario y la contraseña son válidos
-        $response = array();
-        while ($row = $result->fetch_assoc()) {
-            $response['ID_saldo'] = $row['ID_saldo'];
-            $response['caja'] = $row['caja'];
-            $response['saldo_inicial'] = $row['saldo_inicial'];
-            $response['fecha_asignacion'] = $row['fecha_asignacion'];
-            $response['hora_asignacion'] = $row['hora_asignacion'];
-            $response['nuevo_saldo'] = $row['nuevo_saldo'];
-            $response['total_dinero_gastado'] = $row['total_dinero_gastado'];
-            $response['total_dinero_agregado'] = $row['total_dinero_agregado'];
-            $response['gastos_Cajagastos'] = $row['gastos_Cajagastos'];
-            $response['gastos_CajaCapital'] = $row['gastos_CajaCapital'];
-            $response['depositos_Cajagastos'] = $row['depositos_Cajagastos'];
-            $response['depositos_CajaCapital'] = $row['depositos_CajaCapital'];
+    if ($result) {
+        // Verificar si se encontraron resultados en la consulta principal
+        if ($result->num_rows > 0) {
+            // El usuario y la contraseña son válidos
+            $response = array();
+            while ($row = $result->fetch_assoc()) {
+                $response['ID_saldo'] = $row['ID_saldo'];
+                $response['caja'] = $row['caja'];
+                $response['saldo_inicial'] = $row['saldo_inicial'];
+                $response['fecha_asignacion'] = $row['fecha_asignacion'];
+                $response['hora_asignacion'] = $row['hora_asignacion'];
+                $response['nuevo_saldo'] = $row['nuevo_saldo'];
+                $response['total_dinero_gastado'] = $row['total_dinero_gastado'];
+                $response['total_dinero_agregado'] = $row['total_dinero_agregado'];
+                $response['gastos_Cajagastos'] = $row['gastos_Cajagastos'];
+                $response['gastos_CajaCapital'] = $row['gastos_CajaCapital'];
+                $response['depositos_Cajagastos'] = $row['depositos_Cajagastos'];
+                $response['depositos_CajaCapital'] = $row['depositos_CajaCapital'];
 
-            // Consulta secundaria para obtener detalles de gastos
-            $sqlDetallesGastos = "SELECT * FROM gastos WHERE ID_saldo = {$row['ID_saldo']}";
-            $resultDetallesGastos = $conexion->query($sqlDetallesGastos);
+                // Consulta secundaria para obtener detalles de gastos
+                $sqlDetallesGastos = "SELECT * FROM gastos WHERE ID_saldo = {$row['ID_saldo']}";
+                $resultDetallesGastos = $conexion->query($sqlDetallesGastos);
 
-            if ($resultDetallesGastos) {
-                $detallesGastos = array();
-                while ($rowDetallesGastos = $resultDetallesGastos->fetch_assoc()) {
-                    $detallesGastos[] = $rowDetallesGastos;
+                if ($resultDetallesGastos) {
+                    $detallesGastos = array();
+                    while ($rowDetallesGastos = $resultDetallesGastos->fetch_assoc()) {
+                        $detallesGastos[] = $rowDetallesGastos;
+                    }
+
+                    // Agregar detalles de gastos al array de respuesta
+                    $response['gastos'] = $detallesGastos;
                 }
 
-                // Agregar detalles de gastos al array de respuesta
-                $response['gastos'] = $detallesGastos;
-            }
+                // Consulta secundaria para obtener detalles de depósitos
+                $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = {$row['ID_saldo']}";
+                $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
 
-            // Consulta secundaria para obtener detalles de depósitos
-            $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = {$row['ID_saldo']}";
-            $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
+                if ($resultDetallesDepositos) {
+                    $detallesDepositos = array();
+                    while ($rowDetallesDepositos = $resultDetallesDepositos->fetch_assoc()) {
+                        $detallesDepositos[] = $rowDetallesDepositos;
+                    }
 
-            if ($resultDetallesDepositos) {
-                $detallesDepositos = array();
-                while ($rowDetallesDepositos = $resultDetallesDepositos->fetch_assoc()) {
-                    $detallesDepositos[] = $rowDetallesDepositos;
+                    // Agregar detalles de depósitos al array de respuesta
+                    $response['depositos'] = $detallesDepositos;
                 }
-
-                // Agregar detalles de depósitos al array de respuesta
-                $response['depositos'] = $detallesDepositos;
             }
+
+            echo json_encode($response);
+        } else {
+            // No se encontraron resultados
+            echo "No se encontraron resultados";
         }
-
-        echo json_encode($response);
     } else {
-        // No se encontraron resultados
-        echo "No se encontraron resultados";
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
     }
-} else {
-    // Error en la consulta SQL
-    echo "Error en la consulta: " . $conexion->error;
-}
 
 
-/*
+    /*
     $sql = "SELECT 
     saldo.*,
     saldo.saldo AS saldo_inicial,
@@ -1104,8 +1110,6 @@ saldo.ID_saldo, saldo.saldo";
     } else {
         echo "Error en la consulta: " . $conexion->error;
     }
-
-
 } else if ($opcion == "56") {
 
     $fecha_actual = date("Y-m-d");
@@ -1159,81 +1163,81 @@ LEFT JOIN (
 WHERE saldo.ID_usuario = $ID_usuario
 ORDER BY saldo.ID_saldo DESC";
 
-$result = $conexion->query($sql);
+    $result = $conexion->query($sql);
 
-if ($result) {
-    // Verificar si se encontraron resultados en la consulta principal
-    if ($result->num_rows > 0) {
-        // El usuario y la contraseña son válidos
-        $response = array();
-        while ($row = $result->fetch_assoc()) {
-            $saldoInfo = array(
-                'ID_saldo' => $row['ID_saldo'],
-                'caja' => $row['caja'],
-                'saldo_inicial' => $row['saldo_inicial'],
-                'status_saldo' => $row['status_saldo'],
-                'fecha_asignacion' => $row['fecha_asignacion'],
-                'hora_asignacion' => $row['hora_asignacion'],
-                'nuevo_saldo' => $row['nuevo_saldo'],
-                'total_dinero_gastado' => $row['total_dinero_gastado'],
-                'total_dinero_agregado' => $row['total_dinero_agregado'],
-                'gastos_Cajagastos' => $row['gastos_Cajagastos'],
-                'gastos_CajaCapital' => $row['gastos_CajaCapital'],
-                'depositos_Cajagastos' => $row['depositos_Cajagastos'],
-                'depositos_CajaCapital' => $row['depositos_CajaCapital']
-            );
+    if ($result) {
+        // Verificar si se encontraron resultados en la consulta principal
+        if ($result->num_rows > 0) {
+            // El usuario y la contraseña son válidos
+            $response = array();
+            while ($row = $result->fetch_assoc()) {
+                $saldoInfo = array(
+                    'ID_saldo' => $row['ID_saldo'],
+                    'caja' => $row['caja'],
+                    'saldo_inicial' => $row['saldo_inicial'],
+                    'status_saldo' => $row['status_saldo'],
+                    'fecha_asignacion' => $row['fecha_asignacion'],
+                    'hora_asignacion' => $row['hora_asignacion'],
+                    'nuevo_saldo' => $row['nuevo_saldo'],
+                    'total_dinero_gastado' => $row['total_dinero_gastado'],
+                    'total_dinero_agregado' => $row['total_dinero_agregado'],
+                    'gastos_Cajagastos' => $row['gastos_Cajagastos'],
+                    'gastos_CajaCapital' => $row['gastos_CajaCapital'],
+                    'depositos_Cajagastos' => $row['depositos_Cajagastos'],
+                    'depositos_CajaCapital' => $row['depositos_CajaCapital']
+                );
 
-            // Consulta secundaria para obtener detalles de gastos
-$sqlDetallesGastos="SELECT * FROM gastos LEFT OUTER JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad 
+                // Consulta secundaria para obtener detalles de gastos
+                $sqlDetallesGastos = "SELECT * FROM gastos LEFT OUTER JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad 
 LEFT OUTER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad WHERE ID_saldo ={$row['ID_saldo']}";
-/*
+                /*
 
             $sqlDetallesGastos = "SELECT * FROM gastos WHERE ID_saldo = {$row['ID_saldo']}    ";
 
 $sqlDetallesGastos="SELECT * FROM gastos LEFT OUTER JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad 
 LEFT OUTER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad WHERE ID_saldo ={$row['ID_saldo']}";
 */
-            $resultDetallesGastos = $conexion->query($sqlDetallesGastos);
+                $resultDetallesGastos = $conexion->query($sqlDetallesGastos);
 
-            if ($resultDetallesGastos) {
-                $detallesGastos = array();
-                while ($rowDetallesGastos = $resultDetallesGastos->fetch_assoc()) {
-                    $detallesGastos[] = $rowDetallesGastos;
+                if ($resultDetallesGastos) {
+                    $detallesGastos = array();
+                    while ($rowDetallesGastos = $resultDetallesGastos->fetch_assoc()) {
+                        $detallesGastos[] = $rowDetallesGastos;
+                    }
+
+                    // Agregar detalles de gastos al array de saldoInfo
+                    $saldoInfo['gastos'] = $detallesGastos;
                 }
 
-                // Agregar detalles de gastos al array de saldoInfo
-                $saldoInfo['gastos'] = $detallesGastos;
-            }
+                // Consulta secundaria para obtener detalles de depósitos
+                $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = {$row['ID_saldo']}";
+                $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
 
-            // Consulta secundaria para obtener detalles de depósitos
-            $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = {$row['ID_saldo']}";
-            $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
+                if ($resultDetallesDepositos) {
+                    $detallesDepositos = array();
+                    while ($rowDetallesDepositos = $resultDetallesDepositos->fetch_assoc()) {
+                        $detallesDepositos[] = $rowDetallesDepositos;
+                    }
 
-            if ($resultDetallesDepositos) {
-                $detallesDepositos = array();
-                while ($rowDetallesDepositos = $resultDetallesDepositos->fetch_assoc()) {
-                    $detallesDepositos[] = $rowDetallesDepositos;
+                    // Agregar detalles de depósitos al array de saldoInfo
+                    $saldoInfo['depositos'] = $detallesDepositos;
                 }
 
-                // Agregar detalles de depósitos al array de saldoInfo
-                $saldoInfo['depositos'] = $detallesDepositos;
+                // Agregar el array de información de saldo al array de respuesta
+                $response[] = $saldoInfo;
             }
 
-            // Agregar el array de información de saldo al array de respuesta
-            $response[] = $saldoInfo;
+            echo json_encode($response);
+        } else {
+            // No se encontraron resultados
+            echo "No se encontraron resultados";
         }
-
-        echo json_encode($response);
     } else {
-        // No se encontraron resultados
-        echo "No se encontraron resultados";
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
     }
-} else {
-    // Error en la consulta SQL
-    echo "Error en la consulta: " . $conexion->error;
-}
 
-/*
+    /*
     $sql = "SELECT 
 saldo.*,
 saldo.saldo AS saldo_inicial,
@@ -1346,79 +1350,79 @@ WHERE saldo.ID_usuario = $ID_usuario
     AND saldo.fecha_asignacion BETWEEN '$fechaInicio' AND '$fechaFin' 
 ORDER BY saldo.ID_saldo DESC";
 
-$result = $conexion->query($sql);
+    $result = $conexion->query($sql);
 
-if ($result) {
-    // Verificar si se encontraron resultados en la consulta principal
-    if ($result->num_rows > 0) {
-        // El usuario y la contraseña son válidos
-        $response = array();
-        while ($row = $result->fetch_assoc()) {
-            $saldoInfo = array(
-                'ID_saldo' => $row['ID_saldo'],
-                'caja' => $row['caja'],
-                'saldo_inicial' => $row['saldo_inicial'],
-                'status_saldo' => $row['status_saldo'],
-                'fecha_asignacion' => $row['fecha_asignacion'],
-                'hora_asignacion' => $row['hora_asignacion'],
-                'nuevo_saldo' => $row['nuevo_saldo'],
-                'total_dinero_gastado' => $row['total_dinero_gastado'],
-                'total_dinero_agregado' => $row['total_dinero_agregado'],
-                'gastos_Cajagastos' => $row['gastos_Cajagastos'],
-                'gastos_CajaCapital' => $row['gastos_CajaCapital'],
-                'depositos_Cajagastos' => $row['depositos_Cajagastos'],
-                'depositos_CajaCapital' => $row['depositos_CajaCapital']
-            );
+    if ($result) {
+        // Verificar si se encontraron resultados en la consulta principal
+        if ($result->num_rows > 0) {
+            // El usuario y la contraseña son válidos
+            $response = array();
+            while ($row = $result->fetch_assoc()) {
+                $saldoInfo = array(
+                    'ID_saldo' => $row['ID_saldo'],
+                    'caja' => $row['caja'],
+                    'saldo_inicial' => $row['saldo_inicial'],
+                    'status_saldo' => $row['status_saldo'],
+                    'fecha_asignacion' => $row['fecha_asignacion'],
+                    'hora_asignacion' => $row['hora_asignacion'],
+                    'nuevo_saldo' => $row['nuevo_saldo'],
+                    'total_dinero_gastado' => $row['total_dinero_gastado'],
+                    'total_dinero_agregado' => $row['total_dinero_agregado'],
+                    'gastos_Cajagastos' => $row['gastos_Cajagastos'],
+                    'gastos_CajaCapital' => $row['gastos_CajaCapital'],
+                    'depositos_Cajagastos' => $row['depositos_Cajagastos'],
+                    'depositos_CajaCapital' => $row['depositos_CajaCapital']
+                );
 
-            // Consulta secundaria para obtener detalles de gastos
-$sqlDetallesGastos="SELECT * FROM gastos LEFT OUTER JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad 
+                // Consulta secundaria para obtener detalles de gastos
+                $sqlDetallesGastos = "SELECT * FROM gastos LEFT OUTER JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad 
 LEFT OUTER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad WHERE ID_saldo ={$row['ID_saldo']}";
-/*
+                /*
 
             $sqlDetallesGastos = "SELECT * FROM gastos WHERE ID_saldo = {$row['ID_saldo']}    ";
 
 $sqlDetallesGastos="SELECT * FROM gastos LEFT OUTER JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad 
 LEFT OUTER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad WHERE ID_saldo ={$row['ID_saldo']}";
 */
-            $resultDetallesGastos = $conexion->query($sqlDetallesGastos);
+                $resultDetallesGastos = $conexion->query($sqlDetallesGastos);
 
-            if ($resultDetallesGastos) {
-                $detallesGastos = array();
-                while ($rowDetallesGastos = $resultDetallesGastos->fetch_assoc()) {
-                    $detallesGastos[] = $rowDetallesGastos;
+                if ($resultDetallesGastos) {
+                    $detallesGastos = array();
+                    while ($rowDetallesGastos = $resultDetallesGastos->fetch_assoc()) {
+                        $detallesGastos[] = $rowDetallesGastos;
+                    }
+
+                    // Agregar detalles de gastos al array de saldoInfo
+                    $saldoInfo['gastos'] = $detallesGastos;
                 }
 
-                // Agregar detalles de gastos al array de saldoInfo
-                $saldoInfo['gastos'] = $detallesGastos;
-            }
+                // Consulta secundaria para obtener detalles de depósitos
+                $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = {$row['ID_saldo']}";
+                $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
 
-            // Consulta secundaria para obtener detalles de depósitos
-            $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = {$row['ID_saldo']}";
-            $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
+                if ($resultDetallesDepositos) {
+                    $detallesDepositos = array();
+                    while ($rowDetallesDepositos = $resultDetallesDepositos->fetch_assoc()) {
+                        $detallesDepositos[] = $rowDetallesDepositos;
+                    }
 
-            if ($resultDetallesDepositos) {
-                $detallesDepositos = array();
-                while ($rowDetallesDepositos = $resultDetallesDepositos->fetch_assoc()) {
-                    $detallesDepositos[] = $rowDetallesDepositos;
+                    // Agregar detalles de depósitos al array de saldoInfo
+                    $saldoInfo['depositos'] = $detallesDepositos;
                 }
 
-                // Agregar detalles de depósitos al array de saldoInfo
-                $saldoInfo['depositos'] = $detallesDepositos;
+                // Agregar el array de información de saldo al array de respuesta
+                $response[] = $saldoInfo;
             }
 
-            // Agregar el array de información de saldo al array de respuesta
-            $response[] = $saldoInfo;
+            echo json_encode($response);
+        } else {
+            // No se encontraron resultados
+            echo "No se encontraron resultados";
         }
-
-        echo json_encode($response);
     } else {
-        // No se encontraron resultados
-        echo "No se encontraron resultados";
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
     }
-} else {
-    // Error en la consulta SQL
-    echo "Error en la consulta: " . $conexion->error;
-}
 
     /*
     $sql = "SELECT 
@@ -1543,7 +1547,7 @@ ORDER BY saldo.fecha_asignacion DESC";
 
 
 
-/*
+    /*
 
     $sql = "SELECT 
 saldo.*,
@@ -1743,7 +1747,7 @@ WHERE saldo.ID_usuario = $ID_usuario
 ORDER BY saldo.ID_saldo DESC
 LIMIT 1";
 
-/*
+    /*
     $sql = "SELECT 
     saldo.ID_saldo,
     saldo.ID_usuario,
@@ -1784,11 +1788,102 @@ LIMIT 1";
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
-} 
+} else if ($opcion == "66") {
+
+    $fecha_actual = date("Y-m-d");
+    // Verificar si se ha enviado un archivo
+    if ($_FILES['archivo']['error'] === UPLOAD_ERR_OK) {
+        // Obtener información del archivo
+        $nombreArchivoOriginal = $_FILES['archivo']['name'];
+        $tipoArchivo = $_FILES['archivo']['type'];
+        $tamañoArchivo = $_FILES['archivo']['size'];
+        $rutaTemporal = $_FILES['archivo']['tmp_name'];
+
+        // Generar un nombre de archivo único
+        $nombreUnico = uniqid() . '_' . $nombreArchivoOriginal;
+
+        // Definir la ruta donde se guardará la imagen
+        $rutaDestino = 'archivos/' . $nombreUnico;
+
+        // Crear la carpeta 'fotos' si no existe
+        if (!file_exists('archivos')) {
+            mkdir('archivos', 0777, true);
+        }
+
+        // Mover la imagen de la ruta temporal a la ruta de destino con el nombre único
+        if (move_uploaded_file($rutaTemporal, $rutaDestino)) {
+
+
+            $sql = "INSERT INTO `archivos_actividades`(`nombre_archivo`, `fecha`, `ID_actividad`, `ID_usuario`, `estado`, `nombreVisible`) 
+VALUES ('$nombreUnico', '$fecha_actual', $ID_actividad, $ID_usuario,'Activo', 'Archivo')";
+
+            if ($conexion->query($sql) === TRUE) {
+                echo "El archivo se ha subido y los datos se han registrado correctamente en la base de datos.";
+            } else {
+                echo "Error al registrar la imagen en la base de datos: " . $conexion->error;
+            }
+        } else {
+            echo "Hubo un error al subir la imagen.";
+        }
+    } else {
+        echo "Error al cargar la imagen.";
+    }
+}else if($opcion=="67"){
+
+    // Opción 2: Obtener actividades del usuario
+    $sql = "SELECT * FROM `archivos_actividades` WHERE ID_actividad=$ID_actividad && estado='Activo'";
+
+    $result = $conexion->query($sql);
+
+    if ($result) {
+        // Verificar si se encontraron resultados en la consulta
+        if ($result->num_rows > 0) {
+            // Las actividades fueron encontradas
+            $response = array();
+            while ($row = $result->fetch_assoc()) {
+                $response[] = $row;
+            }
+            echo json_encode($response);
+        } else {
+            // No se encontraron actividades para el usuario
+            echo "No se encontraron evidencias";
+        }
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
+} else if ($opcion=="68"){
+
+    $sql = "UPDATE `archivos_actividades` SET `estado`='Inactivo' WHERE ID_archivo= $ID_archivo";
+    
+    
+    $result = $conexion->query($sql);
+
+    if ($result) {
+        echo "Exito";
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
+} else if ($opcion=="69"){
+    $sql = "UPDATE `archivos_actividades` SET `nombreVisible`='$nuevoNombreArchivo' WHERE ID_archivo= $ID_archivo";
+    $result = $conexion->query($sql);
+
+    if ($result) {
+        echo "Exito";
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
+}
+
 
 else {
     echo "Opción no válida";
 }
+
+
+
 
 
 

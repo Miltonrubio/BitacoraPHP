@@ -4,9 +4,15 @@ ob_start();
 require_once "conexion.php";
 
 $ID_usuario = $_POST['ID_usuario'];
-$listaSeleccion = $_POST['listaSeleccion'];
+$listaSeleccionEncoded = $_POST['listaSeleccion'];
 
-$listaSeleccion = unserialize(urldecode($_POST['listaSeleccion']));
+$listaSeleccion = json_decode($listaSeleccionEncoded, true);
+
+//$listaSeleccion = unserialize(urldecode($_POST['listaSeleccion']));
+
+
+//$listaSeleccion = unserialize(base64_decode($listaSeleccionEncoded));
+
 
 // print_r($listaSeleccion);
 if ($conexion->connect_error) {
@@ -193,31 +199,48 @@ if (!empty($datosUsuario)) {
 
 <br>
 <?php
-            if (empty($resultadosSaldos)) {
-                echo "No se encontraron datos";
-            } else {
-                foreach ($resultadosSaldos as $gastos) {
+if (empty($resultadosSaldos)) {
+    echo "No se encontraron datos";
+} else {
+    foreach ($resultadosSaldos as $gastos) {
 
-                    $ID_saldo_actual = $gastos['ID_saldo']; // Obtén el ID_saldo actual
+        $ID_saldo_actual = $gastos['ID_saldo']; // Obtén el ID_saldo actual
 
-                    // Consulta secundaria para obtener detalles de gastos
-                    $sqlDetallesGastos = "SELECT * FROM gastos 
+        // Consulta secundaria para obtener detalles de gastos
+        $sqlDetallesGastos = "SELECT * FROM gastos 
                                           LEFT OUTER JOIN actividades ON gastos.ID_actividad = actividades.ID_actividad 
                                           LEFT OUTER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad 
                                           WHERE ID_saldo = $ID_saldo_actual";
 
-                    $resultDetallesGastos = $conexion->query($sqlDetallesGastos);
+        $resultDetallesGastos = $conexion->query($sqlDetallesGastos);
 
-                    if ($resultDetallesGastos) {
-                        $detallesGastos = array();
-                        while ($rowDetallesGastos = $resultDetallesGastos->fetch_assoc()) {
-                            $detallesGastos[] = $rowDetallesGastos;
-                        }
-                    } else {
-                        // Manejar errores si la consulta no fue exitosa
-                        echo "Error en la consulta de detalles de gastos: " . $conexion->error;
-                    }
-            ?>
+        if ($resultDetallesGastos) {
+            $detallesGastos = array();
+            while ($rowDetallesGastos = $resultDetallesGastos->fetch_assoc()) {
+                $detallesGastos[] = $rowDetallesGastos;
+            }
+        } else {
+            // Manejar errores si la consulta no fue exitosa
+            echo "Error en la consulta de detalles de gastos: " . $conexion->error;
+        }
+
+
+        $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = $ID_saldo_actual";
+
+        $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
+
+        if ($resultDetallesDepositos) {
+            $detallesDepositos = array();
+            while ($rowDetallesDepositos = $resultDetallesDepositos->fetch_assoc()) {
+                $detallesDepositos[] = $rowDetallesDepositos;
+            }
+        } else {
+            // Manejar errores si la consulta no fue exitosa
+            echo "Error en la consulta de detalles de depósitos: " . $conexion->error;
+        }
+
+
+?>
 
         <div class="contenedor_gastos">
 
@@ -226,12 +249,12 @@ if (!empty($datosUsuario)) {
             <table class="tabla_mitad">
                 <tbody>
                     <tr>
-                        <td class="fondogris texto_centrado">Saldo asignado</td>
-                        <td class="fondogris texto_centrado">Saldo gastado</td>
-                        <td class="fondogris texto_centrado">Saldo restante</td>
-                        <td class="fondogris texto_centrado">Saldo depositado</td>
-                        <td class="fondogris texto_centrado">Fecha de asignacion</td>
-                        <td class="fondogris texto_centrado">Hora de asignacion</td>
+                        <td class="fondo_amarillo texto_centrado">Saldo asignado</td>
+                        <td class="fondo_amarillo texto_centrado">Saldo gastado</td>
+                        <td class="fondo_amarillo texto_centrado">Saldo restante</td>
+                        <td class="fondo_amarillo texto_centrado">Saldo depositado</td>
+                        <td class="fondo_amarillo texto_centrado">Fecha de asignacion</td>
+                        <td class="fondo_amarillo texto_centrado">Hora de asignacion</td>
                     </tr>
 
                     <tr>
@@ -247,25 +270,25 @@ if (!empty($datosUsuario)) {
             </table>
 
             <?php
-            if (empty($gastos['depositos'])) {
-            } else {
+
+
+            if (!empty($detallesDepositos)) {
 
             ?>
                 <H5 class="texto_centrado"> SALDOS AGREGADOS </H5>
                 <table class="tabla_mitad">
                     <tbody>
                         <tr>
-                            <td class="fondo_amarillo texto_centrado">Saldo agregado</td>
-                            <td class="fondo_amarillo">Fecha</td>
-                            <td class="fondo_amarillo">Hora</td>
-                            <td class="fondo_amarillo">Caja</td>
+                            <td class="fondogris texto_centrado">Saldo agregado</td>
+                            <td class="fondogris">Fecha</td>
+                            <td class="fondogris">Hora</td>
+                            <td class="fondogris">Caja</td>
                         </tr>
 
-
                         <?php
-                        foreach ($gastos['depositos'] as $desgloseDepositos) {
+                        foreach ($detallesDepositos as $desgloseDepositos) {
                         ?>
-
+  <tr>
                             <td class="texto_verde texto_centrado"><?php echo " + " . $desgloseDepositos['dinero_agregado'] . " $" ?></td>
                             <td><?php echo  $desgloseDepositos['fecha'] ?></td>
                             <td><?php echo  $desgloseDepositos['hora'] ?></td>
@@ -285,23 +308,23 @@ if (!empty($datosUsuario)) {
             <table class="tabla_mitad">
                 <tbody>
                     <tr>
-                        <td class="fondo_amarillo texto_centrado">Saldo</td>
-                        <td class="fondo_amarillo">Fecha</td>
-                        <td class="fondo_amarillo">Hora</td>
-                        <td class="fondo_amarillo">Tipo de actividad</td>
-                        <td class="fondo_amarillo">Descripcion</td>
-                        <td class="fondo_amarillo">Caja</td>
+                        <td class="fondogris texto_centrado">Saldo</td>
+                        <td class="fondogris">Fecha</td>
+                        <td class="fondogris">Hora</td>
+                        <td class="fondogris">Tipo de actividad</td>
+                        <td class="fondogris">Descripcion</td>
+                        <td class="fondogris">Caja</td>
                     </tr>
                     <?php
-                if (!empty($detallesGastos)) {
-                    foreach ($detallesGastos as $detalleGasto) {
-                        ?>
+                    if (!empty($detallesGastos)) {
+                        foreach ($detallesGastos as $detalleGasto) {
+                    ?>
                             <tr>
                                 <td class="texto_rojo texto_centrado"> <?php echo " - " . $detalleGasto['dinero_gastado'] . " $"; ?> </td>
                                 <td><?php echo  $detalleGasto['fecha'] ?></td>
                                 <td><?php echo  $detalleGasto['hora'] ?></td>
                                 <td><?php echo  $detalleGasto['nombre_actividad'];    ?> </td>
-                                <td><?php  echo $detalleGasto['descripcion_actividad']; ?></td>
+                                <td><?php echo $detalleGasto['descripcion_actividad']; ?></td>
                                 <td><?php echo  $detalleGasto['tipo_caja'] ?></td>
                             </tr>
 

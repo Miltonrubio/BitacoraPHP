@@ -501,7 +501,7 @@
             </div>
         </div><br><br>
 
-        
+
 
         <div class="row col-md-12">
             <div class="col-md-6">
@@ -526,7 +526,7 @@
             <div class="col-md-6">
                 <div class="card custom-card">
                     <div class="card-body">
-                        <h2 class="card-title">CONSULTAR SALDO  ACTUAL DE USUARIO</h2>
+                        <h2 class="card-title">CONSULTAR SALDO ACTUAL DE USUARIO</h2>
                         <h5 class="card-title">opcion="52"</h5>
                         <h5 class="card-title">ID_usuario="13"</h5>
 
@@ -660,8 +660,8 @@
                         <form action="mostrar.php" method="POST" enctype="multipart/form-data">
                             <input class="form-control mb-2" type="text" name="opcion" value="58">
                             <input class="form-control mb-2" type="text" name="ID_usuario" value="45">
-                            <input class="form-control mb-2" type="date" name="fechaInicio" >
-                            <input class="form-control mb-2" type="date" name="fechaFin" >
+                            <input class="form-control mb-2" type="date" name="fechaInicio">
+                            <input class="form-control mb-2" type="date" name="fechaFin">
                             <input class="btn btn-primary" type="submit" value="Consultar">
                         </form>
                     </div>
@@ -682,8 +682,8 @@
                         <form action="mostrar.php" method="POST" enctype="multipart/form-data">
                             <input class="form-control mb-2" type="text" name="opcion" value="59">
                             <input class="form-control mb-2" type="text" name="ID_usuario" value="45">
-                            <input class="form-control mb-2" type="date" name="fechaInicio" >
-                            <input class="form-control mb-2" type="date" name="fechaFin" >
+                            <input class="form-control mb-2" type="date" name="fechaInicio">
+                            <input class="form-control mb-2" type="date" name="fechaFin">
                             <input class="btn btn-primary" type="submit" value="Consultar">
                         </form>
                     </div>
@@ -760,7 +760,7 @@
         </div><br><br>
 
 
-        
+
 
 
 
@@ -833,9 +833,7 @@
             </div>
         </div><br><br>
 
-
-
-    <div class="row col-md-12">
+        <div class="row col-md-12">
             <div class="col-md-6">
                 <div class="card custom-card">
                     <div class="card-body">
@@ -844,15 +842,13 @@
                         <h5 class="card-title">ID_usuario=45</h5>
                         <h5 class="card-title">listaSeleccion=</h5>
                         <?php
-                // Ejemplo de array a enviar
-                $listaSeleccion = array('3', '7', '8');
-                ?>
+                        // Ejemplo de array a enviar
+                        $listaSeleccion = array('13', '8');
+                        ?>
                         <form action="./disenioPDF2.php" method="POST" enctype="multipart/form-data">
                             <input class="form-control mb-2" type="text" name="opcion" value="66">
-                            <input class="form-control mb-2" type="text" name="ID_usuario" value="45"> 
-                            <input type="text" name="listaSeleccion" value="<?php echo urlencode(serialize($listaSeleccion)); ?>">
-
-
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="45">
+                            <input type="text" name="listaSeleccion" value='<?php echo json_encode($listaSeleccion); ?>'>
                             <input class="btn btn-primary" type="submit" value="Consultar">
                         </form>
                     </div>
@@ -861,10 +857,128 @@
         </div><br><br>
 
 
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Mandar archivos de evidencia</h2>
+                        <h5 class="card-title">opcion="66"</h5>
+                        <h5 class="card-title">ID_actividad="27"</h5>
+                        <h5 class="card-title">ID_usuario="45"</h5>
+                        <h5 class="card-title">archivo="foto.png"</h5>
+
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+
+                            <input class="form-control mb-2" type="text" name="opcion" value="66">
+                            <input class="form-control mb-2" type="text" name="ID_actividad" value="27">
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="45">
+
+                            <label for="imagen">Seleccionar archivo:</label>
+                            <input class="form-control mb-2" type="file" id="archivo" name="archivo" required>
+                            <br>
+
+                            <input class="btn btn-primary" type="submit" value="Subir archivo y Datos">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Consultar archivos por actividad</h2>
+                        <h5 class="card-title">opcion="67"</h5>
+                        <h5 class="card-title">ID_actividad="27"</h5>
+
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+
+                            <input class="form-control mb-2" type="text" name="opcion" value="67">
+                            <input class="form-control mb-2" type="text" name="ID_actividad" value="27">
+
+                            <input class="btn btn-primary" type="submit" value="Enviar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Eliminar archivos de la actividad </h2>
+                        <h5 class="card-title">opcion="68"</h5>
+                        <h5 class="card-title">ID_archivo="1"</h5>
+
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+
+                            <input class="form-control mb-2" type="text" name="opcion" value="68">
+                            <input class="form-control mb-2" type="text" name="ID_archivo" value="1">
+                            <input class="btn btn-primary" type="submit" value="Enviar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Eliminar archivos de la actividad </h2>
+                        <h5 class="card-title">opcion="68"</h5>
+                        <h5 class="card-title">ID_archivo="1"</h5>
+
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+
+                            <input class="form-control mb-2" type="text" name="opcion" value="68">
+                            <input class="form-control mb-2" type="text" name="ID_archivo" value="1">
+                            <input class="btn btn-primary" type="submit" value="Enviar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Actualizar nombre del archivo </h2>
+                        <h5 class="card-title">opcion="69"</h5>
+                        <h5 class="card-title">nuevoNombreArchivo="PDF DE Gastos"</h5>
+                        <h5 class="card-title">ID_archivo="1"</h5>
+
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+
+                            <input class="form-control mb-2" type="text" name="opcion" value="69">
+                            <input class="form-control mb-2" type="text" name="ID_archivo" value="1">
+                            <input class="form-control mb-2" type="text" name="nuevoNombreArchivo" value="PDF DE Gastos">
+                            <input class="btn btn-primary" type="submit" value="Enviar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+
+
+
     </div>
-
-
-
 
 </body>
 
