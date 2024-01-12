@@ -144,6 +144,7 @@ if (!empty($datosUsuario)) {
     <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacora/css/estilo.css" rel="stylesheet">
 
 <!--
+    <link href="http://<?php // echo $_SERVER['HTTP_HOST'] ?>/BitacoraPHP/css/estilo.css" rel="stylesheet">
     <link href="http://<?php //echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
 -->
 
@@ -225,7 +226,13 @@ if (empty($resultadosSaldos)) {
         }
 
 
-        $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = $ID_saldo_actual";
+      //  $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = $ID_saldo_actual";
+
+      $sqlDetallesDepositos = "SELECT depositos.*,
+          usuarios.nombre AS nombre_admin_asig
+          FROM usuarios
+          JOIN depositos ON usuarios.ID_usuario = depositos.ID_admin_asig
+           WHERE ID_saldo =$ID_saldo_actual";
 
         $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
 
@@ -283,6 +290,7 @@ if (empty($resultadosSaldos)) {
                             <td class="fondogris">Fecha</td>
                             <td class="fondogris">Hora</td>
                             <td class="fondogris">Caja</td>
+                            <td class="fondogris">Persona que asigno</td>
                         </tr>
 
                         <?php
@@ -293,6 +301,7 @@ if (empty($resultadosSaldos)) {
                             <td><?php echo  $desgloseDepositos['fecha'] ?></td>
                             <td><?php echo  $desgloseDepositos['hora'] ?></td>
                             <td><?php echo  $desgloseDepositos['tipo_caja'] ?></td>
+                            <td><?php echo  $desgloseDepositos['nombre_admin_asig'] ?></td>
                             </tr>
 
                         <?php
@@ -324,7 +333,7 @@ if (empty($resultadosSaldos)) {
                                 <td><?php echo  $detalleGasto['fecha'] ?></td>
                                 <td><?php echo  $detalleGasto['hora'] ?></td>
                                 <td><?php echo  $detalleGasto['nombre_actividad'];    ?> </td>
-                                <td><?php echo $detalleGasto['descripcion_actividad']; ?></td>
+                                <td><?php echo $detalleGasto['descripcionActividad']; ?></td>
                                 <td><?php echo  $detalleGasto['tipo_caja'] ?></td>
                             </tr>
 

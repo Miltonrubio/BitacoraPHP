@@ -800,12 +800,15 @@
                         <h5 class="card-title">opcion="64"</h5>
                         <h5 class="card-title">ID_saldo=7</h5>
                         <h5 class="card-title">deposito=450</h5>
+                        <h5 class="card-title">ID_admin_asig=42</h5>
+                        
                         <h5 class="card-title">tipo_caja="gastos/capital/prueba"</h5>
 
                         <form action="mostrar.php" method="POST" enctype="multipart/form-data">
                             <input class="form-control mb-2" type="text" name="opcion" value="64">
                             <input class="form-control mb-2" type="text" name="ID_saldo" value="7">
                             <input class="form-control mb-2" type="text" name="deposito" value="450">
+                            <input class="form-control mb-2" type="text" name="ID_admin_asig" value="42">
                             <input class="form-control mb-2" type="text" name="tipo_caja" value="Gastos">
                             <input class="btn btn-primary" type="submit" value="Consultar">
                         </form>
