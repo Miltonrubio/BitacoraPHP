@@ -69,6 +69,8 @@ $ID_archivo=isset($_POST["ID_archivo"]) ? $_POST["ID_archivo"] : "";
 
 $nuevoNombreArchivo=isset($_POST["nuevoNombreArchivo"]) ? $_POST["nuevoNombreArchivo"] : "";
 
+$ID_admin_asig=isset($_POST["ID_admin_asig"]) ? $_POST["ID_admin_asig"] : "";
+
 
 
 // Verificar la conexión a la base de datos
@@ -1210,7 +1212,13 @@ LEFT OUTER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_a
                 }
 
                 // Consulta secundaria para obtener detalles de depósitos
-                $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = {$row['ID_saldo']}";
+                $sqlDetallesDepositos = "SELECT depositos.*,
+            usuarios.nombre AS nombre_admin_asig
+            FROM usuarios
+            JOIN depositos ON usuarios.ID_usuario = depositos.ID_admin_asig
+             WHERE ID_saldo ={$row['ID_saldo']}";
+
+                //"SELECT * FROM depositos WHERE ID_saldo = {$row['ID_saldo']}";
                 $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
 
                 if ($resultDetallesDepositos) {
@@ -1397,8 +1405,15 @@ LEFT OUTER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_a
                 }
 
                 // Consulta secundaria para obtener detalles de depósitos
-                $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = {$row['ID_saldo']}";
-                $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
+          //      $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = {$row['ID_saldo']}";
+            
+          $sqlDetallesDepositos = "SELECT depositos.*,
+          usuarios.nombre AS nombre_admin_asig
+          FROM usuarios
+          JOIN depositos ON usuarios.ID_usuario = depositos.ID_admin_asig
+           WHERE ID_saldo ={$row['ID_saldo']}";
+           
+          $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
 
                 if ($resultDetallesDepositos) {
                     $detallesDepositos = array();
@@ -1699,7 +1714,7 @@ saldo.fecha_asignacion DESC";
     $fecha_actual = date("Y-m-d");
     $hora_actual = date("H:i:s");
 
-    $sql = "INSERT INTO `depositos`(`dinero_agregado`, `fecha`, `hora`, `ID_saldo`, `tipo_caja`) VALUES ($deposito,'$fecha_actual','$hora_actual',$ID_saldo,'$tipo_caja')";
+    $sql = "INSERT INTO `depositos`(`dinero_agregado`, `fecha`, `hora`, `ID_saldo`, `tipo_caja`,`ID_admin_asig` ) VALUES ($deposito,'$fecha_actual','$hora_actual',$ID_saldo,'$tipo_caja', $ID_admin_asig)";
     $result = $conexion->query($sql);
 
     if ($result) {
