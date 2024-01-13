@@ -105,7 +105,17 @@ if ($opcion == "1") {
 } elseif ($opcion == "2") {
     // Opción 2: Obtener actividades del usuario
 
-    $sql = "SELECT * FROM actividades INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario WHERE actividades.ID_usuario = $ID_usuario ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fecha_inicio DESC";
+   // $sql = "SELECT * FROM actividades INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario WHERE actividades.ID_usuario = $ID_usuario ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fecha_inicio DESC";
+
+$sql="SELECT actividades.*,
+adminAsig.nombre as nombreQuienAsigno,
+usuarios.*
+FROM actividades 
+INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad 
+LEFT JOIN usuarios AS adminAsig ON actividades.ID_admin_asig = adminAsig.ID_usuario 
+INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario WHERE actividades.ID_usuario = $ID_usuario
+
+ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fecha_inicio DESC";
 
     $result = $conexion->query($sql);
 
@@ -1923,9 +1933,6 @@ LEFT JOIN (
 ) saldo ON usuarios.ID_usuario = saldo.ID_usuario
 WHERE usuarios.ID_usuario = $ID_usuario";
 
-
-
-
 $result = $conexion->query($sql);
 
 if ($result) {
@@ -1946,8 +1953,19 @@ if ($result) {
     echo "Error en la consulta: " . $conexion->error;
 }
 
-}
+}else if($opcion=="71")
+{
 
+    $fechaAsign= date("Y-m-d H:i:s"); // Resta una hora a la fecha actual
+    $sql = "INSERT INTO `actividades`(`ID_nombre_actividad`, `descripcionActividad`, `fecha_inicio`, `fecha_fin`, `estadoActividad`, `ID_usuario`,`fecha_asignacion`,`ID_admin_asig` ) VALUES ('$ID_nombre_actividad','$descripcionActividad',null,null,'Pendiente','$ID_usuario','$fechaAsign', $ID_admin_asig)";
+    $result = $conexion->query($sql);
+
+    if ($result) {
+        echo "Exito";
+    } else {
+        echo "Error en la consulta: " . $conexion->error;
+    }
+}
 
 else {
     echo "Opción no válida";

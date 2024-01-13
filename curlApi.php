@@ -975,6 +975,32 @@
         </div><br><br>
 
 
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Asignar Actividad a Usuario</h2>
+                        <form method="post" action="mostrar.php">
+                            <h5 class="card-title">opcion="71"</h5>
+                            <h5 class="card-title">ID_nombre_actividad="45"</h5>
+                            <h5 class="card-title">descripcionActividad="descripcion"</h5>
+                            <h5 class="card-title">ID_usuario="2"</h5>
+                            <h5 class="card-title">ID_usuario="ID_admin_asig"</h5>
+
+                            
+
+                            <input class="form-control mb-2" type="text" name="opcion" value="71">
+                            <input class="form-control mb-2" type="text" name="ID_nombre_actividad" value="45">
+                            <input class="form-control mb-2" type="text" name="descripcionActividad" value="Prueba de descripcionActividad">
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="13">
+                            <input class="form-control mb-2" type="text" name="ID_admin_asig" value="42">
+                            <input type="submit" class="btn btn-primary" value="Enviar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div> <br><br>
+
 
 
     </div>

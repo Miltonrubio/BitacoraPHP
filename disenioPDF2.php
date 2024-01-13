@@ -142,7 +142,6 @@ if (!empty($datosUsuario)) {
 
 
     <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacora/css/estilo.css" rel="stylesheet">
-
 <!--
     <link href="http://<?php // echo $_SERVER['HTTP_HOST'] ?>/BitacoraPHP/css/estilo.css" rel="stylesheet">
     <link href="http://<?php //echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
@@ -173,10 +172,6 @@ if (!empty($datosUsuario)) {
                         <tr>
                             <td class="fondogris texto-izquierda">Nombre: </td>
                             <td><?php echo $datosUsuario['nombre']; ?></td>
-                        </tr>
-                        <tr>
-                            <td class="fondogris texto-izquierda">Correo:</td>
-                            <td><?php echo $datosUsuario['correo']; ?></td>
                         </tr>
                         <tr>
                             <td class="fondogris texto-izquierda">Telefono: </td>
@@ -262,6 +257,7 @@ if (empty($resultadosSaldos)) {
                         <td class="fondo_amarillo texto_centrado">Saldo depositado</td>
                         <td class="fondo_amarillo texto_centrado">Fecha de asignacion</td>
                         <td class="fondo_amarillo texto_centrado">Hora de asignacion</td>
+                        <td class="fondo_amarillo texto_centrado">Caja</td>
                     </tr>
 
                     <tr>
@@ -271,6 +267,7 @@ if (empty($resultadosSaldos)) {
                         <td><?php echo  $gastos['total_dinero_agregado'] ?></td>
                         <td><?php echo  $gastos['fecha_asignacion'] ?></td>
                         <td><?php echo  $gastos['hora_asignacion'] ?></td>
+                        <td><?php echo  $gastos['caja'] ?></td>
 
                     </tr>
                 </tbody>
@@ -289,8 +286,8 @@ if (empty($resultadosSaldos)) {
                             <td class="fondogris texto_centrado">Saldo agregado</td>
                             <td class="fondogris">Fecha</td>
                             <td class="fondogris">Hora</td>
+                            <td class="fondogris">Persona que asignó</td>
                             <td class="fondogris">Caja</td>
-                            <td class="fondogris">Persona que asigno</td>
                         </tr>
 
                         <?php
@@ -300,8 +297,8 @@ if (empty($resultadosSaldos)) {
                             <td class="texto_verde texto_centrado"><?php echo " + " . $desgloseDepositos['dinero_agregado'] . " $" ?></td>
                             <td><?php echo  $desgloseDepositos['fecha'] ?></td>
                             <td><?php echo  $desgloseDepositos['hora'] ?></td>
-                            <td><?php echo  $desgloseDepositos['tipo_caja'] ?></td>
                             <td><?php echo  $desgloseDepositos['nombre_admin_asig'] ?></td>
+                            <td><?php echo  $desgloseDepositos['tipo_caja'] ?></td>
                             </tr>
 
                         <?php

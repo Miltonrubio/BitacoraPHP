@@ -168,10 +168,6 @@ if (!empty($datosUsuario)) {
                             <td><?php echo  $empleado['nombre'] ?></td>
                         </tr>
                         <tr>
-                            <td class="fondogris texto-izquierda">CORREO:</td>
-                            <td><?php echo  $empleado['correo'] ?></td>
-                        </tr>
-                        <tr>
                             <td class="fondogris texto-izquierda">TELEFONO: </td>
                             <td><?php echo  $empleado['telefono'] ?></td>
                         </tr>
