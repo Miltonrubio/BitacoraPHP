@@ -109,7 +109,8 @@ if ($opcion == "1") {
 
 $sql="SELECT actividades.*,
 adminAsig.nombre as nombreQuienAsigno,
-usuarios.*
+usuarios.*,
+nombre_actividades.*
 FROM actividades 
 INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad 
 LEFT JOIN usuarios AS adminAsig ON actividades.ID_admin_asig = adminAsig.ID_usuario 
