@@ -71,7 +71,7 @@ protected $PDFVersion;         // PDF version number
 *                               Public methods                                 *
 *******************************************************************************/
 
-function __construct($orientation='P', $unit='mm', $size='A4')
+function __construct($orientation='P', $unit='mm',  $size=array(80, 258))
 {
 	// Some checks
 	$this->_dochecks();
@@ -118,11 +118,11 @@ function __construct($orientation='P', $unit='mm', $size='A4')
 	if($unit=='pt')
 		$this->k = 1;
 	elseif($unit=='mm')
-		$this->k = 72/25.4;
+		$this->k = 80/25.4;
 	elseif($unit=='cm')
-		$this->k = 72/2.54;
+		$this->k = 80/2.54;
 	elseif($unit=='in')
-		$this->k = 72;
+		$this->k = 80;
 	else
 		$this->Error('Incorrect unit: '.$unit);
 	// Page sizes
@@ -171,6 +171,15 @@ function __construct($orientation='P', $unit='mm', $size='A4')
 
 function SetMargins($left, $top, $right=null)
 {
+    // Set left, top, and right margins
+    $this->lMargin = $left;
+    $this->tMargin = $top;
+    $this->rMargin = ($right === null) ? $left : $right;
+}
+
+/*
+function SetMargins($left, $top, $right=null)
+{
 	// Set left, top and right margins
 	$this->lMargin = $left;
 	$this->tMargin = $top;
@@ -178,6 +187,7 @@ function SetMargins($left, $top, $right=null)
 		$right = $left;
 	$this->rMargin = $right;
 }
+*/
 
 function SetLeftMargin($margin)
 {
@@ -897,9 +907,9 @@ function Image($file, $x=null, $y=null, $w=0, $h=0, $type='', $link='')
 		$h = -96;
 	}
 	if($w<0)
-		$w = -$info['w']*72/$w/$this->k;
+		$w = -$info['w']*80/$w/$this->k;
 	if($h<0)
-		$h = -$info['h']*72/$h/$this->k;
+		$h = -$info['h']*80/$h/$this->k;
 	if($w==0)
 		$w = $h*$info['w']/$info['h'];
 	if($h==0)

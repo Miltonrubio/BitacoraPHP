@@ -1769,7 +1769,7 @@ LEFT JOIN (
     FROM depositos
     GROUP BY ID_saldo
 ) AS depositos ON saldo.ID_saldo = depositos.ID_saldo
-WHERE saldo.ID_usuario = $ID_usuario
+WHERE saldo.ID_usuario = $ID_usuario AND saldo.status_saldo like 'activo'
 ORDER BY saldo.ID_saldo DESC
 LIMIT 1";
 
@@ -1966,8 +1966,45 @@ if ($result) {
     } else {
         echo "Error en la consulta: " . $conexion->error;
     }
-}
+}else if($opcion=="72"){
 
+    $sql="SELECT actividades.*,
+    adminAsig.nombre AS nombreQuienAsigno,
+    usuarios.*,
+    nombre_actividades.*
+FROM actividades 
+INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad 
+LEFT JOIN usuarios AS adminAsig ON actividades.ID_admin_asig = adminAsig.ID_usuario 
+INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario 
+WHERE actividades.ID_usuario = $ID_usuario
+AND (
+     actividades.fecha_inicio IS NULL
+     OR actividades.fecha_fin IS NULL
+     OR DATE(actividades.fecha_inicio) = CURDATE()
+     OR DATE(actividades.fecha_fin) = CURDATE()
+   )
+ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fecha_inicio DESC";
+
+    $result = $conexion->query($sql);
+
+    if ($result) {
+        // Verificar si se encontraron resultados en la consulta
+        if ($result->num_rows > 0) {
+            // Las actividades fueron encontradas
+            $response = array();
+            while ($row = $result->fetch_assoc()) {
+                $response[] = $row;
+            }
+            echo json_encode($response);
+        } else {
+            // No se encontraron actividades para el usuario
+            echo "No se encontraron actividades";
+        }
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
+}
 else {
     echo "Opción no válida";
 }

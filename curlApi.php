@@ -1002,6 +1002,48 @@
         </div> <br><br>
 
 
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Consultar Actividades por usuario solo de hoy</h2>
+                        <form method="post" action="mostrar.php">
+                            <h5 class="card-title">opcion="72"</h5>
+                            <h5 class="card-title">ID_usuario="45"</h5><br>
+                            <input class="form-control mb-2" type="text" name="opcion" value="72">
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="45">
+                            <input type="submit" class="btn btn-primary" value="Enviar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br><br>
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">GENERAR TICKET DE SALDOS DE USUARIO POR SELECCION </h2>
+                        <h5 class="card-title">ID_usuario=45 - Usuario mandadero </h5>
+                        <h5 class="card-title">ID_encargado=42 - Administrador que imprimio el ticket</h5>
+                        <h5 class="card-title">listaSeleccion=</h5>
+                        <?php
+                        // Ejemplo de array a enviar
+                        $listaSeleccion = array('13', '8');
+                        ?>
+                        <form action="ticket.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="45">
+                            <input class="form-control mb-2" type="text" name="ID_encargado" value="42">
+                            <input type="text" name="listaSeleccion" value='<?php echo json_encode($listaSeleccion); ?>'>
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
 
     </div>
 
