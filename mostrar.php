@@ -14,7 +14,6 @@ $foto_usuario = isset($_POST["foto_usuario"]) ? $_POST["foto_usuario"] : "";
 $telefono_usuario = isset($_POST["telefono"]) ? $_POST["telefono"] : "";
 
 
-
 $tipo_actividad = isset($_POST["tipo_actividad"]) ? $_POST["tipo_actividad"] : "";
 
 $nombreActividad = isset($_POST["nombreActividad"]) ? $_POST["nombreActividad"] : "";
@@ -64,12 +63,19 @@ $fechaFin = isset($_POST["fechaFin"]) ? $_POST["fechaFin"] : "";
 $tipo_caja = isset($_POST["tipo_caja"]) ? $_POST["tipo_caja"] : "";
 
 
-$ID_archivo=isset($_POST["ID_archivo"]) ? $_POST["ID_archivo"] : "";
+$ID_archivo = isset($_POST["ID_archivo"]) ? $_POST["ID_archivo"] : "";
 
 
-$nuevoNombreArchivo=isset($_POST["nuevoNombreArchivo"]) ? $_POST["nuevoNombreArchivo"] : "";
+$nuevoNombreArchivo = isset($_POST["nuevoNombreArchivo"]) ? $_POST["nuevoNombreArchivo"] : "";
 
-$ID_admin_asig=isset($_POST["ID_admin_asig"]) ? $_POST["ID_admin_asig"] : "";
+$ID_admin_asig = isset($_POST["ID_admin_asig"]) ? $_POST["ID_admin_asig"] : "";
+
+
+
+$nuevoSaldoAsignado = isset($_POST["nuevoSaldoAsignado"]) ? $_POST["nuevoSaldoAsignado"] : "";
+$nuevoTipoCaja = isset($_POST["nuevoTipoCaja"]) ? $_POST["nuevoTipoCaja"] : "";
+$ID_registro_saldo= isset($_POST["ID_registro_saldo"]) ? $_POST["ID_registro_saldo"] : "";
+$ID_admin_asig= isset($_POST["ID_admin_asig"]) ? $_POST["ID_admin_asig"] : "";
 
 
 
@@ -105,9 +111,9 @@ if ($opcion == "1") {
 } elseif ($opcion == "2") {
     // Opción 2: Obtener actividades del usuario
 
-   // $sql = "SELECT * FROM actividades INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario WHERE actividades.ID_usuario = $ID_usuario ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fecha_inicio DESC";
+    // $sql = "SELECT * FROM actividades INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario WHERE actividades.ID_usuario = $ID_usuario ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fecha_inicio DESC";
 
-$sql="SELECT actividades.*,
+    $sql = "SELECT actividades.*,
 adminAsig.nombre as nombreQuienAsigno,
 usuarios.*,
 nombre_actividades.*
@@ -1416,15 +1422,15 @@ LEFT OUTER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_a
                 }
 
                 // Consulta secundaria para obtener detalles de depósitos
-          //      $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = {$row['ID_saldo']}";
-            
-          $sqlDetallesDepositos = "SELECT depositos.*,
+                //      $sqlDetallesDepositos = "SELECT * FROM depositos WHERE ID_saldo = {$row['ID_saldo']}";
+
+                $sqlDetallesDepositos = "SELECT depositos.*,
           usuarios.nombre AS nombre_admin_asig
           FROM usuarios
           JOIN depositos ON usuarios.ID_usuario = depositos.ID_admin_asig
            WHERE ID_saldo ={$row['ID_saldo']}";
-           
-          $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
+
+                $resultDetallesDepositos = $conexion->query($sqlDetallesDepositos);
 
                 if ($resultDetallesDepositos) {
                     $detallesDepositos = array();
@@ -1854,7 +1860,7 @@ VALUES ('$nombreUnico', '$fecha_actual', $ID_actividad, $ID_usuario,'Activo', 'A
     } else {
         echo "Error al cargar la imagen.";
     }
-}else if($opcion=="67"){
+} else if ($opcion == "67") {
 
     // Opción 2: Obtener actividades del usuario
     $sql = "SELECT * FROM `archivos_actividades` WHERE ID_actividad=$ID_actividad && estado='Activo'";
@@ -1878,11 +1884,11 @@ VALUES ('$nombreUnico', '$fecha_actual', $ID_actividad, $ID_usuario,'Activo', 'A
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
-} else if ($opcion=="68"){
+} else if ($opcion == "68") {
 
     $sql = "UPDATE `archivos_actividades` SET `estado`='Inactivo' WHERE ID_archivo= $ID_archivo";
-    
-    
+
+
     $result = $conexion->query($sql);
 
     if ($result) {
@@ -1891,7 +1897,7 @@ VALUES ('$nombreUnico', '$fecha_actual', $ID_actividad, $ID_usuario,'Activo', 'A
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
-} else if ($opcion=="69"){
+} else if ($opcion == "69") {
     $sql = "UPDATE `archivos_actividades` SET `nombreVisible`='$nuevoNombreArchivo' WHERE ID_archivo= $ID_archivo";
     $result = $conexion->query($sql);
 
@@ -1901,9 +1907,9 @@ VALUES ('$nombreUnico', '$fecha_actual', $ID_actividad, $ID_usuario,'Activo', 'A
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
-} else if ($opcion=="70"){
+} else if ($opcion == "70") {
 
-    $sql="SELECT 
+    $sql = "SELECT 
     usuarios.*,
     saldo.*,
     (
@@ -1934,30 +1940,28 @@ LEFT JOIN (
 ) saldo ON usuarios.ID_usuario = saldo.ID_usuario
 WHERE usuarios.ID_usuario = $ID_usuario";
 
-$result = $conexion->query($sql);
+    $result = $conexion->query($sql);
 
-if ($result) {
-    // Verificar si se encontraron resultados en la consulta
-    if ($result->num_rows > 0) {
-        // Las actividades fueron encontradas
-        $response = array();
-        while ($row = $result->fetch_assoc()) {
-            $response[] = $row;
+    if ($result) {
+        // Verificar si se encontraron resultados en la consulta
+        if ($result->num_rows > 0) {
+            // Las actividades fueron encontradas
+            $response = array();
+            while ($row = $result->fetch_assoc()) {
+                $response[] = $row;
+            }
+            echo json_encode($response);
+        } else {
+            // No se encontraron actividades para el usuario
+            echo "No se encontraron actividades";
         }
-        echo json_encode($response);
     } else {
-        // No se encontraron actividades para el usuario
-        echo "No se encontraron actividades";
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
     }
-} else {
-    // Error en la consulta SQL
-    echo "Error en la consulta: " . $conexion->error;
-}
+} else if ($opcion == "71") {
 
-}else if($opcion=="71")
-{
-
-    $fechaAsign= date("Y-m-d H:i:s"); // Resta una hora a la fecha actual
+    $fechaAsign = date("Y-m-d H:i:s"); // Resta una hora a la fecha actual
     $sql = "INSERT INTO `actividades`(`ID_nombre_actividad`, `descripcionActividad`, `fecha_inicio`, `fecha_fin`, `estadoActividad`, `ID_usuario`,`fecha_asignacion`,`ID_admin_asig` ) VALUES ('$ID_nombre_actividad','$descripcionActividad',null,null,'Pendiente','$ID_usuario','$fechaAsign', $ID_admin_asig)";
     $result = $conexion->query($sql);
 
@@ -1966,9 +1970,9 @@ if ($result) {
     } else {
         echo "Error en la consulta: " . $conexion->error;
     }
-}else if($opcion=="72"){
+} else if ($opcion == "72") {
 
-    $sql="SELECT actividades.*,
+    $sql = "SELECT actividades.*,
     adminAsig.nombre AS nombreQuienAsigno,
     usuarios.*,
     nombre_actividades.*
@@ -2004,15 +2008,135 @@ ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fech
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
+} else if ($opcion == "73") {
+
+    $fecha_actual = date("Y-m-d");
+    $hora_actual = date("H:i:s");
+
+    $sql_verificar = "SELECT COUNT(*) as count, MAX(ID_registro_saldo) as last_id FROM `registros_saldos` WHERE `ID_usuario` = $ID_usuario AND `status` = 'Activo'";
+    $result_verificar = $conexion->query($sql_verificar);
+
+    if ($result_verificar) {
+        $row = $result_verificar->fetch_assoc();
+        $count = $row['count'];
+
+        if ($count > 0) {
+            // Si existe un saldo activo, muestra el mensaje y el ID del registro activo
+            echo "Ya tienes un saldo activo (ID Registro: " . $row['last_id'] . "), debes finalizarlo antes de asignar otro.";
+        } else {
+            // Si no existe un saldo activo, realiza la inserción en la tabla registros_saldos
+            $sql_insertar_registros = "INSERT INTO `registros_saldos`(`fecha_asignacion`, `hora_asignacion`, `ID_usuario`, `status`) VALUES ('$fecha_actual', '$hora_actual', $ID_usuario, 'Activo')";
+            $result_insertar_registros = $conexion->query($sql_insertar_registros);
+
+            if ($result_insertar_registros) {
+                // Obtén el ID del registro recién insertado
+                $last_inserted_id = $conexion->insert_id;
+
+                // Realiza la inserción en la tabla nuevo_saldo con el ID del registro anterior
+                $sql_insertar_saldo = "INSERT INTO `nuevo_saldo`(`saldo_asignado`, `tipo_caja`, `status_saldo`, `ID_registro_saldo`,`ID_admin_asig`) VALUES ($nuevoSaldoAsignado, '$nuevoTipoCaja', 'Activo', $last_inserted_id, $ID_admin_asig)";
+                $result_insertar_saldo = $conexion->query($sql_insertar_saldo);
+
+                if ($result_insertar_saldo) {
+                    echo "Exito";
+                } else {
+                    echo "Error en la consulta de inserción en nuevo_saldo: " . $conexion->error;
+                }
+            } else {
+                echo "Error en la consulta de inserción en registros_saldos: " . $conexion->error;
+            }
+        }
+    } else {
+        echo "Error en la consulta de verificación: " . $conexion->error;
+    }
+} else if ($opcion == "74") {
+    
+    $fecha_actual = date("Y-m-d");
+    $hora_actual = date("H:i:s");
+
+    // Consulta para actualizar el status en la tabla registros_saldos
+    $sql_update_registros = "UPDATE `registros_saldos` SET `status`='Finalizado' WHERE ID_registro_saldo= $ID_registro_saldo";
+    $result_update_registros = $conexion->query($sql_update_registros);
+
+    if ($result_update_registros) {
+        // Consulta para actualizar el status en la tabla nuevo_saldo
+        $sql_update_nuevo_saldo = "UPDATE `nuevo_saldo` SET `status_saldo`='Finalizado' WHERE ID_registro_saldo= $ID_registro_saldo";
+        $result_update_nuevo_saldo = $conexion->query($sql_update_nuevo_saldo);
+
+        if ($result_update_nuevo_saldo) {
+            echo "Exito";
+        } else {
+            echo "Error en la consulta de actualización en nuevo_saldo: " . $conexion->error;
+        }
+    } else {
+        echo "Error en la consulta de actualización en registros_saldos: " . $conexion->error;
+    }
 }
+
+else if ($opcion == "75") {
+    // Finalizar un saldo
+    $fecha_actual = date("Y-m-d");
+    $hora_actual = date("H:i:s");
+
+    // Consulta para contar cuántos registros cumplen con las condiciones en la tabla nuevo_saldo para tipo de caja "Capital"
+    $sql_count_capital = "SELECT COUNT(*) as count FROM `nuevo_saldo` WHERE ID_registro_saldo = $ID_registro_saldo AND status_saldo = 'Activo' AND tipo_caja = 'Capital'";
+    $result_count_capital = $conexion->query($sql_count_capital);
+
+    // Consulta para contar cuántos registros cumplen con las condiciones en la tabla nuevo_saldo para tipo de caja "Gastos"
+    $sql_count_gastos = "SELECT COUNT(*) as count FROM `nuevo_saldo` WHERE ID_registro_saldo = $ID_registro_saldo AND status_saldo = 'Activo' AND tipo_caja = 'Gastos'";
+    $result_count_gastos = $conexion->query($sql_count_gastos);
+
+    if ($result_count_capital && $result_count_gastos) {
+        $row_count_capital = $result_count_capital->fetch_assoc();
+        $row_count_gastos = $result_count_gastos->fetch_assoc();
+
+        $count_capital = $row_count_capital['count'];
+        $count_gastos = $row_count_gastos['count'];
+
+        if ($count_capital > 0 && $count_gastos > 0) {
+            // Si ambas consultas devuelven resultados, realiza la actualización en nuevo_saldo y en registros_saldos
+            $sql_update_nuevo_saldo = "UPDATE `nuevo_saldo` SET `status_saldo`='Finalizado' WHERE ID_registro_saldo= $ID_registro_saldo AND tipo_caja= '$nuevoTipoCaja'";
+            $result_update_nuevo_saldo = $conexion->query($sql_update_nuevo_saldo);
+
+            if ($result_update_nuevo_saldo) {
+                $sql_update_registros = "UPDATE `registros_saldos` SET `status`='Finalizado' WHERE ID_registro_saldo= $ID_registro_saldo";
+                $result_update_registros = $conexion->query($sql_update_registros);
+
+                if ($result_update_registros) {
+                    echo "Exito";
+                } else {
+                    echo "Error en la consulta de actualización en registros_saldos: " . $conexion->error;
+                }
+            } else {
+                echo "Error en la consulta de actualización en nuevo_saldo: " . $conexion->error;
+            }
+        } elseif ($count_capital > 0 || $count_gastos > 0) {
+            // Si solo una de las consultas devuelve un resultado, realiza la actualización en nuevo_saldo
+            $sql_update_nuevo_saldo = "UPDATE `nuevo_saldo` SET `status_saldo`='Finalizado' WHERE ID_registro_saldo= $ID_registro_saldo AND tipo_caja= '$nuevoTipoCaja'";
+            $result_update_nuevo_saldo = $conexion->query($sql_update_nuevo_saldo);
+
+            if ($result_update_nuevo_saldo) {
+                echo "Exito";
+            } else {
+                echo "Error en la consulta de actualización en nuevo_saldo: " . $conexion->error;
+            }
+        } else {
+            echo "No se encontraron registros activos para el ID_registro_saldo y los tipos de caja especificados.";
+        }
+    } else {
+        echo "Error en las consultas de conteo en nuevo_saldo: " . $conexion->error;
+    }
+}
+
+
+
+
+
+
+
+
 else {
     echo "Opción no válida";
 }
-
-
-
-
-
 
 
 

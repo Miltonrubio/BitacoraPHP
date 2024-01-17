@@ -1045,6 +1045,81 @@
         </div><br><br>
 
 
+
+
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Nuevo Registro De Saldo  </h2>
+                        <h5 class="card-title">opcion=73</h5>
+                        <h5 class="card-title">ID_admin_asig=42</h5>
+                        <h5 class="card-title">ID_usuario=45</h5>
+                        <h5 class="card-title">nuevoSaldoAsignado=1900</h5>
+                        <h5 class="card-title">nuevoTipoCaja="Gastos/Capital/Prueba"</h5>
+                   
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="opcion" value="73">
+                            <input class="form-control mb-2" type="text" name="ID_admin_asig" value="42">
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="45">
+                            <input class="form-control mb-2" type="text" name="nuevoSaldoAsignado" value="1900">
+                            <input class="form-control mb-2" type="text" name="nuevoTipoCaja" value="Gastos">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Finalizar Ambos Saldos</h2>
+                        <h5 class="card-title">opcion=74</h5>
+                        <h5 class="card-title">ID_registro_saldo=1</h5>
+                   
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="opcion" value="74">
+                            <input class="form-control mb-2" type="text" name="ID_registro_saldo" value="1">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Finalizar Un Saldo por tipo de caja</h2>
+                        <h5 class="card-title">opcion=74</h5>
+                        <h5 class="card-title">ID_registro_saldo=1</h5>
+                        <h5 class="card-title">nuevoTipoCaja=Gastos/Capital</h5>
+                   
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="opcion" value="74">
+                            <input class="form-control mb-2" type="text" name="ID_registro_saldo" value="1">
+                            <input class="form-control mb-2" type="text" name="nuevoTipoCaja" value="Capital">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+<!--
+
+                            <input class="form-control mb-2" type="text" name="" value="Gastos">
+-->
     </div>
 
 </body>
