@@ -1101,12 +1101,12 @@
                 <div class="card custom-card">
                     <div class="card-body">
                         <h2 class="card-title">Finalizar Un Saldo por tipo de caja</h2>
-                        <h5 class="card-title">opcion=74</h5>
+                        <h5 class="card-title">opcion=75</h5>
                         <h5 class="card-title">ID_registro_saldo=1</h5>
                         <h5 class="card-title">nuevoTipoCaja=Gastos/Capital</h5>
                    
                         <form action="mostrar.php" method="POST" enctype="multipart/form-data">
-                            <input class="form-control mb-2" type="text" name="opcion" value="74">
+                            <input class="form-control mb-2" type="text" name="opcion" value="75">
                             <input class="form-control mb-2" type="text" name="ID_registro_saldo" value="1">
                             <input class="form-control mb-2" type="text" name="nuevoTipoCaja" value="Capital">
                             <input class="btn btn-primary" type="submit" value="Consultar">
@@ -1120,6 +1120,166 @@
 
                             <input class="form-control mb-2" type="text" name="" value="Gastos">
 -->
+
+
+<div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Agregar saldo de otra caja </h2>
+                        <h5 class="card-title">opcion=76</h5>
+                        <h5 class="card-title">ID_admin_asig=42</h5>
+                        <h5 class="card-title">ID_registro_saldo=6</h5>
+                        <h5 class="card-title">nuevoSaldoAsignado=1900</h5>
+                        <h5 class="card-title">nuevoTipoCaja="Gastos/Capital/Prueba"</h5>
+                   
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="opcion" value="76">
+                            <input class="form-control mb-2" type="text" name="ID_admin_asig" value="42">
+                            <input class="form-control mb-2" type="text" name="ID_registro_saldo" value="6">
+                            <input class="form-control mb-2" type="text" name="nuevoSaldoAsignado" value="1900">
+                            <input class="form-control mb-2" type="text" name="nuevoTipoCaja" value="Gastos">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Mostrar saldo activo por usuario</h2>
+                        <h5 class="card-title">opcion=77</h5>
+                        <h5 class="card-title">ID_usuario=45</h5>
+                   
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="opcion" value="77">
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="45">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Agregar mas dinero a registro de saldo</h2>
+                        <h5 class="card-title">opcion=78</h5>
+                        <h5 class="card-title">saldoAgregado=500</h5>
+                        <h5 class="card-title">ID_saldo=10</h5>
+                        <h5 class="card-title">ID_admin_asig=42</h5>
+                   
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="opcion" value="78">
+                            <input class="form-control mb-2" type="text" name="saldoAgregado" value="500">
+                            <input class="form-control mb-2" type="text" name="ID_saldo" value="10">
+                            <input class="form-control mb-2" type="text" name="ID_admin_asig" value="42">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Asignar Gasto a una actividad en tabla nuevo_saldo</h2>
+                        <h5 class="card-title">opcion=79</h5>
+                        <h5 class="card-title">dinero_gastado=500</h5>
+                        <h5 class="card-title">ID_saldo=10</h5>
+                        <h5 class="card-title">ID_actividad=42</h5>
+                   
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="opcion" value="79">
+                            <input class="form-control mb-2" type="text" name="dinero_gastado" value="500">
+                            <input class="form-control mb-2" type="text" name="ID_saldo" value="10">
+                            <input class="form-control mb-2" type="text" name="ID_actividad" value="42">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Mostrar todos los saldos de usuario</h2>
+                        <h5 class="card-title">opcion=80</h5>
+                        <h5 class="card-title">ID_usuario=45</h5>
+                   
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="opcion" value="80">
+                            <input class="form-control mb-2" type="text" name="ID_usuario" value="45">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+        
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Mostrar el desglose por id_saldo</h2>
+                        <h5 class="card-title">opcion=81</h5>
+                        <h5 class="card-title">ID_saldo=10</h5>
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="opcion" value="81">
+                            <input class="form-control mb-2" type="text" name="ID_saldo" value="10">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+
+
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Mostrar todos los usuarios y su saldo</h2>
+                        <h5 class="card-title">opcion=82</h5>
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="opcion" value="82">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+
+
+
     </div>
 
 </body>
