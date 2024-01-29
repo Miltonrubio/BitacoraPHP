@@ -60,6 +60,7 @@ $serverKey = 'AAAAw189fFA:APA91bGcuc07qIZOK9pMiJt_pa-VBBi0sskU9vU3DRohluo2Jd1N2v
 
 $fechaInicio = isset($_POST["fechaInicio"]) ? $_POST["fechaInicio"] : "";
 $fechaFin = isset($_POST["fechaFin"]) ? $_POST["fechaFin"] : "";
+
 $tipo_caja = isset($_POST["tipo_caja"]) ? $_POST["tipo_caja"] : "";
 
 
@@ -83,7 +84,8 @@ $saldoAgregado = isset($_POST["saldoAgregado"]) ? $_POST["saldoAgregado"] : "";
 $dinero_gastado = isset($_POST["dinero_gastado"]) ? $_POST["dinero_gastado"] : "";
 
 
-
+$fecha_inicioBusqueda= isset($_POST["fecha_inicioBusqueda"]) ? $_POST["fecha_inicioBusqueda"] : "";
+$fecha_finBusqueda= isset($_POST["fecha_finBusqueda"]) ? $_POST["fecha_finBusqueda"] : "";
 
 
 // Verificar la conexión a la base de datos
@@ -2040,7 +2042,7 @@ ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fech
                 $last_inserted_id = $conexion->insert_id;
 
                 // Realiza la inserción en la tabla nuevo_saldo con el ID del registro anterior
-                $sql_insertar_saldo = "INSERT INTO `nuevo_saldo`(`saldo_asignado`, `tipo_caja`, `status_saldo`, `ID_registro_saldo`,`ID_admin_asig`) VALUES ($nuevoSaldoAsignado, '$nuevoTipoCaja', 'Activo', $last_inserted_id, $ID_admin_asig)";
+                $sql_insertar_saldo = "INSERT INTO `nuevo_saldo`(`saldo_asignado`, `tipo_caja`, `status_saldo`, `ID_registro_saldo`,`ID_admin_asig`, `fecha_asignacion_saldo`, `hora_asignacion_saldo`) VALUES ($nuevoSaldoAsignado, '$nuevoTipoCaja', 'Activo', $last_inserted_id, $ID_admin_asig, '$fecha_actual', '$hora_actual')";
                 $result_insertar_saldo = $conexion->query($sql_insertar_saldo);
 
                 if ($result_insertar_saldo) {
@@ -2134,6 +2136,9 @@ ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fech
 
     // Asignar nuevo saldo de otra caja 
 
+    $fecha_actual = date("Y-m-d");
+    $hora_actual = date("H:i:s");
+
     $sql_count_gastos = "SELECT COUNT(*) as count FROM `nuevo_saldo` WHERE ID_registro_saldo = $ID_registro_saldo AND status_saldo = 'Activo' AND tipo_caja = '$nuevoTipoCaja'";
     $result_count_gastos = $conexion->query($sql_count_gastos);  // Cambié el nombre de la variable aquí
     if ($result_count_gastos) {
@@ -2143,7 +2148,7 @@ ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fech
             echo "Ya tienes un saldo asignado para esta caja, primero finalízalo";
         } else {
 
-            $sql_insertar_saldo = "INSERT INTO `nuevo_saldo`(`saldo_asignado`, `tipo_caja`, `status_saldo`, `ID_registro_saldo`,`ID_admin_asig`) VALUES ($nuevoSaldoAsignado, '$nuevoTipoCaja', 'Activo', $ID_registro_saldo, $ID_admin_asig)";
+            $sql_insertar_saldo = "INSERT INTO `nuevo_saldo`(`saldo_asignado`, `tipo_caja`, `status_saldo`, `ID_registro_saldo`,`ID_admin_asig`,`fecha_asignacion_saldo`,`hora_asignacion_saldo`) VALUES ($nuevoSaldoAsignado, '$nuevoTipoCaja', 'Activo', $ID_registro_saldo, $ID_admin_asig,'$fecha_actual', '$hora_actual' )";
             $result_insertar_saldo = $conexion->query($sql_insertar_saldo);
 
             if ($result_insertar_saldo) {
@@ -2156,6 +2161,91 @@ ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fech
         echo "Algo no se realizó en la primer consulta";
     }
 } else if ($opcion == "77") {
+
+// Consulta a la tabla registros_saldos
+$query = "SELECT * FROM registros_saldos WHERE ID_usuario=$ID_usuario AND status='Activo' ORDER BY ID_registro_saldo DESC  Limit 1 ";
+$result = $conexion->query($query);
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $ID_registro_saldo = $row['ID_registro_saldo'];
+
+        // Consulta a la tabla nuevo_saldo
+        $saldo_query = "SELECT * FROM nuevo_saldo WHERE ID_registro_saldo=$ID_registro_saldo";
+        $saldo_result = $conexion->query($saldo_query);
+
+        $saldos = array();
+
+        if ($saldo_result->num_rows > 0) {
+            while ($saldo_row = $saldo_result->fetch_assoc()) {
+                // Calcular el saldo restante, total de adiciones y total de consumos aquí
+                $saldo_asignado = $saldo_row['saldo_asignado'];
+
+
+
+                
+                // Consulta para obtener la suma de consumos
+              //  $consumos_query = "SELECT * FROM consumos WHERE ID_saldo_por_caja = {$saldo_row['ID_saldo']}";
+               
+              $consumos_query = "SELECT consumos.*, actividades.*, nombre_actividades.*
+                   FROM consumos 
+                   JOIN actividades ON consumos.ID_actividad = actividades.ID_actividad
+                   JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
+                   WHERE consumos.ID_saldo_por_caja = {$saldo_row['ID_saldo']}";
+
+              $consumos_result = $conexion->query($consumos_query);
+
+                $consumos = array();
+
+                if ($consumos_result->num_rows > 0) {
+                    while ($consumos_row = $consumos_result->fetch_assoc()) {
+                        $consumos[] = $consumos_row;
+                    }
+                }
+
+                // Consulta para obtener la suma de adiciones
+                $adiciones_query = "SELECT adiciones.*, usuarios.nombre AS nombre_admin_asig FROM adiciones INNER JOIN usuarios ON adiciones.ID_admin_asig = usuarios.ID_usuario 
+                
+                WHERE adiciones.ID_saldo_por_caja ={$saldo_row['ID_saldo']}";
+                $adiciones_result = $conexion->query($adiciones_query);
+
+                $adiciones = array();
+
+                if ($adiciones_result->num_rows > 0) {
+                    while ($adiciones_row = $adiciones_result->fetch_assoc()) {
+                        $adiciones[] = $adiciones_row;
+                    }
+                }
+
+                $saldo_restante = $saldo_asignado + array_sum(array_column($adiciones, 'saldo_agregado')) - array_sum(array_column($consumos, 'dinero_gastado'));
+
+                // Calcular el total de adiciones y consumos
+                $total_adiciones = array_sum(array_column($adiciones, 'saldo_agregado'));
+                $total_consumos = array_sum(array_column($consumos, 'dinero_gastado'));
+
+                // Agregar detalles al array principal
+                $saldo_row['saldo_restante'] = $saldo_restante;
+                $saldo_row['total_adiciones'] = $total_adiciones;
+                $saldo_row['total_consumos'] = $total_consumos;
+                $saldo_row['desglose_adiciones'] = $adiciones;
+                $saldo_row['desglose_gastos'] = $consumos;
+
+                $saldos[] = $saldo_row;
+            }
+        }
+
+        // Agregar el array al campo desglose_saldo_por_caja dentro del JSON
+        $row['desglose_saldo_por_caja'] = $saldos;
+
+        // Mostrar el resultado como JSON
+        echo json_encode($row);
+    }
+} else {
+    echo "No tiene saldo activo";
+}
+
+
+    /*
     // Consulta a la tabla registros_saldos
     $query = "SELECT * FROM registros_saldos WHERE ID_usuario=$ID_usuario AND status='Activo' ORDER BY ID_registro_saldo DESC  Limit 1 ";
     $result = $conexion->query($query);
@@ -2185,6 +2275,9 @@ ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fech
     } else {
         echo "No tiene saldo activo";
     }
+
+
+    */
 } else if ($opcion == "78") {
 
     $fecha_actual = date("Y-m-d");
@@ -2315,7 +2408,14 @@ if ($result->num_rows > 0) {
         $saldo_asignado = $row['saldo_asignado'];
 
         // Consulta para obtener la suma de consumos
-        $consumos_query = "SELECT * FROM `consumos` WHERE ID_saldo_por_caja=$ID_saldoTomado";
+      //  $consumos_query = "SELECT * FROM `consumos` WHERE ID_saldo_por_caja=$ID_saldoTomado";
+
+      $consumos_query = "SELECT consumos.*, actividades.*, nombre_actividades.*
+      FROM consumos
+      INNER JOIN actividades ON consumos.ID_actividad = actividades.ID_actividad
+      INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
+      WHERE consumos.ID_saldo_por_caja = $ID_saldoTomado";
+
         $consumos_result = $conexion->query($consumos_query);
 
         $consumos = array();
@@ -2327,8 +2427,13 @@ if ($result->num_rows > 0) {
         }
 
         // Consulta para obtener la suma de adiciones
-        $adiciones_query = "SELECT * FROM `adiciones` WHERE ID_saldo_por_caja=$ID_saldoTomado";
-        $adiciones_result = $conexion->query($adiciones_query);
+   //     $adiciones_query = "SELECT * FROM `adiciones` WHERE ID_saldo_por_caja=$ID_saldoTomado";
+   $adiciones_query = "SELECT adiciones.*, usuarios.nombre AS adminQueAsigno
+                    FROM adiciones
+                    INNER JOIN usuarios ON adiciones.ID_admin_asig = usuarios.ID_usuario
+                    WHERE adiciones.ID_saldo_por_caja = $ID_saldoTomado";
+  
+   $adiciones_result = $conexion->query($adiciones_query);
 
         $adiciones = array();
 
@@ -2386,7 +2491,7 @@ if ($result->num_rows > 0) {
                         $ID_registro_saldo = $row['ID_registro_saldo'];
     
                         // Consulta para obtener la información de nuevo_saldo
-                        $saldo_query = "SELECT * FROM nuevo_saldo WHERE ID_registro_saldo = $ID_registro_saldo AND status_saldo = 'Activo'";
+                        $saldo_query = "SELECT * FROM nuevo_saldo WHERE ID_registro_saldo = $ID_registro_saldo AND status_saldo = 'Activo' ORDER BY tipo_caja";
                         $saldo_result = $conexion->query($saldo_query);
     
                         $saldos = array();
@@ -2515,8 +2620,148 @@ echo "Error en la consulta: " . $conexion->error;
 }
 */
 }
+else if ($opcion=="83"){
+// Tu primera consulta
+$query = "SELECT * FROM registros_saldos 
+    WHERE ID_usuario = $ID_usuario 
+    AND fecha_asignacion BETWEEN '$fecha_inicioBusqueda' AND '$fecha_finBusqueda' 
+    ORDER BY ID_registro_saldo DESC";
 
+$result = $conexion->query($query);
 
+// Crear un array para almacenar todos los resultados
+$data = array();
+
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $ID_registro_saldo = $row['ID_registro_saldo'];
+
+        // Consulta a la tabla nuevo_saldo
+        $saldo_query = "SELECT * FROM nuevo_saldo WHERE ID_registro_saldo=$ID_registro_saldo";
+        $saldo_result = $conexion->query($saldo_query);
+
+        // Crear un array para almacenar los resultados de desglose_saldo_por_caja
+        $desglose_saldo_por_caja = array();
+
+        if ($saldo_result->num_rows > 0) {
+            while ($saldo_row = $saldo_result->fetch_assoc()) {
+                $ID_saldoTomado = $saldo_row['ID_saldo'];
+                $saldo_asignado = $saldo_row['saldo_asignado'];
+                $fecha_asignacion = $saldo_row['fecha_asignacion'];
+                $hora_asignacion = $saldo_row['hora_asignacion'];
+
+                // Consulta para obtener la suma de consumos
+                $consumos_query = "SELECT consumos.*, actividades.*, nombre_actividades.*
+                FROM consumos
+                INNER JOIN actividades ON consumos.ID_actividad = actividades.ID_actividad
+                INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad
+                WHERE consumos.ID_saldo_por_caja = $ID_saldoTomado";
+
+                $consumos_result = $conexion->query($consumos_query);
+
+                $consumos = array();
+
+                if ($consumos_result->num_rows > 0) {
+                    while ($consumos_row = $consumos_result->fetch_assoc()) {
+                        $consumos[] = $consumos_row;
+                    }
+                }
+
+                // Consulta para obtener la suma de adiciones
+                $adiciones_query = "SELECT adiciones.*, usuarios.nombre AS adminQueAsigno
+                    FROM adiciones
+                    INNER JOIN usuarios ON adiciones.ID_admin_asig = usuarios.ID_usuario
+                    WHERE adiciones.ID_saldo_por_caja = $ID_saldoTomado";
+
+                $adiciones_result = $conexion->query($adiciones_query);
+
+                $adiciones = array();
+
+                if ($adiciones_result->num_rows > 0) {
+                    while ($adiciones_row = $adiciones_result->fetch_assoc()) {
+                        $adiciones[] = $adiciones_row;
+                    }
+                }
+
+                // Calcular el saldo restante
+                $saldo_restante = $saldo_asignado + array_sum(array_column($adiciones, 'saldo_agregado')) - array_sum(array_column($consumos, 'dinero_gastado'));
+
+                // Calcular el total de adiciones
+                $total_adiciones = array_sum(array_column($adiciones, 'saldo_agregado'));
+
+                // Calcular el total de consumos
+                $total_consumos = array_sum(array_column($consumos, 'dinero_gastado'));
+
+                // Agregar detalles al array principal
+                $saldo_row['consumos'] = $consumos;
+                $saldo_row['adiciones'] = $adiciones;
+                $saldo_row['saldo_restante'] = $saldo_restante;
+                $saldo_row['total_adiciones'] = $total_adiciones;
+                $saldo_row['total_consumos'] = $total_consumos;
+
+                // Agregar el array al campo desglose_saldo_por_caja dentro del JSON
+                $desglose_saldo_por_caja[] = $saldo_row;
+            }
+        }
+
+        // Agregar el array al campo desglose_saldo_por_caja dentro del JSON
+        $row['desglose_saldo_por_caja'] = $desglose_saldo_por_caja;
+
+        // Agregar el resultado al array principal
+        $data[] = $row;
+    }
+
+    // Mostrar el resultado como JSON fuera del bucle
+    echo json_encode($data);
+} else {
+    echo "No tiene saldo activo";
+}
+
+}
+/*
+else if ($opcion=="83"){
+      // Consulta a la tabla registros_saldos
+      
+      $query = "SELECT * FROM registros_saldos 
+          WHERE ID_usuario = $ID_usuario 
+          AND fecha_asignacion BETWEEN '$fecha_inicioBusqueda' AND '$fecha_finBusqueda' 
+          ORDER BY ID_registro_saldo DESC";
+
+      $result = $conexion->query($query);
+  
+      // Crear un array para almacenar todos los resultados
+      $data = array();
+  
+      if ($result->num_rows > 0) {
+          while ($row = $result->fetch_assoc()) {
+              $ID_registro_saldo = $row['ID_registro_saldo'];
+  
+              // Consulta a la tabla nuevo_saldo
+              $saldo_query = "SELECT * FROM nuevo_saldo WHERE ID_registro_saldo=$ID_registro_saldo";
+              $saldo_result = $conexion->query($saldo_query);
+  
+              $desglose_saldo = array();
+  
+              if ($saldo_result->num_rows > 0) {
+                  while ($saldo_row = $saldo_result->fetch_assoc()) {
+                      $desglose_saldo[] = $saldo_row;
+                  }
+              }
+  
+              // Agregar el array al campo desglose_saldo_por_caja dentro del JSON
+              $row['desglose_saldo_por_caja'] = $desglose_saldo;
+  
+              // Agregar el resultado al array principal
+              $data[] = $row;
+          }
+  
+          // Mostrar el resultado como JSON fuera del bucle
+          echo json_encode($data);
+      } else {
+          echo "No tiene saldo activo";
+      }
+}
+*/
 
 else {
     echo "Opción no válida";

@@ -158,49 +158,79 @@ $pdf->Image('logoAb.png', $imageX, 5, 20, 20, 'png');
 $pdf->Ln(22);
 $pdf->SetFont('Arial', 'B', 9);
 $pdf->SetTextColor(0, 0, 0);
-$pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", strtoupper("ABARROTERA HIDALGO")), 0, 'C', false);
-$pdf->SetFont('Arial', '', 8);
+//$pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", strtoupper("ABARROTERA HIDALGO")), 0, 'C', false);
 
 
-$pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", "Dirección: 5 Ote 1500,"), 0, 'C', false);
-$pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", "La Purísima, 75784 "), 0, 'C', false);
-$pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", "Tehuacán, Pue"), 0, 'C', false);
+$pdf->MultiCell(0, 3, iconv("UTF-8", "ISO-8859-1", " 5 Ote 1500, La Purísima, 75784 Tehuacán, Pue."), 0, 'C', false);
+//$pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", "La Purísima, 75784 "), 0, 'C', false);
+//$pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", "Tehuacán, Pue"), 0, 'C', false);
 
-$pdf->Cell(0, 5, iconv("UTF-8", "ISO-8859-1", "------------------------------------------------------"), 0, 0, 'C');
+$pdf->SetFont('Arial', '', 9);
+$pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
 $pdf->Ln(3);
 
-$pdf->MultiCell(0, 5, "Fecha: " . date("d/m/Y h:i A"), 0, 'C', false);
-
-
+// Obtener la posición Y actual
+$posicionYEncargado = $pdf->GetY();
 
 if (!empty($datosMostrarEncargado)) {
     foreach ($datosMostrarEncargado as $Encargado) {
         $nombreEncargado = $Encargado['nombre'];
-        $pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", "Encargado: " . $nombreEncargado), 0, 'C', false);
+        $pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", "Encargado: " . $nombreEncargado), 0, 'L', false);
     }
 } else {
-
     echo "No se encontraron datos";
 }
 
-$pdf->SetFont('Arial', 'B', 10);
+// Obtener la posición Y después de imprimir "Encargado"
+$posicionYFecha = $pdf->GetY();
+
+// Establecer la posición Y de la fecha para que coincida con la posición Y de "Encargado"
+$pdf->SetY($posicionYEncargado);
+
+$pdf->Cell(0, 5, iconv("UTF-8", "ISO-8859-1", "Fecha: " . date("d/m/Y")), 0, 1, 'R');
+
+// Mostrar solo la hora
+$pdf->Cell(0, 5, iconv("UTF-8", "ISO-8859-1", "Hora: " . date("h:i A")), 0, 1, 'R');
+
+
+//$pdf->SetFont('Arial', 'B', 10);
 $pdf->SetFont('Arial', '', 9);
 
-$pdf->Ln(1);
-$pdf->Cell(0, 5, iconv("UTF-8", "ISO-8859-1", "------------------------------------------------------"), 0, 0, 'C');
+$pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
 $pdf->Ln(3);
+
+$pdf->MultiCell(0, 4, iconv("UTF-8", "ISO-8859-1", strtoupper("INFORMACIÓN DEL EMPLEADO")), 0, 'C', false);
+
+
+
+$posicionYNombreEmpleado = $pdf->GetY();
 
 if (!empty($datosMostrarUsuario)) {
     foreach ($datosMostrarUsuario as $datosUsuario) {
         $nombreEmpleado = $datosUsuario['nombre'];
         $telefono = $datosUsuario['telefono'];
+        $permisos = $datosUsuario['permisos'];
 
-        $pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", "Saldo de: " . $nombreEmpleado), 0, 'C', false);
-        $pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", "Teléfono: " . $telefono), 0, 'C', false);
+
+        $pdf->SetY($posicionYNombreEmpleado);
+        $pdf->Cell(0, 5, iconv("UTF-8", "ISO-8859-1", "Nombre: " . $nombreEmpleado), 0, 1, 'L');
+        $pdf->Cell(0, 5, iconv("UTF-8", "ISO-8859-1", "Puesto: " . $permisos), 0, 1, 'L');
+        $pdf->Ln(2);
+
+        $posicionYTelefono = $pdf->GetY();
+        $pdf->SetY($posicionYNombreEmpleado);
+
+        $pdf->Cell(0, 5, iconv("UTF-8", "ISO-8859-1", "Cel: " . $telefono), 0, 1, 'R');
+        $pdf->Ln(2);
     }
 } else {
     echo "No se encontraron datos";
 }
+
+$pdf->Ln(2);
+    
+$pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
+  $pdf->Ln(3);
 
 
 if (!empty($resultadosSaldos)) {
@@ -244,8 +274,7 @@ if (!empty($resultadosSaldos)) {
             echo "Error en la consulta de detalles de depósitos: " . $conexion->error;
         }
 
-
-
+        /*
         $pdf->Ln(1);
         $pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
         $pdf->Ln(3);
@@ -257,26 +286,37 @@ if (!empty($resultadosSaldos)) {
         $pdf->Cell(37, 5, iconv("UTF-8", "ISO-8859-1", "Asignacion"), 0, 0, 'C');
         //$pdf->Cell(28, 5, iconv("UTF-8", "ISO-8859-1", "Total"), 0, 0, 'C');
 
+*/
+
+
+
+$caja =    $gastos['caja'];
+$hora_asignacion =    $gastos['hora_asignacion'];
+$fecha_asignacion =    $gastos['fecha_asignacion'];
+$saldo_inicial =    $gastos['saldo_inicial'];
+
+
+$gastos_Cajagastos =    $gastos['gastos_Cajagastos'];
+$gastos_CajaCapital =    $gastos['gastos_CajaCapital'];
+$depositos_Cajagastos =    $gastos['depositos_Cajagastos'];
+$depositos_CajaCapital =    $gastos['depositos_CajaCapital'];
+
+
+/*
 
 
         $pdf->Ln(3);
         $pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
         $pdf->Ln(3);
 
-        $caja =    $gastos['caja'];
-        $hora_asignacion =    $gastos['hora_asignacion'];
-        $fecha_asignacion =    $gastos['fecha_asignacion'];
-        $saldo_inicial =    $gastos['saldo_inicial'];
 
-
-        /*----------  Detalles de la tabla  ----------*/
         //$pdf->MultiCell(0, 4, iconv("UTF-8", "ISO-8859-1", "Nombre de producto a vender"), 0, 'C', false);
         $pdf->Cell(14, 4, iconv("UTF-8", "ISO-8859-1", $caja), 0, 0, 'C');
         $pdf->Cell(19, 4, iconv("UTF-8", "ISO-8859-1", $saldo_inicial), 0, 0, 'C');
         $pdf->Cell(37, 4, iconv("UTF-8", "ISO-8859-1", $fecha_asignacion . " " . $hora_asignacion), 0, 0, 'C');
         //$pdf->Cell(28, 4, iconv("UTF-8", "ISO-8859-1", "$70.00 USD"), 0, 0, 'C');
 
-
+*/
 
 
         if (!empty($detallesDepositos)) {
@@ -287,7 +327,7 @@ if (!empty($resultadosSaldos)) {
                 $dinero_agregado =    $desgloseDepositos['dinero_agregado'];
                 $tipo_caja =    $desgloseDepositos['tipo_caja'];
 
-
+/*
                 $pdf->Ln(2);
                 $pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
                 $pdf->Ln(3);
@@ -295,13 +335,18 @@ if (!empty($resultadosSaldos)) {
                 $pdf->Cell(19, 4, iconv("UTF-8", "ISO-8859-1", "+ " . $dinero_agregado), 0, 0, 'C');
                 $pdf->Cell(37, 4, iconv("UTF-8", "ISO-8859-1", $fecha . " " . $hora), 0, 0, 'C');
                 //$pdf->Cell(28, 4, iconv("UTF-8", "ISO-8859-1", "$70.00 USD"), 0, 0, 'C');
+                */
                
             }
         } else {
         }
 
 
+  $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "SALDO  DEL: " . $fecha_asignacion), 0, 0, 'C');
 
+        $pdf->SetFont('Arial', '', 9);
+        $pdf->Ln(4);
         if (!empty($detallesGastos)) {
             foreach ($detallesGastos as $detalleGasto) {
 
@@ -313,10 +358,9 @@ if (!empty($resultadosSaldos)) {
                 $dinero_gastado =    $detalleGasto['dinero_gastado'];
                 $nombre_actividad =    $detalleGasto['nombre_actividad'];
                 $descripcionActividad =    $detalleGasto['descripcionActividad'];
-                
-                $pdf->Ln(2);
-                $pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
-                $pdf->Ln(3);
+
+                $posicionYGastos = $pdf->GetY();
+                /*
                 $pdf->Cell(14, 4, iconv("UTF-8", "ISO-8859-1", $tipo_caja), 0, 0, 'C');
                 $pdf->Cell(19, 4, iconv("UTF-8", "ISO-8859-1", "- " . $dinero_gastado), 0, 0, 'C');
                 $pdf->Cell(37, 4, iconv("UTF-8", "ISO-8859-1", $fecha . " " . $hora), 0, 0, 'C');
@@ -329,25 +373,34 @@ if (!empty($resultadosSaldos)) {
                 $pdf->Ln(4);   
                 $pdf->SetFont('Arial', '', 9);
                 $pdf->Cell(72, 5,  iconv("UTF-8", "ISO-8859-1", $descripcionActividad), 0, 0, 'C');
+*/
+
+                $pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", "Asignacion: " . $fecha . " " . $hora), 0, 'L', false);
+                $pdf->MultiCell(0, 3, iconv("UTF-8", "ISO-8859-1", $descripcionActividad), 0, 'L', false);
 
 
+                $posicionYSaldoGastado = $pdf->GetY();
+                $pdf->SetY($posicionYGastos);
+                // $pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", "$ " . $dinero_gastado), 0, 'R', false);
+
+
+                $pdf->SetFont('Arial', 'B', 10);
+
+                $pdf->MultiCell(0, 8, iconv("UTF-8", "ISO-8859-1", strtoupper("$ " . $dinero_gastado)), 0, 'R', false);
+
+                $pdf->SetFont('Arial', '', 9);
+
+                $pdf->Ln(1);
             }
-        }else{
-
+        } else {
         }
 
-        $pdf->Ln(2);
-        $pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
-
+   
+$pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
         $pdf->SetFont('Arial', 'B', 9);
         $pdf->SetFont('Arial', '', 8);
 
 
-
-        $gastos_Cajagastos =    $gastos['gastos_Cajagastos'];
-        $gastos_CajaCapital =    $gastos['gastos_CajaCapital'];
-        $depositos_Cajagastos =    $gastos['depositos_Cajagastos'];
-        $depositos_CajaCapital =    $gastos['depositos_CajaCapital'];
 
         $total_caja_gastos = 0;
         $total_caja_capital = 0;
@@ -373,47 +426,66 @@ if (!empty($resultadosSaldos)) {
             $total_saldo_gastos = $saldo_inicial + $depositos_Cajagastos;
         }
 
-        $pdf->Ln(5);
-        $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
-        $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "SALDO TOTAL DE GASTOS: "), 0, 0, 'C');
-        $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1", $total_saldo_gastos), 0, 0, 'C');
-
-        $pdf->Ln(5);
-        $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
-        $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "GASTOS CAJA GASTOS: "), 0, 0, 'C');
-        $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1", $gastos_Cajagastos), 0, 0, 'C');
-
-        $pdf->Ln(5);
-
-        $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
-        $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "RESTANTE CAJA GASTOS:"), 0, 0, 'C');
-        $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1",  $total_caja_gastos), 0, 0, 'C');
-
-        $pdf->Ln(7);
-
-
-        $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
-        $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "SALDO TOTAL DE CAPITAL: "), 0, 0, 'C');
-        $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1", $total_saldo_capital), 0, 0, 'C');
-
-        $pdf->Ln(5);
-
-        $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
-        $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "GASTOS CAJA CAPITAL:"), 0, 0, 'C');
-        $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1", $gastos_CajaCapital), 0, 0, 'C');
-
-        $pdf->Ln(5);
-
-        $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
-        $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "RESTANTE CAJA CAPITAL:"), 0, 0, 'C');
-        $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1", $total_caja_capital), 0, 0, 'C');
-
-
-        $pdf->Ln(10);
-
-
+        $pdf->Ln(2);
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "CAJA GASTOS: "), 0, 0, 'C');
         
+        $pdf->SetFont('Arial', '', 9);
+        $pdf->Ln(5);
+        $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
+        
+        $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "SALDO TOTAL: "), 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1"," $ ". $total_saldo_gastos), 0, 0, 'R');
+        $pdf->SetFont('Arial', '', 9);
 
+        $pdf->Ln(5);
+        $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
+        $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "TOTAL DE GASTOS: "), 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1", " $ ".$gastos_Cajagastos), 0, 0, 'R');
+        $pdf->SetFont('Arial', '', 9);
+
+        $pdf->Ln(5);
+
+        $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
+        $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "SOBRANTE:"), 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1", " $ ". $total_caja_gastos), 0, 0, 'R');
+        $pdf->SetFont('Arial', '', 9);
+
+        $pdf->Ln(5);
+
+
+        $pdf->Ln(2);
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "CAJA CAPITAL: "), 0, 0, 'C');
+        $pdf->SetFont('Arial', '', 9);
+        $pdf->Ln(4);
+        $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
+        $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "SALDO TOTAL: "), 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1"," $ ". $total_saldo_capital), 0, 0, 'R');
+        $pdf->SetFont('Arial', '', 9);
+
+        $pdf->Ln(5);
+
+        $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
+        $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "TOTAL DE GASTOS:"), 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1"," $ ". $gastos_CajaCapital), 0, 0, 'R');
+        $pdf->SetFont('Arial', '', 9);
+
+        $pdf->Ln(5);
+
+        $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
+        $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "SOBRANTE:"), 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1"," $ ". $total_caja_capital), 0, 0, 'R');
+        $pdf->SetFont('Arial', '', 9);
+
+
+        $pdf->Ln(8);
     }
 } else {
     echo   "No se encontraron resultados";
@@ -422,13 +494,10 @@ if (!empty($resultadosSaldos)) {
 
 $pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 'C', false);
 
-$pdf->Ln(2);
-$pdf->Cell(65, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
+$pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
 $pdf->Ln(2);
 $pdf->SetFont('Arial', 'B', 9);
 $pdf->Cell(0, 7, iconv("UTF-8", "ISO-8859-1", $nombreEmpleado), '', 0, 'C');
-
-$pdf->Ln(9);
 
 /*
     # Codigo de barras #
