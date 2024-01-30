@@ -1324,6 +1324,29 @@
 
 
 
+
+        <div class="row col-md-12">
+            <div class="col-md-6">
+                <div class="card custom-card">
+                    <div class="card-body">
+                        <h2 class="card-title">Corregir Saldo Asignado</h2>
+                        <h5 class="card-title">opcion=84</h5>
+                        <h5 class="card-title">ID_saldo=10</h5>
+                        <h5 class="card-title">montoCorregido=1500</h5>
+                   
+                        <form action="mostrar.php" method="POST" enctype="multipart/form-data">
+                            <input class="form-control mb-2" type="text" name="opcion" value="84">
+                            <input class="form-control mb-2" type="text" name="ID_saldo" value="10">
+                            <input class="form-control mb-2" type="text" name="montoCorregido" value="1500">
+                            <input class="btn btn-primary" type="submit" value="Consultar">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><br><br>
+
+
+
     </div>
 
 </body>
