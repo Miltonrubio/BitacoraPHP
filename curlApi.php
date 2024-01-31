@@ -848,7 +848,7 @@
                         // Ejemplo de array a enviar
                         $listaSeleccion = array('13', '8');
                         ?>
-                        <form action="disenioPDF2.php" method="POST" enctype="multipart/form-data">
+                        <form action="disenioPDF.php" method="POST" enctype="multipart/form-data">
                             <input class="form-control mb-2" type="text" name="opcion" value="66">
                             <input class="form-control mb-2" type="text" name="ID_usuario" value="45">
                             <input type="text" name="listaSeleccion" value='<?php echo json_encode($listaSeleccion); ?>'>

@@ -146,12 +146,16 @@ if (!empty($datosUsuario)) {
     <link href="http://<?php // echo $_SERVER['HTTP_HOST'] ?>/BitacoraPHP/css/estilo.css" rel="stylesheet">
     <link href="http://<?php //echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
 -->
+<link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
 
 </head>
 
 <div class="contenedorImagen">
-    <img src="http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario45.jpg" class="imagen-centrada" width="100px" height="100px">
+<img src="./logoAb.jpeg" class="imagen-centrada" width="100px" height="100px">
 
+<!--
+<img src="http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario45.jpg" class="imagen-centrada" width="100px" height="100px">
+-->
 
     <br><br>
     <div class="contenedor-tabla">

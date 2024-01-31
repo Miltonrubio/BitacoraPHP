@@ -2298,13 +2298,19 @@ if ($result->num_rows > 0) {
 
     $fecha_actual = date("Y-m-d");
     $hora_actual = date("H:i:s");
+    $fecha_y_hora_actual = date("Y-m-d H:i:s");
+
 
     $sql = "INSERT INTO `consumos`(`dinero_gastado`, `fecha`, `hora`, `ID_actividad`, `ID_saldo_por_caja`)
         VALUES ($dinero_gastado, '$fecha_actual', '$hora_actual', $ID_actividad, $ID_saldo)";
 
-    $result = $conexion->query($sql);
+$sql2="UPDATE `actividades` SET `fecha_fin`='$fecha_y_hora_actual',`estadoActividad`='Finalizado' WHERE ID_actividad=$ID_actividad";
 
-    if ($result) {
+$result = $conexion->query($sql);
+
+    $result2 = $conexion->query($sql2);
+
+    if ($result && $result2) {
         echo "Exito";
     } else {
         echo "Error en la consulta de inserción en nuevo_saldo: " . $conexion->error;
