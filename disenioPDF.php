@@ -25,21 +25,18 @@ $resultadosSaldos = array();
 foreach ($listaSeleccion as $elemento) {
 
 
-// Consulta a la tabla nuevo_saldo para obtener los elementos específicos
-$saldo_query = "SELECT * FROM nuevo_saldo WHERE ID_saldo=$elemento ORDER BY status_saldo ASC, tipo_caja ASC";
-$saldo_result = $conexion->query($saldo_query);
+    // Consulta a la tabla nuevo_saldo para obtener los elementos específicos
+    $saldo_query = "SELECT * FROM nuevo_saldo WHERE ID_saldo=$elemento ORDER BY status_saldo ASC, tipo_caja ASC";
+    $saldo_result = $conexion->query($saldo_query);
 
-if ($saldo_result) {
-    // Obtener los datos del usuario y almacenarlos en el array de resultados
-    $datosSaldos = $saldo_result->fetch_assoc();
-    $resultadosSaldos[] = $datosSaldos;
-
-
-
-} else {
-    // Manejar errores si la consulta no fue exitosa
-    echo "Error en la consulta: " . $conexion->error;
-}
+    if ($saldo_result) {
+        // Obtener los datos del usuario y almacenarlos en el array de resultados
+        $datosSaldos = $saldo_result->fetch_assoc();
+        $resultadosSaldos[] = $datosSaldos;
+    } else {
+        // Manejar errores si la consulta no fue exitosa
+        echo "Error en la consulta: " . $conexion->error;
+    }
 
     /*
 
@@ -162,18 +159,20 @@ if (!empty($datosUsuario)) {
 
 
     <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacora/css/estilo.css" rel="stylesheet">
-<!--
-    <link href="http://<?php // echo $_SERVER['HTTP_HOST'] ?>/BitacoraPHP/css/estilo.css" rel="stylesheet">
-    <link href="http://<?php //echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
+    <!--
+    <link href="http://<?php // echo $_SERVER['HTTP_HOST'] 
+                        ?>/BitacoraPHP/css/estilo.css" rel="stylesheet">
+    <link href="http://<?php //echo $_SERVER['HTTP_HOST'] 
+                        ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
 -->
-<link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
+    <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
 
 </head>
 
 <div class="contenedorImagen">
-<img src="./logoAb.jpeg" class="imagen-centrada" width="100px" height="100px">
+    <img src="./logoAb.jpeg" class="imagen-centrada" width="100px" height="100px">
 
-<!--
+    <!--
 <img src="http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario45.jpg" class="imagen-centrada" width="100px" height="100px">
 -->
 
@@ -234,8 +233,8 @@ if (empty($resultadosSaldos)) {
 
         $resultDetallesGastos = $conexion->query($consumos_query);
 
-     //   $detallesGastos = array();
-    
+        //   $detallesGastos = array();
+
 
         if ($resultDetallesGastos) {
             $detallesGastos = array();
@@ -250,15 +249,15 @@ if (empty($resultadosSaldos)) {
 
 
 
-       // Consulta para obtener la suma de adiciones
-       $adiciones_query = "SELECT adiciones.*, usuarios.nombre AS nombre_admin_asig
+        // Consulta para obtener la suma de adiciones
+        $adiciones_query = "SELECT adiciones.*, usuarios.nombre AS nombre_admin_asig
        FROM adiciones
        INNER JOIN usuarios ON adiciones.ID_admin_asig = usuarios.ID_usuario
        WHERE adiciones.ID_saldo_por_caja = $ID_saldo_actual";
 
-   $adiciones_result = $conexion->query($adiciones_query);
+        $adiciones_result = $conexion->query($adiciones_query);
 
- //  $detallesDepositos = array();
+        //  $detallesDepositos = array();
 
 
         if ($adiciones_result) {
@@ -276,32 +275,11 @@ if (empty($resultadosSaldos)) {
 
         <div class="contenedor_gastos">
 
-            <H4 class="texto_centrado"> RESUMEN DEL SALDO: </H4>
 
-            <table class="tabla_mitad">
-                <tbody>
-                    <tr>
-                        <td class="fondo_amarillo texto_centrado">Saldo asignado</td>
-                        <td class="fondo_amarillo texto_centrado">Saldo gastado</td>
-                        <td class="fondo_amarillo texto_centrado">Saldo restante</td>
-                        <td class="fondo_amarillo texto_centrado">Saldo depositado</td>
-                        <td class="fondo_amarillo texto_centrado">Fecha de asignacion</td>
-                        <td class="fondo_amarillo texto_centrado">Hora de asignacion</td>
-                        <td class="fondo_amarillo texto_centrado">Caja</td>
-                    </tr>
 
-                    <tr>
-                        <td><?php echo  $gastos['saldo_inicial'] ?></td>
-                        <td><?php echo  $gastos['total_dinero_gastado'] ?></td>
-                        <td><?php echo  $gastos['nuevo_saldo'] ?></td>
-                        <td><?php echo  $gastos['total_dinero_agregado'] ?></td>
-                        <td><?php echo  $gastos['fecha_asignacion'] ?></td>
-                        <td><?php echo  $gastos['hora_asignacion'] ?></td>
-                        <td><?php echo  $gastos['caja'] ?></td>
+        <H4 class="texto_centrado"> RESUMEN DE CAJA <?php echo strtoupper($gastos['tipo_caja']);?></H4>
 
-                    </tr>
-                </tbody>
-            </table>
+
 
             <?php
 
@@ -322,11 +300,11 @@ if (empty($resultadosSaldos)) {
                         <?php
                         foreach ($detallesDepositos as $desgloseDepositos) {
                         ?>
-  <tr>
-                            <td class="texto_verde texto_centrado"><?php echo " + " . $desgloseDepositos['saldo_agregado'] . " $" ?></td>
-                            <td><?php echo  $desgloseDepositos['fecha'] ?></td>
-                            <td><?php echo  $desgloseDepositos['hora'] ?></td>
-                            <td><?php echo  $desgloseDepositos['nombre_admin_asig'] ?></td>
+                            <tr>
+                                <td class="texto_verde texto_centrado"><?php echo " + " . $desgloseDepositos['saldo_agregado'] . " $" ?></td>
+                                <td><?php echo  $desgloseDepositos['fecha'] ?></td>
+                                <td><?php echo  $desgloseDepositos['hora'] ?></td>
+                                <td><?php echo  $desgloseDepositos['nombre_admin_asig'] ?></td>
                             </tr>
 
                         <?php
@@ -347,7 +325,6 @@ if (empty($resultadosSaldos)) {
                         <td class="fondogris">Hora</td>
                         <td class="fondogris">Tipo de actividad</td>
                         <td class="fondogris">Descripcion</td>
-                        <td class="fondogris">Caja</td>
                     </tr>
                     <?php
                     if (!empty($detallesGastos)) {
@@ -359,7 +336,6 @@ if (empty($resultadosSaldos)) {
                                 <td><?php echo  $detalleGasto['hora'] ?></td>
                                 <td><?php echo  $detalleGasto['nombre_actividad'];    ?> </td>
                                 <td><?php echo $detalleGasto['descripcionActividad']; ?></td>
-                                <td><?php echo  $detalleGasto['tipo_caja'] ?></td>
                             </tr>
 
                     <?php

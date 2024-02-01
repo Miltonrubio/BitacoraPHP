@@ -1031,7 +1031,7 @@
                         <h5 class="card-title">listaSeleccion=</h5>
                         <?php
                         // Ejemplo de array a enviar
-                        $listaSeleccion = array('13', '8');
+                        $listaSeleccion = array('10', '12');
                         ?>
                         <form action="ticket.php" method="POST" enctype="multipart/form-data">
                             <input class="form-control mb-2" type="text" name="ID_usuario" value="45">
