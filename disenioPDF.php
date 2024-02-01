@@ -224,6 +224,8 @@ if (empty($resultadosSaldos)) {
     foreach ($resultadosSaldos as $gastos) {
 
         $ID_saldo_actual = $gastos['ID_saldo']; // Obtén el ID_saldo actual
+    $saldo_inicial=    $gastos['saldo_asignado'];
+
 
         $consumos_query = "SELECT consumos.*, actividades.*, nombre_actividades.*
         FROM consumos
@@ -271,6 +273,21 @@ if (empty($resultadosSaldos)) {
         }
 
 
+
+
+
+
+        $saldo_restante = $saldo_inicial + array_sum(array_column($detallesDepositos, 'saldo_agregado')) - array_sum(array_column($detallesGastos, 'dinero_gastado'));
+    
+        // Calcular el total de adiciones
+        $total_adiciones = array_sum(array_column($detallesDepositos, 'saldo_agregado'));
+
+        // Calcular el total de consumos
+        $total_consumos = array_sum(array_column($detallesGastos, 'dinero_gastado'));
+
+
+
+
 ?>
 
         <div class="contenedor_gastos">
@@ -279,11 +296,34 @@ if (empty($resultadosSaldos)) {
 
         <H4 class="texto_centrado"> RESUMEN DE CAJA <?php echo strtoupper($gastos['tipo_caja']);?></H4>
 
+        <table class="tabla_mitad">
+                    <tbody>
+                        <tr>
+                        <td class="fondogris ">Saldo Total</td>
+                            <td class="fondogris">Saldo Inicial</td>
+                            <td class="fondogris">Total Agregado</td>
+                            <td class="fondogris">Gastos totales</td>
+                            <td class="fondogris">Saldo Restante</td>
+                            <td class="fondogris">Fecha de asignacion</td>
+                        </tr>
+                            <tr>
 
+                            <td class=" texto_centrado"> <?php echo ($saldo_inicial+ $total_adiciones)?></td>
+                                <td class=" texto_centrado"><?php echo $saldo_inicial?></td>
+                                <td class="texto_centrado"> <?php echo $total_adiciones?></td>
+                                <td class=" texto_centrado"><?php echo $total_consumos?></td>
+
+                                <td class=" texto_centrado"><?php echo $saldo_restante?></td>
+
+                                <td class=" texto_centrado"><?php echo ($gastos['fecha_asignacion_saldo']);?></td>
+                            </tr>
+                    </tbody>
+                </table>
+
+
+        
 
             <?php
-
-
             if (!empty($detallesDepositos)) {
 
             ?>

@@ -846,7 +846,7 @@
                         <h5 class="card-title">listaSeleccion=</h5>
                         <?php
                         // Ejemplo de array a enviar
-                        $listaSeleccion = array('13', '8');
+                        $listaSeleccion = array('12', '10');
                         ?>
                         <form action="disenioPDF.php" method="POST" enctype="multipart/form-data">
                             <input class="form-control mb-2" type="text" name="opcion" value="66">
