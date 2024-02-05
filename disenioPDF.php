@@ -170,11 +170,8 @@ if (!empty($datosUsuario)) {
 </head>
 
 <div class="contenedorImagen">
-    <img src="./logoAb.jpeg" class="imagen-centrada" width="100px" height="100px">
-
-    <!--
+  
 <img src="http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario45.jpg" class="imagen-centrada" width="100px" height="100px">
--->
 
     <br><br>
     <div class="contenedor-tabla">

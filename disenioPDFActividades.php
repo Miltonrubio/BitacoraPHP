@@ -133,7 +133,8 @@ if (!empty($datosUsuario)) {
 
 
     <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacora/css/estilo.css" rel="stylesheet">
-    
+
+    <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
     <?php
     /*
     <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
@@ -227,8 +228,7 @@ if (!empty($datosUsuario)) {
                 $fechaFormateadaFin = str_replace($meses_en_ingles, $meses_en_espanol, $fechaFormateadaFin);
 
 
-
-
+                /*
 
                 $sumaDiferencia = '';
 
@@ -252,6 +252,34 @@ if (!empty($datosUsuario)) {
                     $sumaDiferencia .= "$segundos segundos";
                 }
         ?>
+*/        // Verificar si hay una siguiente actividad
+
+
+                $sumaDiferencia = '';
+
+                $diferencia = $fechaInicio->diff($fechaFin);
+                $dias = $diferencia->days;
+                $horas = $diferencia->h;
+                $minutos = $diferencia->i;
+                $segundos = $diferencia->s;
+
+                if ($dias > 0) {
+                    $sumaDiferencia .= "$dias días, ";
+                }
+                if ($horas > 0) {
+                    $sumaDiferencia .= "$horas horas, ";
+                }
+                if ($minutos > 0) {
+                    $sumaDiferencia .= "$minutos minutos, ";
+                }
+                if ($segundos > 0 || empty($sumaDiferencia)) {
+                    $sumaDiferencia .= "$segundos segundos";
+                }
+                
+        ?>
+
+
+
                 <tr>
                     <td class="texto_centrado "><?php echo $actividades['nombre_actividad'] ?></td>
                     <td class="texto_centrado "><?php echo $actividades['descripcionActividad'] ?></td>
@@ -264,7 +292,7 @@ if (!empty($datosUsuario)) {
                         <td class="texto_centrado"><?php echo "Iniciado el " . $fechaFormateadaInicio; ?></td>
 
                     <?php
-                    } else {    
+                    } else {
                     ?>
                         <td class="texto_centrado"><?php echo "Aun no se ha iniciado la actividad" ?></td>
 
@@ -319,7 +347,60 @@ if (!empty($datosUsuario)) {
 
                     ?>
 
+<?php
+   if ($index < count($datosMostrarActividades) - 1) {
+    $fechaSiguienteInicio = new DateTime($datosMostrarActividades[$index + 1]['fecha_inicio']);
+    $diferenciaEntreActividades = $fechaFin->diff($fechaSiguienteInicio);
+
+    // Verificar si ambas fechas pertenecen al mismo día
+    if ($fechaFin->format('Y-m-d') == $fechaSiguienteInicio->format('Y-m-d')) {
+        $minutosDiferencia = $diferenciaEntreActividades->days * 24 * 60 + $diferenciaEntreActividades->h * 60 + $diferenciaEntreActividades->i;
+
+        // Mostrar el mensaje solo si la diferencia es mayor a 30 minutos
+        if ($minutosDiferencia > 20) {
+            // Formatear la diferencia de tiempo de manera similar a $sumaDiferencia
+            $mensajeDiferencia = '';
+            $dias = $diferenciaEntreActividades->days;
+            $horas = $diferenciaEntreActividades->h;
+            $minutos = $diferenciaEntreActividades->i;
+            $segundos = $diferenciaEntreActividades->s;
+
+            if ($dias > 0) {
+                $mensajeDiferencia .= "$dias días, ";
+            }
+            if ($horas > 0) {
+if($horas==1){
+    $mensajeDiferencia .= "$horas hora, ";
+}else{
+
+    $mensajeDiferencia .= "$horas horas, ";
+}
+
+            }
+            if ($minutos > 0) {
+
+                $mensajeDiferencia .= "$minutos minutos";
+            }
+   
+?>
+            <tr>
+                <td colspan="5" class="texto_centrado texto_rojo">
+                    Tiempo sin registrar actividades: <?php echo $mensajeDiferencia; ?>
+                </td>
+            </tr>
+<?php
+        }
+    }
+}
+
+?>
+
+
                 </tr>
+
+
+
+
         <?php
             }
         }

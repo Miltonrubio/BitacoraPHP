@@ -3,6 +3,11 @@
 # Incluyendo librerias necesarias #
 require "./code128.php";
 
+//Habilitar la depuraciòn de errores
+ ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 
 require_once "conexion.php";
 
@@ -335,7 +340,8 @@ if (!empty($resultadosSaldos)) {
 
         $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "SALDO TOTAL: "), 0, 0, 'L');
         $pdf->SetFont('Arial', 'B', 9);
-        $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1", " $ " . $saldo_asignado + $total_adiciones), 0, 0, 'R');
+        $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1", " $ " . ($saldo_asignado + $total_adiciones)), 0, 0, 'R');
+
         $pdf->SetFont('Arial', '', 9);
 
       
