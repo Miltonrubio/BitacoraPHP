@@ -275,7 +275,7 @@ if (!empty($datosUsuario)) {
                 if ($segundos > 0 || empty($sumaDiferencia)) {
                     $sumaDiferencia .= "$segundos segundos";
                 }
-                
+
         ?>
 
 
@@ -341,70 +341,66 @@ if (!empty($datosUsuario)) {
 
                         <td class="texto_centrado ">Aun no se ha finalizado la actividad</td>
 
-                    <?php
+                        <?php
 
                     }
+                    $index=0;
+                    if ($index < count($datosMostrarActividades) - 1) {
+                        $fechaSiguienteInicio = new DateTime($datosMostrarActividades[$index + 1]['fecha_inicio']);
+                        $diferenciaEntreActividades = $fechaFin->diff($fechaSiguienteInicio);
 
-                    ?>
+                        // Verificar si ambas fechas pertenecen al mismo día
+                        if ($fechaFin->format('Y-m-d') == $fechaSiguienteInicio->format('Y-m-d')) {
+                            $minutosDiferencia = $diferenciaEntreActividades->days * 24 * 60 + $diferenciaEntreActividades->h * 60 + $diferenciaEntreActividades->i;
 
-<?php
-   if ($index < count($datosMostrarActividades) - 1) {
-    $fechaSiguienteInicio = new DateTime($datosMostrarActividades[$index + 1]['fecha_inicio']);
-    $diferenciaEntreActividades = $fechaFin->diff($fechaSiguienteInicio);
+                            // Mostrar el mensaje solo si la diferencia es mayor a 30 minutos
+                            if ($minutosDiferencia > 20) {
+                                // Formatear la diferencia de tiempo de manera similar a $sumaDiferencia
+                                $mensajeDiferencia = '';
+                                $dias = $diferenciaEntreActividades->days;
+                                $horas = $diferenciaEntreActividades->h;
+                                $minutos = $diferenciaEntreActividades->i;
+                                $segundos = $diferenciaEntreActividades->s;
 
-    // Verificar si ambas fechas pertenecen al mismo día
-    if ($fechaFin->format('Y-m-d') == $fechaSiguienteInicio->format('Y-m-d')) {
-        $minutosDiferencia = $diferenciaEntreActividades->days * 24 * 60 + $diferenciaEntreActividades->h * 60 + $diferenciaEntreActividades->i;
+                                if ($dias > 0) {
+                                    $mensajeDiferencia .= "$dias días, ";
+                                }
+                                if ($horas > 0) {
+                                    if ($horas == 1) {
+                                        $mensajeDiferencia .= "$horas hora, ";
+                                    } else {
 
-        // Mostrar el mensaje solo si la diferencia es mayor a 30 minutos
-        if ($minutosDiferencia > 20) {
-            // Formatear la diferencia de tiempo de manera similar a $sumaDiferencia
-            $mensajeDiferencia = '';
-            $dias = $diferenciaEntreActividades->days;
-            $horas = $diferenciaEntreActividades->h;
-            $minutos = $diferenciaEntreActividades->i;
-            $segundos = $diferenciaEntreActividades->s;
+                                        $mensajeDiferencia .= "$horas horas, ";
+                                    }
+                                }
+                                if ($minutos > 0) {
 
-            if ($dias > 0) {
-                $mensajeDiferencia .= "$dias días, ";
-            }
-            if ($horas > 0) {
-if($horas==1){
-    $mensajeDiferencia .= "$horas hora, ";
-}else{
+                                    $mensajeDiferencia .= "$minutos minutos";
+                                }
 
-    $mensajeDiferencia .= "$horas horas, ";
-}
-
-            }
-            if ($minutos > 0) {
-
-                $mensajeDiferencia .= "$minutos minutos";
-            }
-   
-?>
-            <tr>
-                <td colspan="5" class="texto_centrado texto_rojo">
-                    Tiempo sin registrar actividades: <?php echo $mensajeDiferencia; ?>
-                </td>
-            </tr>
-<?php
-        }
-    }
-}
-
-?>
-
-
+                        ?>
+                <tr>
+                    <td colspan="5" class="texto_centrado texto_rojo">
+                        Tiempo sin registrar actividades: <?php echo $mensajeDiferencia; ?>
+                    </td>
                 </tr>
+    <?php
+                            }
+                        }
+                    }
+
+    ?>
+
+
+    </tr>
 
 
 
 
-        <?php
+<?php
             }
         }
-        ?>
+?>
     </tbody>
 </table>
 
