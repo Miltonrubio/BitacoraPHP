@@ -1,10 +1,6 @@
 <?php
-
-# Incluyendo librerias necesarias #
 require "./code128.php";
-
-//Habilitar la depuraciòn de errores
- ini_set('display_errors', 1);
+ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
@@ -28,11 +24,9 @@ foreach ($listaSeleccion as $elemento) {
     $saldo_result = $conexion->query($saldo_query);
 
     if ($saldo_result) {
-        // Obtener los datos del usuario y almacenarlos en el array de resultados
         $datosSaldos = $saldo_result->fetch_assoc();
         $resultadosSaldos[] = $datosSaldos;
     } else {
-        // Manejar errores si la consulta no fue exitosa
         echo "Error en la consulta: " . $conexion->error;
     }
 }
@@ -46,20 +40,16 @@ $resultUsuarios = $conexion->query($sqlUsuario);
 
 
 if ($resultUsuarios) {
-    // Verificar si se encontraron resultados en la consulta
     if ($resultUsuarios->num_rows > 0) {
-        // El usuario y la contraseña son válidos
         $responseUsuarios = array();
         while ($row = $resultUsuarios->fetch_assoc()) {
             $responseUsuarios[] = $row;
         }
         $datosUsuario =    json_encode($responseUsuarios);
     } else {
-        // Las credenciales son incorrectas
         echo "fallo";
     }
 } else {
-    // Error en la consulta SQL
     echo "Error en la consulta: " . $conexion->error;
 }
 
@@ -71,20 +61,16 @@ $resultEncargado = $conexion->query($sqlEncargado);
 
 
 if ($resultEncargado) {
-    // Verificar si se encontraron resultados en la consulta
     if ($resultEncargado->num_rows > 0) {
-        // El usuario y la contraseña son válidos
         $responseEncargado = array();
         while ($row = $resultEncargado->fetch_assoc()) {
             $responseEncargado[] = $row;
         }
         $datosEncargado =    json_encode($responseEncargado);
     } else {
-        // Las credenciales son incorrectas
         echo "fallo";
     }
 } else {
-    // Error en la consulta SQL
     echo "Error en la consulta: " . $conexion->error;
 }
 
@@ -108,71 +94,60 @@ if (!empty($datosEncargado)) {
 }
 
 
-$pdf = new PDF_Code128('P', 'mm', array(80, 258));
+$pdf = new PDF_Code128('P', 'mm', array(80, 340));
 
-$pdf->SetMargins(4, 6, 4);
+$pdf->SetMargins(2, 2, 2);
 $pdf->AddPage();
 
-# Encabezado y datos de la empresa #
 $pageWidth = $pdf->GetPageWidth();
-
-$imageWidth = 20; // Adjust this based on the actual width of your image
-
-// Calculate the X-coordinate to center the image
+$imageWidth = 20;
 $imageX = ($pageWidth - $imageWidth) / 2;
 $pdf->Ln(1);
-// Draw the image first
 $pdf->Image('logoAb.png', $imageX, 5, 20, 20, 'png');
+
 $pdf->Ln(22);
 $pdf->SetFont('Arial', 'B', 9);
 $pdf->SetTextColor(0, 0, 0);
-//$pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", strtoupper("ABARROTERA HIDALGO")), 0, 'C', false);
 
-
+$pdf->Ln(2);
 $pdf->MultiCell(0, 3, iconv("UTF-8", "ISO-8859-1", " 5 Ote 1500, La Purísima, 75784 Tehuacán, Pue."), 0, 'C', false);
-//$pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", "La Purísima, 75784 "), 0, 'C', false);
-//$pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", "Tehuacán, Pue"), 0, 'C', false);
-
 $pdf->SetFont('Arial', '', 9);
 $pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
 $pdf->Ln(2);
 
-// Obtener la posición Y actual
 $posicionYEncargado = $pdf->GetY();
 
 if (!empty($datosMostrarEncargado)) {
     foreach ($datosMostrarEncargado as $Encargado) {
         $nombreEncargado = $Encargado['nombre'];
+
+        $pdf->SetFont('Arial', 'B', 9);
         $pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", "Encargado: " . $nombreEncargado), 0, 'L', false);
     }
 } else {
     echo "No se encontraron datos";
 }
 
-// Obtener la posición Y después de imprimir "Encargado"
 $posicionYFecha = $pdf->GetY();
 
-// Establecer la posición Y de la fecha para que coincida con la posición Y de "Encargado"
+$pdf->SetFont('Arial', '', 9);
 $pdf->SetY($posicionYEncargado);
-
 $pdf->Cell(0, 5, iconv("UTF-8", "ISO-8859-1", "Fecha: " . date("d/m/Y")), 0, 1, 'R');
-
-// Mostrar solo la hora
 $pdf->Cell(0, 5, iconv("UTF-8", "ISO-8859-1", "Hora: " . date("h:i A")), 0, 1, 'R');
 
-
-//$pdf->SetFont('Arial', 'B', 10);
 $pdf->SetFont('Arial', '', 9);
 
 $pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
 $pdf->Ln(3);
 
+$pdf->SetFont('Arial', 'B', 9);
 $pdf->MultiCell(0, 4, iconv("UTF-8", "ISO-8859-1", strtoupper("INFORMACIÓN DEL EMPLEADO")), 0, 'C', false);
 
 
 
 $posicionYNombreEmpleado = $pdf->GetY();
 
+$pdf->SetFont('Arial', '', 9);
 if (!empty($datosMostrarUsuario)) {
     foreach ($datosMostrarUsuario as $datosUsuario) {
         $nombreEmpleado = $datosUsuario['nombre'];
@@ -181,14 +156,18 @@ if (!empty($datosMostrarUsuario)) {
 
 
         $pdf->SetY($posicionYNombreEmpleado);
-        $pdf->Cell(0, 5, iconv("UTF-8", "ISO-8859-1", "Nombre: " . $nombreEmpleado), 0, 1, 'L');
+
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(0, 5, iconv("UTF-8", "ISO-8859-1", $nombreEmpleado), 0, 1, 'L');
+
+        $pdf->SetFont('Arial', '', 9);
         $pdf->Cell(0, 5, iconv("UTF-8", "ISO-8859-1", "Puesto: " . $permisos), 0, 1, 'L');
         $pdf->Ln(2);
 
         $posicionYTelefono = $pdf->GetY();
         $pdf->SetY($posicionYNombreEmpleado);
 
-        $pdf->Cell(0, 5, iconv("UTF-8", "ISO-8859-1", "Cel: " . $telefono), 0, 1, 'R');
+        $pdf->Cell(0, 5, iconv("UTF-8", "ISO-8859-1",  $telefono), 0, 1, 'R');
         $pdf->Ln(2);
     }
 } else {
@@ -197,15 +176,13 @@ if (!empty($datosMostrarUsuario)) {
 
 $pdf->Ln(2);
 
-
-
 if (!empty($resultadosSaldos)) {
     foreach ($resultadosSaldos as $gastos) {
 
         $pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
         $pdf->Ln(1);
 
-        $ID_saldo_actual = $gastos['ID_saldo']; // Obtén el ID_saldo actual
+        $ID_saldo_actual = $gastos['ID_saldo'];
         $caja =    $gastos['tipo_caja'];
         $hora_asignacion =    $gastos['hora_asignacion_saldo'];
         $fecha_asignacion =    $gastos['fecha_asignacion_saldo'];
@@ -260,35 +237,44 @@ if (!empty($resultadosSaldos)) {
         $pdf->SetFont('Arial', 'B', 9);
         $pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "SALDO  DE CAJA: " . strtoupper($caja)), 0, 0, 'C');
 
-        $pdf->SetFont('Arial', '', 9);
+        $pdf->Ln(2);
         $pdf->Ln(4);
         if (!empty($detallesGastos)) {
+
             foreach ($detallesGastos as $detalleGasto) {
 
+                $pdf->SetFont('Arial', 'B', 9);
+                $anchoMaximo = 19; // Puedes ajustar este valor según tus necesidades
+                $anchoColumna = 52;
 
-                $fecha =    $detalleGasto['fecha'];
-                $hora =    $detalleGasto['hora'];
-                $dinero_gastado =    $detalleGasto['dinero_gastado'];
-                $nombre_actividad =    $detalleGasto['nombre_actividad'];
-                $descripcionActividad =    $detalleGasto['descripcionActividad'];
+                $fecha = $detalleGasto['fecha'];
+                $hora = $detalleGasto['hora'];
+                $dinero_gastado = $detalleGasto['dinero_gastado'];
+                $nombre_actividad = $detalleGasto['nombre_actividad'];
+                $descripcionActividad = $detalleGasto['descripcionActividad'];
 
-                $posicionYGastos = $pdf->GetY();
+                // Registra la posición Y actual antes de imprimir el contenido
+                $posicionYInicial = $pdf->GetY();
 
-                $pdf->MultiCell(0, 3, iconv("UTF-8", "ISO-8859-1", "Asignacion: " . $fecha . " " . $hora), 0, 'L', false);
-                $pdf->MultiCell(0, 4, iconv("UTF-8", "ISO-8859-1", $descripcionActividad), 0, 'L', false);
-
-
-                $posicionYSaldoGastado = $pdf->GetY();
-                $pdf->SetY($posicionYGastos);
-
-
-                $pdf->SetFont('Arial', 'B', 10);
-
-                $pdf->MultiCell(0, 8, iconv("UTF-8", "ISO-8859-1", strtoupper("$ " . $dinero_gastado)), 0, 'R', false);
+                // Imprime la asignación y la descripción de la actividad en la primera columna
+                $pdf->SetXY(10, $posicionYInicial); // Ajusta la posición X según tus necesidades
+                $pdf->MultiCell($anchoColumna, 5, iconv("UTF-8", "ISO-8859-1", "Asignación: " . $fecha . " " . $hora), 0, 'L', false);
+                $pdf->SetXY(10, $pdf->GetY());
 
                 $pdf->SetFont('Arial', '', 9);
+                $pdf->MultiCell($anchoColumna, 5, iconv("UTF-8", "ISO-8859-1", $descripcionActividad), 0, 'L', false);
 
-                $pdf->Ln(2);
+                // Calcula la altura total del contenido impreso
+                $alturaContenido = $pdf->GetY() - $posicionYInicial;
+
+                // Imprime el importe gastado en la segunda columna, alineado a la derecha
+                $pdf->SetXY(10 + $anchoColumna + 5, $posicionYInicial); // Ajusta la posición X según tus necesidades
+                $pdf->SetFont('Arial', 'B', 9);
+                $pdf->MultiCell(0, 5, iconv("UTF-8", "ISO-8859-1", strtoupper("$ " . $dinero_gastado)), 0, 'R', false);
+                $pdf->SetFont('Arial', '', 9);
+
+                // Establece la posición Y para el siguiente elemento
+                $pdf->SetY($posicionYInicial + $alturaContenido + 2); // Agrega un espacio entre elementos
             }
         } else {
         }
@@ -320,12 +306,9 @@ if (!empty($resultadosSaldos)) {
         } else {
         }
 
-        $pdf->Ln(2);
-
-
 
         $pdf->Cell(72, 5, iconv("UTF-8", "ISO-8859-1", "-------------------------------------------------------------------"), 0, 0, 'C');
-        $pdf->SetFont('Arial', 'B', 9);
+
         $pdf->SetFont('Arial', '', 8);
 
 
@@ -338,18 +321,20 @@ if (!empty($resultadosSaldos)) {
         $pdf->Ln(5);
         $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
 
+        $pdf->SetFont('Arial', 'B', 9);
         $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "SALDO TOTAL: "), 0, 0, 'L');
         $pdf->SetFont('Arial', 'B', 9);
         $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1", " $ " . ($saldo_asignado + $total_adiciones)), 0, 0, 'R');
 
         $pdf->SetFont('Arial', '', 9);
 
-      
+
         if (!empty($detallesDepositos)) {
 
             $pdf->Ln(5);
             $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
-    
+
+            $pdf->SetFont('Arial', 'B', 9);
             $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "SALDO ASIGNADO: "), 0, 0, 'L');
             $pdf->SetFont('Arial', 'B', 9);
             $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1", " $ " . $saldo_asignado), 0, 0, 'R');
@@ -358,6 +343,7 @@ if (!empty($resultadosSaldos)) {
             $pdf->SetFont('Arial', '', 9);
             $pdf->Ln(5);
             $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
+            $pdf->SetFont('Arial', 'B', 9);
             $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "TOTAL DE ADICIONES: "), 0, 0, 'L');
             $pdf->SetFont('Arial', 'B', 9);
 
@@ -369,6 +355,7 @@ if (!empty($resultadosSaldos)) {
 
         $pdf->Ln(5);
         $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
+        $pdf->SetFont('Arial', 'B', 9);
         $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "TOTAL DE GASTOS: "), 0, 0, 'L');
         $pdf->SetFont('Arial', 'B', 9);
 
@@ -383,14 +370,14 @@ if (!empty($resultadosSaldos)) {
         $pdf->Ln(5);
 
         $pdf->Cell(18, 5, iconv("UTF-8", "ISO-8859-1", ""), 0, 0, 'C');
+        
+$pdf->SetFont('Arial', 'B', 9);
         $pdf->Cell(22, 5, iconv("UTF-8", "ISO-8859-1", "SOBRANTE:"), 0, 0, 'L');
         $pdf->SetFont('Arial', 'B', 9);
         $pdf->Cell(32, 5, iconv("UTF-8", "ISO-8859-1", " $ " . $saldo_restante), 0, 0, 'R');
         $pdf->SetFont('Arial', '', 9);
 
         $pdf->Ln(2);
-
-        $pdf->Ln(7);
     }
 } else {
     echo   "No se encontraron resultados";
@@ -412,4 +399,5 @@ $pdf->Cell(0, 7, iconv("UTF-8", "ISO-8859-1", $nombreEmpleado), '', 0, 'C');
   */
 
 # Nombre del archivo PDF #
+
 $pdf->Output("I", "Ticket_Nro_1.pdf", true);
