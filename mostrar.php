@@ -101,7 +101,7 @@ if ($opcion == "1") {
     // Opción 1: Autenticación
     $sql = "SELECT * FROM usuarios 
     WHERE (correo = '$correo' OR telefono = '$correo') 
-    AND clave = '$clave'";
+    AND clave = '$clave' AND estado != 'Inactivo'";
     $result = $conexion->query($sql);
 
     if ($result) {
@@ -187,19 +187,101 @@ ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fech
     $result = $conexion->query($sql);
 
     if ($result) {
-        echo "Extio";
+        echo "Exito";
     } else {
         echo "Error en la consulta: " . $conexion->error;
     }
+
 } elseif ($opcion == "5") {
+    // Opción 2: Obtener actividades del usuario
+
+    // Obtener el ID_usuario de la actividad actual
+    $sqlUsuario = "SELECT ID_usuario FROM actividades WHERE ID_actividad=$ID_actividad";
+    $resultUsuario = $conexion->query($sqlUsuario);
+
+    if ($resultUsuario->num_rows > 0) {
+        $rowUsuario = $resultUsuario->fetch_assoc();
+        $ID_usuario = $rowUsuario['ID_usuario'];
+
+        if ($nuevoEstado != null && $nuevoEstado == "Finalizado") {
+            $fechaFin = date("Y-m-d H:i:s"); // Fecha actual
+            $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', fecha_fin='$fechaFin', motivocancelacion='Todo correcto' WHERE ID_actividad=$ID_actividad";
+        } else if ($nuevoEstado != null && $nuevoEstado == "Iniciado") {
+            // Verificar si hay alguna actividad con estado 'Iniciado' para el usuario actual
+            $sqlActividadIniciada = "SELECT ID_actividad FROM actividades WHERE estadoActividad='Iniciado' AND ID_usuario=$ID_usuario";
+            $resultActividadIniciada = $conexion->query($sqlActividadIniciada);
+
+            if ($resultActividadIniciada->num_rows > 0) {
+                // Si hay una actividad en estado 'Iniciado', poner tiempo_muerto a 0 o nulo
+                $tiempoMuerto = 0;
+            } else {
+                // Obtener la última actividad con estado 'Finalizado' del día de hoy para el usuario actual
+                $hoy = date("Y-m-d");
+                $sqlUltimaActividad = "SELECT fecha_fin FROM actividades WHERE estadoActividad='Finalizado' AND ID_usuario=$ID_usuario AND DATE(fecha_fin) = '$hoy' ORDER BY fecha_fin DESC LIMIT 1";
+                $resultUltimaActividad = $conexion->query($sqlUltimaActividad);
+
+                if ($resultUltimaActividad->num_rows > 0) {
+                    $rowUltimaActividad = $resultUltimaActividad->fetch_assoc();
+                    $fechaFinUltimaActividad = $rowUltimaActividad['fecha_fin'];
+
+                    // Calcular la diferencia de tiempo en segundos
+                    $fechaFinDateTime = new DateTime($fechaFinUltimaActividad);
+                    $fechaActualDateTime = new DateTime();
+
+                    $diferencia = $fechaActualDateTime->diff($fechaFinDateTime);
+                    $tiempoMuerto = $diferencia->h * 3600 + $diferencia->i * 60 + $diferencia->s; // Tiempo muerto en segundos
+                } else {
+                    // Si no hay actividades finalizadas hoy, calcular la diferencia desde las 9 am
+                    $fechaActualDateTime = new DateTime();
+                    $fecha9AM = new DateTime($hoy . " 09:00:00");
+
+                    if ($fechaActualDateTime > $fecha9AM) {
+                        $diferencia = $fechaActualDateTime->diff($fecha9AM);
+                        $tiempoMuerto = $diferencia->h * 3600 + $diferencia->i * 60 + $diferencia->s; // Tiempo muerto en segundos
+                    } else {
+                        $tiempoMuerto = 0; // Si la hora actual es antes de las 9 am, el tiempo muerto es 0
+                    }
+                }
+            }
+
+            // Resta una hora a la fecha actual
+            $fechaInicio = (new DateTime())->modify('-1 hour')->format("Y-m-d H:i:s");
+
+            // Actualizar la actividad actual
+            $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', fecha_inicio='$fechaInicio', motivocancelacion='Todo correcto', tiempo_muerto=$tiempoMuerto WHERE ID_actividad=$ID_actividad";
+        } else {
+            $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado' WHERE ID_actividad=$ID_actividad";
+        }
+
+        $result = $conexion->query($sql);
+
+        if ($result) {
+            echo "Éxito";
+        } else {
+            // Error en la consulta SQL
+            echo "Error en la consulta: " . $conexion->error;
+        }
+    } else {
+        echo "No se encontró el usuario para la actividad especificada.";
+    }
+}
+
+
+
+/*
+elseif ($opcion == "5") {
     // Opción 2: Obtener actividades del usuario
 
     if ($nuevoEstado != null && $nuevoEstado == "Finalizado") {
         $fechaFin = date("Y-m-d H:i:s"); // Resta una hora a la fecha actual
         $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', fecha_fin='$fechaFin', motivocancelacion='Todo correcto' WHERE ID_actividad=$ID_actividad";
     } else if ($nuevoEstado != null && $nuevoEstado == "Iniciado") {
+
+
+
         $fechaInicio = date("Y-m-d H:i:s"); // Resta una hora a la fecha actual
         $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', fecha_inicio='$fechaInicio', motivocancelacion='Todo correcto' WHERE ID_actividad=$ID_actividad";
+        
     } else {
         $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado' WHERE ID_actividad=$ID_actividad";
     }
@@ -212,7 +294,8 @@ ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fech
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
-} elseif ($opcion == "29") {
+} 
+*/ elseif ($opcion == "29") {
     $fechaFin = date("Y-m-d H:i:s"); // Resta una hora a la fecha actual
 
     $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', motivocancelacion='$motivocancelacion', fecha_fin='$fechaFin' WHERE ID_actividad=$ID_actividad";
@@ -493,7 +576,7 @@ WHERE u.estado = 'Activo';";
     $telefono_existente = false;
 
     // Verificar si el correo ya existe
-    $sql_correo = "SELECT * FROM usuarios WHERE correo = '$correo_usuario'";
+    $sql_correo = "SELECT * FROM usuarios WHERE correo = '$correo_usuario' AND estado !='Inactivo' ";
     $result_correo = $conexion->query($sql_correo);
 
     if ($result_correo->num_rows > 0) {
@@ -501,7 +584,7 @@ WHERE u.estado = 'Activo';";
     }
 
     // Verificar si el nombre ya existe
-    $sql_nombre = "SELECT * FROM usuarios WHERE nombre = '$nombre_usuario'";
+    $sql_nombre = "SELECT * FROM usuarios WHERE nombre = '$nombre_usuario' AND estado !='Inactivo' ";
     $result_nombre = $conexion->query($sql_nombre);
 
     if ($result_nombre->num_rows > 0) {
@@ -509,7 +592,7 @@ WHERE u.estado = 'Activo';";
     }
 
     // Verificar si el teléfono ya existe
-    $sql_telefono = "SELECT * FROM usuarios WHERE telefono = '$telefono_usuario'";
+    $sql_telefono = "SELECT * FROM usuarios WHERE telefono = '$telefono_usuario' AND estado !='Inactivo'    ";
     $result_telefono = $conexion->query($sql_telefono);
 
     if ($result_telefono->num_rows > 0) {
@@ -517,7 +600,7 @@ WHERE u.estado = 'Activo';";
     }
 
     if ($correo_existente || $nombre_existente || $telefono_existente) {
-        echo "Error: El correo, nombre o teléfono ya existen en la base de datos.";
+        echo "El correo, nombre o teléfono ya existe";
     } else {
         // Continúa con la inserción
         $sql = "INSERT INTO `usuarios` (`permisos`, `nombre`, `correo`, `clave`, `telefono`) VALUES ('$permisos', '$nombre_usuario', '$correo_usuario', '$clave_usuario', '$telefono_usuario')";
@@ -2571,6 +2654,99 @@ ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fech
 } else if ($opcion == "82") {
     // Consulta principal para obtener los usuarios con saldos activos
     $sql = "SELECT usuarios.*, MAX(registros_saldos.ID_registro_saldo) AS ID_registro_saldo
+  FROM usuarios
+  LEFT JOIN registros_saldos ON usuarios.ID_usuario = registros_saldos.ID_usuario
+  WHERE usuarios.estado = 'Activo'
+  GROUP BY usuarios.ID_usuario
+  ORDER BY usuarios.ID_usuario";
+
+    $result = $conexion->query($sql);
+
+    if ($result) {
+        // Verificar si se encontraron resultados en la consulta
+        if ($result->num_rows > 0) {
+            // Los usuarios fueron encontrados
+            $response = array();
+
+            while ($row = $result->fetch_assoc()) {
+                // Verificar si el usuario tiene saldo activo
+                if (!empty($row['ID_registro_saldo'])) {
+                    // Usuario con saldo activo, procesar la información de saldo
+                    $ID_registro_saldo = $row['ID_registro_saldo'];
+
+                    // Consulta para obtener la información de nuevo_saldo
+                    $saldo_query = "SELECT * FROM nuevo_saldo WHERE ID_registro_saldo = $ID_registro_saldo AND status_saldo = 'Activo' ORDER BY status_saldo ASC, tipo_caja ASC";
+                    $saldo_result = $conexion->query($saldo_query);
+
+                    $saldos = array();
+
+                    while ($saldo_row = $saldo_result->fetch_assoc()) {
+                        // Calcular el saldo restante
+                        $saldo_asignado = $saldo_row['saldo_asignado'];
+
+                        // Consulta para obtener la suma de consumos
+                        $consumos_query = "SELECT * FROM consumos WHERE ID_saldo_por_caja = {$saldo_row['ID_saldo']}";
+                        $consumos_result = $conexion->query($consumos_query);
+
+                        $consumos = array();
+
+                        if ($consumos_result->num_rows > 0) {
+                            while ($consumos_row = $consumos_result->fetch_assoc()) {
+                                $consumos[] = $consumos_row;
+                            }
+                        }
+
+                        // Consulta para obtener la suma de adiciones
+                        $adiciones_query = "SELECT * FROM adiciones WHERE ID_saldo_por_caja = {$saldo_row['ID_saldo']}";
+                        $adiciones_result = $conexion->query($adiciones_query);
+
+                        $adiciones = array();
+
+                        if ($adiciones_result->num_rows > 0) {
+                            while ($adiciones_row = $adiciones_result->fetch_assoc()) {
+                                $adiciones[] = $adiciones_row;
+                            }
+                        }
+
+                        $saldo_restante = $saldo_asignado + array_sum(array_column($adiciones, 'saldo_agregado')) - array_sum(array_column($consumos, 'dinero_gastado'));
+
+                        // Calcular el total de adiciones
+                        $total_adiciones = array_sum(array_column($adiciones, 'saldo_agregado'));
+
+                        // Calcular el total de consumos
+                        $total_consumos = array_sum(array_column($consumos, 'dinero_gastado'));
+
+                        // Agregar detalles al array principal
+                        $saldo_row['saldo_restante'] = $saldo_restante;
+                        $saldo_row['total_adiciones'] = $total_adiciones;
+                        $saldo_row['total_consumos'] = $total_consumos;
+
+                        $saldos[] = $saldo_row;
+                    }
+
+                    $row['desglose_saldo_por_caja'] = $saldos;
+                } else {
+                    // Usuario sin saldo activo
+                    $row['desglose_saldo_por_caja'] = array();
+                    $row['mensaje'] = "Sin saldo activo";
+                }
+
+                $response[] = $row;
+            }
+
+            // Mostrar el resultado como JSON
+            echo json_encode($response);
+        } else {
+            // No se encontraron usuarios
+            echo "No se encontraron usuarios";
+        }
+    } else {
+        // Error en la consulta SQL
+        echo "Error en la consulta: " . $conexion->error;
+    }
+    /*
+    // Consulta principal para obtener los usuarios con saldos activos
+    $sql = "SELECT usuarios.*, MAX(registros_saldos.ID_registro_saldo) AS ID_registro_saldo
                 FROM usuarios
                 LEFT JOIN registros_saldos ON usuarios.ID_usuario = registros_saldos.ID_usuario
                 WHERE usuarios.estado = 'Activo'
@@ -2683,7 +2859,7 @@ ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fech
         // Error en la consulta SQL
         echo "Error en la consulta: " . $conexion->error;
     }
-
+*/
 
 
     /*

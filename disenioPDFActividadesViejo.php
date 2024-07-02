@@ -72,6 +72,14 @@ ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC";
 }
 
 
+
+/*
+
+$sqlActividades = "SELECT * FROM actividades INNER JOIN nombre_actividades ON actividades.ID_nombre_actividad = nombre_actividades.ID_nombre_actividad 
+INNER JOIN usuarios ON actividades.ID_usuario = usuarios.ID_usuario WHERE actividades.ID_usuario = $ID_usuario 
+ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC";
+*/
+
 $resultActividades = $conexion->query($sqlActividades);
 if ($resultActividades) {
     if ($resultActividades->num_rows > 0) {
@@ -126,7 +134,7 @@ if (!empty($datosUsuario)) {
 
     <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacora/css/estilo.css" rel="stylesheet">
 
-
+    
     <?php
     /*
     <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
@@ -136,9 +144,9 @@ if (!empty($datosUsuario)) {
 </head>
 
 <div class="contenedorImagen">
+    
 
-
-    <img src="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacora/logoAH.jpg" class="imagen-centrada" width="100px" height="100px">
+<img src="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacora/logoAH.jpg" class="imagen-centrada" width="100px" height="100px">
 
     <br><br>
 
@@ -221,31 +229,33 @@ if (!empty($datosUsuario)) {
                 $fechaFormateadaFin = str_replace($meses_en_ingles, $meses_en_espanol, $fechaFormateadaFin);
 
 
-
-                $sumaDiferencia = '';
-
-                $diferencia = $fechaInicio->diff($fechaFin);
-
-                $dias = $diferencia->days;
-                $horas = $diferencia->h;
-                $minutos = $diferencia->i;
-                $segundos = $diferencia->s;
-
-                if ($dias > 0) {
-                    $sumaDiferencia .= "$dias días, ";
-                }
-                if ($horas > 0) {
-                    $sumaDiferencia .= "$horas horas, ";
-                }
-                if ($minutos > 0) {
-                    $sumaDiferencia .= "$minutos minutos, ";
-                }
-                if ($segundos > 0 || empty($sumaDiferencia)) {
-                    $sumaDiferencia .= "$segundos segundos";
-                }
-
-
                 /*
+
+                $sumaDiferencia = '';
+
+                $diferencia = $fechaInicio->diff($fechaFin);
+
+                $dias = $diferencia->days;
+                $horas = $diferencia->h;
+                $minutos = $diferencia->i;
+                $segundos = $diferencia->s;
+
+                if ($dias > 0) {
+                    $sumaDiferencia .= "$dias días, ";
+                }
+                if ($horas > 0) {
+                    $sumaDiferencia .= "$horas horas, ";
+                }
+                if ($minutos > 0) {
+                    $sumaDiferencia .= "$minutos minutos, ";
+                }
+                if ($segundos > 0 || empty($sumaDiferencia)) {
+                    $sumaDiferencia .= "$segundos segundos";
+                }
+        ?>
+*/        // Verificar si hay una siguiente actividad
+
+
                 $sumaDiferencia = '';
 
                 $diferencia = $fechaInicio->diff($fechaFin);
@@ -267,7 +277,6 @@ if (!empty($datosUsuario)) {
                     $sumaDiferencia .= "$segundos segundos";
                 }
 
-*/        // Verificar si hay una siguiente actividad
         ?>
 
 
@@ -314,7 +323,7 @@ if (!empty($datosUsuario)) {
                     ?>
 
 
-
+                    
 
                     <?php
 
@@ -333,12 +342,9 @@ if (!empty($datosUsuario)) {
 
                         <td class="texto_centrado ">Aun no se ha finalizado la actividad</td>
 
-                    <?php
+                        <?php
 
                     }
-
-                    /*
-
                     $index=0;
                     if ($index < count($datosMostrarActividades) - 1) {
                         $fechaSiguienteInicio = new DateTime($datosMostrarActividades[$index + 1]['fecha_inicio']);
@@ -373,87 +379,29 @@ if (!empty($datosUsuario)) {
                                     $mensajeDiferencia .= "$minutos minutos";
                                 }
 
-                    ?>
+                        ?>
                 <tr>
                     <td colspan="5" class="texto_centrado texto_rojo">
-                        <?php
-
-
-                        $tipoMuerto = $actividades['tiempo_muerto'];
-
-                        if ($tipoMuerto) {
-                            echo 'Tiempo sin registrar actividades: ' . $tipoMuerto;
-                        } else {
-                        }
-                        ?>
+                        Tiempo sin registrar actividades: <?php echo $mensajeDiferencia; ?>
                     </td>
                 </tr>
-                <?php
-
-                /* }
+    <?php
+                            }
                         }
-                    
-                   
-                } */
-
-                    /*
-                $tiempoMuerto = $actividades['tiempo_muerto'];
-
-                if (isset($tiempoMuerto) && $tiempoMuerto > 1200) {
-                    ?>
-
-                <tr>
-                    <td colspan="5" class="texto_centrado texto_rojo"> Tiempo sin registrar actividades: <?php echo $tipoMuerto; ?></td>
-                </tr>
-
-            <?php
-                    } else {
-                        echo ' <tr><td colspan="5" class="texto_centrado texto_rojo"> Menor a 20</td></tr>';
-                    }
-*/
-
-
-
-                    $tiempoMuerto = $actividades['tiempo_muerto'];
-
-                    $segundos = strtotime($tiempoMuerto) - strtotime('TODAY');
-
-
-                    if ($segundos > 1200) {
-                        
-                        $horas = floor($segundos / 3600);
-                        $minutos = floor(($segundos % 3600) / 60);
-                        $segundosRestantes = $segundos % 60;
-
-                        $tiempoFormateado = "";
-                        if ($horas > 0) {
-                            $tiempoFormateado .= $horas . " horas, ";
-                        }
-                        if ($minutos > 0) {
-                            $tiempoFormateado .= $minutos . " minutos con ";
-                        }
-                        $tiempoFormateado .= $segundosRestantes . " segundos";
-
-                        echo '<tr><td colspan="5" class="texto_centrado texto_rojo"> Tiempo sin registrar actividades:' . $tiempoFormateado . '</td></tr>';
-                    } else {
                     }
 
+    ?>
+
+
+    </tr>
 
 
 
 
-                    ?>
-
-
-                </tr>
-
-
-
-
-        <?php
+<?php
             }
         }
-        ?>
+?>
     </tbody>
 </table>
 
