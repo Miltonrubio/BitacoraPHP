@@ -134,7 +134,7 @@ if (!empty($datosUsuario)) {
 
     <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacora/css/estilo.css" rel="stylesheet">
 
-    <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
+    
     <?php
     /*
     <link href="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacoraphp/BitacoraPHP/css/estilo.css" rel="stylesheet">
@@ -144,8 +144,9 @@ if (!empty($datosUsuario)) {
 </head>
 
 <div class="contenedorImagen">
-    <img src="http://hidalgo.no-ip.info:5610/bitacora/fotos/fotos_usuarios/fotoperfilusuario45.jpg" class="imagen-centrada" width="100px" height="100px">
+    
 
+<img src="http://<?php echo $_SERVER['HTTP_HOST'] ?>/bitacora/logoAH.jpg" class="imagen-centrada" width="100px" height="100px">
 
     <br><br>
 
