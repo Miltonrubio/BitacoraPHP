@@ -193,9 +193,82 @@ ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fech
     }
 
 } elseif ($opcion == "5") {
-    // Opción 2: Obtener actividades del usuario
 
     // Obtener el ID_usuario de la actividad actual
+    $sqlUsuario = "SELECT ID_usuario FROM actividades WHERE ID_actividad=$ID_actividad";
+    $resultUsuario = $conexion->query($sqlUsuario);
+
+    if ($resultUsuario->num_rows > 0) {
+        $rowUsuario = $resultUsuario->fetch_assoc();
+        $ID_usuario = $rowUsuario['ID_usuario'];
+
+        if ($nuevoEstado != null && $nuevoEstado == "Finalizado") {
+            $fechaFin = date("Y-m-d H:i:s"); // Fecha actual
+            $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', fecha_fin='$fechaFin', motivocancelacion='Todo correcto' WHERE ID_actividad=$ID_actividad";
+        } else if ($nuevoEstado != null && $nuevoEstado == "Iniciado") {
+            // Verificar si hay alguna actividad con estado 'Iniciado' para el usuario actual
+            $sqlActividadIniciada = "SELECT ID_actividad FROM actividades WHERE estadoActividad='Iniciado' AND ID_usuario=$ID_usuario";
+            $resultActividadIniciada = $conexion->query($sqlActividadIniciada);
+
+            if ($resultActividadIniciada->num_rows > 0) {
+                // Si hay una actividad en estado 'Iniciado', poner tiempo_muerto a 0 o nulo
+                $tiempoMuerto = '00:00:00';
+            } else {
+                // Obtener la última actividad con estado 'Finalizado' del día de hoy para el usuario actual
+                $hoy = date("Y-m-d");
+                $sqlUltimaActividad = "SELECT fecha_fin FROM actividades WHERE estadoActividad='Finalizado' AND ID_usuario=$ID_usuario AND DATE(fecha_fin) = '$hoy' ORDER BY fecha_fin DESC LIMIT 1";
+                $resultUltimaActividad = $conexion->query($sqlUltimaActividad);
+
+                if ($resultUltimaActividad->num_rows > 0) {
+                    $rowUltimaActividad = $resultUltimaActividad->fetch_assoc();
+                    $fechaFinUltimaActividad = $rowUltimaActividad['fecha_fin'];
+
+                    // Calcular la diferencia de tiempo en segundos
+                    $fechaFinDateTime = new DateTime($fechaFinUltimaActividad);
+                    $fechaActualDateTime = new DateTime();
+
+                    $diferencia = $fechaActualDateTime->diff($fechaFinDateTime);
+                    $tiempoMuerto = $diferencia->format("%H:%I:%S"); // Tiempo muerto en formato hh:mm:ss
+                } else {
+                    // Si no hay actividades finalizadas hoy, calcular la diferencia desde las 9 am
+                    $fechaActualDateTime = new DateTime();
+                    $fecha9AM = new DateTime($hoy . " 09:00:00");
+
+                    if ($fechaActualDateTime > $fecha9AM) {
+                        $diferencia = $fechaActualDateTime->diff($fecha9AM);
+                        $tiempoMuerto = $diferencia->format("%H:%I:%S"); // Tiempo muerto en formato hh:mm:ss
+                    } else {
+                        $tiempoMuerto = '00:00:00'; // Si la hora actual es antes de las 9 am, el tiempo muerto es 0
+                    }
+                }
+            }
+
+            // Resta una hora a la fecha actual
+            $fechaInicio = date("Y-m-d H:i:s");
+
+            // Actualizar la actividad actual
+            $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', fecha_inicio='$fechaInicio', motivocancelacion='Todo correcto', tiempo_muerto='$tiempoMuerto' WHERE ID_actividad=$ID_actividad";
+        } else {
+            $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado' WHERE ID_actividad=$ID_actividad";
+        }
+
+        $result = $conexion->query($sql);
+
+        if ($result) {
+            echo "Éxito";
+        } else {
+            // Error en la consulta SQL
+            echo "Error en la consulta: " . $conexion->error;
+        }
+    } else {
+        echo "No se encontró el usuario para la actividad especificada.";
+    }
+}
+    /*
+ANTERIOR: 12/07/2024
+
+    // Opción 2: Obtener actividades del usuario
+
     $sqlUsuario = "SELECT ID_usuario FROM actividades WHERE ID_actividad=$ID_actividad";
     $resultUsuario = $conexion->query($sqlUsuario);
 
@@ -245,7 +318,9 @@ ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fech
             }
 
             // Resta una hora a la fecha actual
-            $fechaInicio = (new DateTime())->modify('-1 hour')->format("Y-m-d H:i:s");
+//            $fechaInicio = (new DateTime())->modify('-1 hour')->format("Y-m-d H:i:s");
+
+$fechaInicio = date("Y-m-d H:i:s"); 
 
             // Actualizar la actividad actual
             $sql = "UPDATE actividades SET estadoActividad='$nuevoEstado', fecha_inicio='$fechaInicio', motivocancelacion='Todo correcto', tiempo_muerto=$tiempoMuerto WHERE ID_actividad=$ID_actividad";
@@ -265,7 +340,7 @@ ORDER BY COALESCE(actividades.fecha_inicio, '9999-12-31') DESC, actividades.fech
         echo "No se encontró el usuario para la actividad especificada.";
     }
 }
-
+*/
 
 
 /*
